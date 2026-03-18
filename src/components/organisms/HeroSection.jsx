@@ -157,7 +157,6 @@ const HeroSection = ({ date, coupleName }) => {
           fontWeight: "bold",
           color: "var(--primary)",
           letterSpacing: "2px",
-          marginTop: "10px",
         }}
       >
         {date}

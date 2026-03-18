@@ -105,11 +105,11 @@ function App() {
             {/* Hero Section */}
             <HeroSection coupleName="Phạm Khải & Lê Nga" date="05.04.2026" />
 
-            {/* Quote Section */}
-            <QuoteSection />
-
             {/* Profile Section */}
             <ProfileSection />
+
+            {/* Quote Section */}
+            <QuoteSection />
 
             {/* Countdown Section */}
             <div style={{ padding: "0 20px" }}>

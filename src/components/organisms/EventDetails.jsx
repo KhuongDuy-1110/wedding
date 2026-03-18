@@ -23,7 +23,7 @@ const EventDetails = () => {
           id="event-4"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-50px" }}
           className="design-card"
           style={{
             padding: "40px 20px",
@@ -113,7 +113,7 @@ const EventDetails = () => {
           id="event-5"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
+          viewport={{ once: false, margin: "-50px" }}
           className="design-card"
           style={{
             padding: "40px 20px",

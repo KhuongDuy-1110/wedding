@@ -41,7 +41,9 @@ const CalendarSection = () => {
   const engagementDate = 4;
   const handleDateClick = (day) => {
     if (day === engagementDate || day === weddingDate) {
-      document.getElementById(`event-${day}`)?.scrollIntoView({ behavior: "smooth" });
+      document
+        .getElementById(`event-${day}`)
+        ?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -50,16 +52,6 @@ const CalendarSection = () => {
       style={{ padding: "24px 24px", background: "#fff", textAlign: "center" }}
     >
       <div style={{ marginBottom: "40px" }}>
-        <h2
-          style={{
-            fontSize: "12px",
-            letterSpacing: "5px",
-            color: "#999",
-            marginBottom: "15px",
-          }}
-        >
-          SAVE THE DATE
-        </h2>
         <div
           style={{
             fontSize: "20px",
@@ -116,7 +108,10 @@ const CalendarSection = () => {
                 fontSize: "14px",
                 color: day === weddingDate ? "#fff" : "#333",
                 zIndex: 1,
-                cursor: (day === engagementDate || day === weddingDate) ? "pointer" : "default"
+                cursor:
+                  day === engagementDate || day === weddingDate
+                    ? "pointer"
+                    : "default",
               }}
             >
               {day === weddingDate && (

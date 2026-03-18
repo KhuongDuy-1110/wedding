@@ -74,7 +74,39 @@ const WeddingCountdown = ({ targetDate }) => {
   );
 
   return (
-    <div>
+    <div style={{ padding: "60px 0 20px 0" }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, margin: "-50px" }}
+        style={{ textAlign: "center", marginBottom: "40px" }}
+      >
+        <h2
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: "32px",
+            color: "#222",
+            fontWeight: "normal",
+            letterSpacing: "3px",
+            marginBottom: "15px",
+          }}
+        >
+          INVITATION
+        </h2>
+        <p
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: "13px",
+            color: "#444",
+            letterSpacing: "1px",
+            textTransform: "uppercase",
+            fontWeight: "500",
+          }}
+        >
+          Đến dự đám cưới của chúng mình
+        </p>
+      </motion.div>
+
       <div
         style={{
           display: "flex",
