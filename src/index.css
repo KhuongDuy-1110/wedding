@@ -266,11 +266,32 @@ h3 {
 
   .opening-card-image {
     width: 100% !important;
-    aspect-ratio: 1/1 !important;
+    max-height: 200px !important; /* Reduced for mobile */
+    aspect-ratio: auto !important;
   }
 
   .opening-card-info {
     width: 100% !important;
-    padding: 25px 15px !important;
+    padding: 15px 10px !important; /* Tighter padding */
+  }
+
+  .opening-card-info .script {
+    font-size: 36px !important; /* Smaller text on mobile */
+  }
+}
+
+/* Optimization for short viewports (short screens) */
+@media (max-height: 720px) {
+  .opening-card-image {
+    max-height: 150px !important;
+  }
+  .opening-card-info {
+    padding: 10px !important;
+  }
+  .opening-card-info h2 {
+    margin: 5px 0 !important;
+  }
+  .opening-card-info .script {
+    font-size: 32px !important;
   }
 }

@@ -81,7 +81,11 @@ const ProfileSection = () => {
             </h2>
           </motion.div>
 
-          <div
+          <motion.div
+            initial={{ x: 40 }}
+            whileInView={{ x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             style={{
               display: "flex",
               gap: "10px",
@@ -93,11 +97,7 @@ const ProfileSection = () => {
               marginBottom: "40px",
             }}
           >
-            <motion.div
-              initial={{ x: 40 }}
-              whileInView={{ x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
+            <div
               style={{
                 flex: 1,
                 height: "200px",
@@ -110,12 +110,8 @@ const ProfileSection = () => {
                 alt="Bride 2"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
-            </motion.div>
-            <motion.div
-              initial={{ x: 40 }}
-              whileInView={{ x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </div>
+            <div
               style={{
                 flex: 1,
                 height: "200px",
@@ -128,8 +124,8 @@ const ProfileSection = () => {
                 alt="Bride 3"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
@@ -171,7 +167,11 @@ const ProfileSection = () => {
             </h2>
           </motion.div>
 
-          <div
+          <motion.div
+            initial={{ x: -40 }}
+            whileInView={{ x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
             style={{
               display: "flex",
               gap: "10px",
@@ -183,11 +183,7 @@ const ProfileSection = () => {
               marginBottom: "40px",
             }}
           >
-            <motion.div
-              initial={{ x: -40 }}
-              whileInView={{ x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
+            <div
               style={{
                 flex: 1,
                 height: "200px",
@@ -200,12 +196,8 @@ const ProfileSection = () => {
                 alt="Groom 2"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
-            </motion.div>
-            <motion.div
-              initial={{ x: -40 }}
-              whileInView={{ x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+            </div>
+            <div
               style={{
                 flex: 1,
                 height: "200px",
@@ -218,8 +210,8 @@ const ProfileSection = () => {
                 alt="Groom 3"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Large Image Right */}

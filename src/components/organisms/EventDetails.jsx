@@ -18,7 +18,7 @@ const EventDetails = () => {
           marginTop: "40px",
         }}
       >
-        {/* Event 1: Tiệc mừng */}
+        {/* Event 1: Tiệc mừng tại Nhà Gái */}
         <motion.div
           id="event-4"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -84,16 +84,16 @@ const EventDetails = () => {
             >
               <MapPin size={18} color="var(--primary)" />
               <span style={{ fontWeight: "700", fontSize: "15px" }}>
-                Tạ Gia - Tư Gia Nhà Gái
+                Nhà văn Hóa Xóm và - Tư Gia Nhà Gái
               </span>
             </div>
             <p style={{ fontSize: "13px", color: "#888", lineHeight: "1.6" }}>
-              Xóm 8 - Nghĩa Lợi - Nghĩa Hưng - Nam Định
+              Tốt động, Chương Mỹ, Hà Nội
             </p>
           </div>
 
           <a
-            href="https://maps.app.goo.gl/YourMapLink1"
+            href="https://maps.app.goo.gl/8Pj5kNwEWBXq3gk29"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"
@@ -108,7 +108,7 @@ const EventDetails = () => {
           </a>
         </motion.div>
 
-        {/* Event 2: Lễ cưới chính */}
+        {/* Event 2: Lễ cưới chính tại Nhà Trai */}
         <motion.div
           id="event-5"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -174,16 +174,16 @@ const EventDetails = () => {
             >
               <MapPin size={18} color="var(--primary)" />
               <span style={{ fontWeight: "700", fontSize: "15px" }}>
-                Tư Gia Nhà Trai
+                Nhà văn Hóa Xóm giữa - Tư Gia Nhà Trai
               </span>
             </div>
             <p style={{ fontSize: "13px", color: "#888", lineHeight: "1.6" }}>
-              Xóm 7 - Nghĩa Lợi - Nghĩa Hưng - Nam Định
+              Tốt động, Chương Mỹ, Hà Nội
             </p>
           </div>
 
           <a
-            href="https://maps.app.goo.gl/YourMapLink2"
+            href="https://maps.app.goo.gl/VHEtWz2Urw9GKR3F8"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary"
