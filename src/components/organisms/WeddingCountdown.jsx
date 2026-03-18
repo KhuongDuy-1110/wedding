@@ -74,7 +74,7 @@ const WeddingCountdown = ({ targetDate }) => {
   );
 
   return (
-    <div style={{ padding: "60px 0 20px 0" }}>
+    <div style={{ padding: "20px 0 20px 0" }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

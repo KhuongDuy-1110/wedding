@@ -14,6 +14,7 @@ import WishForm from "./components/organisms/WishForm";
 import ProfileSection from "./components/organisms/ProfileSection";
 import QuoteSection from "./components/organisms/QuoteSection";
 import CalendarSection from "./components/organisms/CalendarSection";
+import ThankYouSection from "./components/organisms/ThankYouSection";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -124,6 +125,19 @@ function App() {
 
               {/* Gallery Section */}
               <Gallery />
+              {/* <div
+                style={{
+                  background: "#111",
+                  color: "#ddd",
+                  padding: "15px 0",
+                  textAlign: "center",
+                  fontSize: "12px",
+                  letterSpacing: "4px",
+                  textTransform: "uppercase",
+                }}
+              >
+                {"<< Và thế giới đã mất đi 1 người cô đơn >>"}
+              </div> */}
 
               {/* Gifting Section */}
               <Gifting />
@@ -133,66 +147,31 @@ function App() {
                 <WishForm scriptUrl={GOOGLE_SCRIPT_URL} />
               </div>
 
-              {/* Closing Section */}
-              <section
-                style={{
-                  padding: "60px 24px",
-                  textAlign: "center",
-                  background: "var(--bg-light)",
-                }}
-              >
-                <Heart
-                  size={40}
-                  color="var(--primary)"
-                  fill="var(--primary)"
-                  opacity="0.1"
-                  style={{ marginBottom: "20px" }}
-                />
-                <h2
-                  className="script"
-                  style={{ fontSize: "32px", marginBottom: "10px" }}
-                >
-                  Trân Trọng Kính Mời
-                </h2>
-                <p
-                  style={{
-                    color: "var(--text-muted)",
-                    fontSize: "14px",
-                    marginBottom: "30px",
-                    maxWidth: "300px",
-                    margin: "0 auto 30px",
-                  }}
-                >
-                  Sự diện diện của bạn là món quà tuyệt vời nhất dành cho chúng
-                  tôi trong ngày khởi đầu hành trình mới này.
-                </p>
-
-                <button
-                  className="btn-primary"
-                  onClick={handleCelebrate}
-                  style={{
-                    padding: "16px 32px",
-                    fontSize: "16px",
-                    margin: "0 auto",
-                  }}
-                >
-                  <MessageSquareText size={20} />
-                  KỶ NIỆM CÙNG CHÚNG TÔI
-                </button>
-              </section>
+              {/* Thank You Section */}
+              <ThankYouSection />
 
               <footer
                 style={{
-                  padding: "40px 24px",
+                  padding: "60px 24px",
                   textAlign: "center",
-                  fontSize: "10px",
-                  textTransform: "uppercase",
-                  letterSpacing: "2px",
-                  color: "var(--text-muted)",
-                  opacity: 0.6,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                © 2025 THIỆP CƯỚI ONLINE - DESIGN BY ANTIGRAVITY
+                <h3
+                  style={{
+                    fontSize: "16px",
+                    letterSpacing: "2px",
+                    fontFamily: "'Playfair Display', serif",
+                    textTransform: "uppercase",
+                    fontWeight: "normal",
+                    margin: 0,
+                  }}
+                >
+                  THANK YOU FOR WATCHING . I HOPE YOU LIKE IT
+                </h3>
               </footer>
             </main>
           </motion.div>

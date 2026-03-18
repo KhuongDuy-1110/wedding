@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import "./ProfileSection.css";
 
 const ProfileSection = () => {
   const bride = {
@@ -25,25 +26,9 @@ const ProfileSection = () => {
   return (
     <section style={{ background: "#fff", padding: "40px 20px" }}>
       {/* Bride Section */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "520px",
-          marginBottom: "80px",
-        }}
-      >
+      <div className="profile-wrapper">
         {/* Large Image Left */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "50%",
-            height: "420px",
-            zIndex: 1,
-          }}
-        >
+        <div className="profile-large bride">
           <img
             src={bride.images[0]}
             alt="Bride"
@@ -57,39 +42,17 @@ const ProfileSection = () => {
         </div>
 
         {/* Text Area Right */}
-        <div
-          style={{
-            position: "absolute",
-            top: "40px",
-            right: 0,
-            width: "50%",
-            textAlign: "center",
-            zIndex: 2,
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "18px",
-              fontFamily: "'Playfair Display', serif",
-              color: "#111",
-              letterSpacing: "1px",
-              fontWeight: "normal",
-              textTransform: "uppercase",
-              marginBottom: "5px",
-            }}
-          >
-            {bride.role}
-          </h3>
-          <motion.h2
+        <div className="profile-text-area bride">
+          <h3 className="profile-role-title">{bride.role}</h3>
+          <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: false, margin: "-50px" }}
-            className="font-brush"
-            style={{ fontSize: "32px", color: "#111", lineHeight: 1 }}
+            className="font-brush profile-name-text"
           >
             {bride.name}
-          </motion.h2>
+          </motion.p>
         </div>
 
         {/* Small Images */}
@@ -98,27 +61,9 @@ const ProfileSection = () => {
           whileInView={{ x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: false, margin: "-50px" }}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 3,
-            pointerEvents: "none",
-          }}
+          className="profile-small-container"
         >
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              right: "49%",
-              width: "43%",
-              height: "280px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-              pointerEvents: "auto",
-            }}
-          >
+          <div className="profile-small-img p-1 bride">
             <img
               src={bride.images[1]}
               alt="Bride 2"
@@ -126,17 +71,7 @@ const ProfileSection = () => {
             />
           </div>
 
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              right: "4%",
-              width: "43%",
-              height: "280px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-              pointerEvents: "auto",
-            }}
-          >
+          <div className="profile-small-img p-2 bride">
             <img
               src={bride.images[2]}
               alt="Bride 3"
@@ -147,25 +82,9 @@ const ProfileSection = () => {
       </div>
 
       {/* Groom Section */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "520px",
-          marginBottom: "40px",
-        }}
-      >
+      <div className="profile-wrapper" style={{ marginBottom: "40px" }}>
         {/* Large Image Right */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            width: "50%",
-            height: "420px",
-            zIndex: 1,
-          }}
-        >
+        <div className="profile-large groom">
           <img
             src={groom.images[0]}
             alt="Groom"
@@ -179,39 +98,17 @@ const ProfileSection = () => {
         </div>
 
         {/* Text Area Left */}
-        <div
-          style={{
-            position: "absolute",
-            top: "40px",
-            left: 0,
-            width: "50%",
-            textAlign: "center",
-            zIndex: 2,
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "18px",
-              fontFamily: "'Playfair Display', serif",
-              color: "#111",
-              letterSpacing: "1px",
-              fontWeight: "normal",
-              textTransform: "uppercase",
-              marginBottom: "5px",
-            }}
-          >
-            {groom.role}
-          </h3>
-          <motion.h2
+        <div className="profile-text-area groom">
+          <h3 className="profile-role-title">{groom.role}</h3>
+          <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: false, margin: "-50px" }}
-            className="font-brush"
-            style={{ fontSize: "32px", color: "#111", lineHeight: 1 }}
+            className="font-brush profile-name-text"
           >
             {groom.name}
-          </motion.h2>
+          </motion.p>
         </div>
 
         {/* Small Images */}
@@ -220,27 +117,9 @@ const ProfileSection = () => {
           whileInView={{ x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: false, margin: "-50px" }}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 3,
-            pointerEvents: "none",
-          }}
+          className="profile-small-container"
         >
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: "4%",
-              width: "43%",
-              height: "280px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-              pointerEvents: "auto",
-            }}
-          >
+          <div className="profile-small-img p-1 groom">
             <img
               src={groom.images[1]}
               alt="Groom 2"
@@ -248,17 +127,7 @@ const ProfileSection = () => {
             />
           </div>
 
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: "49%",
-              width: "43%",
-              height: "280px",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-              pointerEvents: "auto",
-            }}
-          >
+          <div className="profile-small-img p-2 groom">
             <img
               src={groom.images[2]}
               alt="Groom 3"

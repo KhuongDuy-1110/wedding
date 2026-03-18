@@ -1,0 +1,141 @@
+/* Mobile Layout Base */
+.profile-wrapper {
+  position: relative;
+  width: 100%;
+  height: var(--profile-container-h, 520px);
+  margin-bottom: 80px;
+}
+
+.profile-large {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: var(--profile-large-h, 420px);
+  z-index: 1;
+}
+.profile-large.bride { left: 0; }
+.profile-large.groom { right: 0; }
+
+.profile-text-area {
+  position: absolute;
+  top: var(--profile-text-top, 40px);
+  width: 50%;
+  text-align: center;
+  z-index: 2;
+}
+.profile-text-area.bride { right: 0; }
+.profile-text-area.groom { left: 0; }
+
+.profile-small-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.profile-small-img {
+  position: absolute;
+  bottom: 0;
+  width: 43%;
+  height: var(--profile-small-h, 280px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  pointer-events: auto;
+}
+
+/* Mobile Positions */
+.profile-small-img.p-1.bride { right: 49%; }
+.profile-small-img.p-2.bride { right: 4%; }
+
+.profile-small-img.p-1.groom { left: 4%; }
+.profile-small-img.p-2.groom { left: 49%; }
+
+/* Default styles */
+.profile-role-title {
+  font-size: var(--profile-role-size, 18px);
+  font-family: 'Playfair Display', serif;
+  color: #111;
+  letter-spacing: 1px;
+  font-weight: normal;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.profile-name-text {
+  font-size: var(--profile-name-size, 32px);
+  color: #111;
+  line-height: 1;
+}
+
+
+/* --- DESKTOP LAYOUT --- */
+@media (min-width: 768px) {
+  .profile-wrapper {
+    height: 600px; /* Taller container on desktop */
+  }
+
+  .profile-large.bride {
+    width: 38%;
+    height: 100%;
+    left: 0;
+  }
+  
+  .profile-large.groom {
+    width: 38%;
+    height: 100%;
+    right: 0;
+    left: auto;
+  }
+
+  .profile-text-area.bride {
+    top: 0;
+    left: 40%;
+    right: auto;
+    width: 50%;
+    text-align: left;
+  }
+
+  .profile-text-area.groom {
+    top: 0;
+    right: 40%;
+    left: auto;
+    width: 50%;
+    text-align: right;
+  }
+
+  /* Desktop Small Images overlapping the large image slightly and spaced from bottom */
+  .profile-small-img {
+    height: 50%; /* 1/2 of large image height (which is 100%) */
+    width: 28%;
+    margin-bottom: 0; /* Remove mobile margin */
+    bottom: 10%; /* Spaced from bottom */
+  }
+
+  .profile-small-img.p-1.bride {
+    left: 28%; /* Overlaps Large Image (which goes to 38%) */
+    right: auto;
+  }
+  .profile-small-img.p-2.bride {
+    left: 60%;
+    right: auto;
+  }
+
+  .profile-small-img.p-1.groom {
+    right: 28%;
+    left: auto;
+  }
+  .profile-small-img.p-2.groom {
+    right: 60%;
+    left: auto;
+  }
+
+  .profile-role-title {
+    font-size: 24px;
+    letter-spacing: 3px;
+  }
+  .profile-name-text {
+    font-size: 48px;
+    margin-top: 10px;
+  }
+}

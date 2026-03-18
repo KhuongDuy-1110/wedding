@@ -11,10 +11,8 @@ const EventDetails = () => {
       </div>
 
       <div
+        className="responsive-flex"
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "40px",
           marginTop: "40px",
         }}
       >

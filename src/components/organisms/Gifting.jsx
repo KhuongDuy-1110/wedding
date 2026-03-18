@@ -28,10 +28,8 @@ const Gifting = () => {
       </div>
 
       <div
+        className="responsive-flex"
         style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "25px",
           marginTop: "40px",
         }}
       >

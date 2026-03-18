@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const QuoteSection = () => {
+const ThankYouSection = () => {
   return (
     <section style={{ padding: "24px 20px", background: "#fdfdfd" }}>
       <motion.div
@@ -30,12 +30,13 @@ const QuoteSection = () => {
             textAlign: "center",
             position: "relative",
             zIndex: 2,
+            marginBottom: 0,
           }}
         >
-          "Tình cảm ấy, chẳng cần cứ phải hét to lên cho cả thế giới biết, chỉ
-          cần thỏ thẻ cho một người là cả thế giới của mình nghe là đủ rồi. Điều
-          quan trọng nhất là đến cuối đường vẫn còn ở bên nhau, đi cạnh nhau,
-          nắm tay nhau, rung động vì nhau. Cứ thế thôi là đủ rồi!"
+          Chúng tôi vô cùng biết ơn tình cảm và sự ủng hộ của bạn trong suốt
+          thời gian qua. Để kỷ niệm ngày hai chúng tôi nên duyên vợ chồng xin
+          kính mời bạn cùng gia đình đến dự lễ cưới của chúng tôi. Sự hiện diện
+          của bạn là niềm vinh dự lớn cho chúng tôi trong ngày hạnh phúc này.
         </p>
         <img
           src="/assets/heart.png"
@@ -56,4 +57,4 @@ const QuoteSection = () => {
   );
 };
 
-export default QuoteSection;
+export default ThankYouSection;

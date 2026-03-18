@@ -18,7 +18,7 @@ const HeroSection = ({ date, coupleName }) => {
       className="hero-section"
       style={{
         textAlign: "center",
-        padding: "60px 20px",
+        padding: "20px 20px",
         background: "var(--bg-light)",
         borderBottom: "4px solid var(--accent)",
         position: "relative",

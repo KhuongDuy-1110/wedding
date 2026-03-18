@@ -41,7 +41,7 @@ const WishForm = ({ scriptUrl }) => {
   };
 
   return (
-    <section style={{ padding: "60px 24px", background: "var(--bg-light)" }}>
+    <section style={{ padding: "24px 24px", background: "var(--bg-light)" }}>
       <SectionHeading subtitle="vui lòng dành ít thời gian">
         Xác Nhận Tham Dự & Gửi Lời Chúc
       </SectionHeading>
