@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const ProfileSection = () => {
   const bride = {
-    role: "BRIDE",
+    role: "Cô dâu",
     name: "Lê Nga",
     images: [
       "https://i.pinimg.com/1200x/53/d5/9b/53d59bb9ff66117c3674e403669224ae.jpg",
@@ -13,7 +13,7 @@ const ProfileSection = () => {
   };
 
   const groom = {
-    role: "GROOM",
+    role: "Chú rể",
     name: "Phạm Khải",
     images: [
       "https://i.pinimg.com/1200x/53/d5/9b/53d59bb9ff66117c3674e403669224ae.jpg",
@@ -94,8 +94,8 @@ const ProfileSection = () => {
             }}
           >
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ x: 40 }}
+              whileInView={{ x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
               style={{
@@ -112,8 +112,8 @@ const ProfileSection = () => {
               />
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ x: 40 }}
+              whileInView={{ x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
               style={{
@@ -184,8 +184,8 @@ const ProfileSection = () => {
             }}
           >
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ x: -40 }}
+              whileInView={{ x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
               style={{
@@ -202,8 +202,8 @@ const ProfileSection = () => {
               />
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ x: -40 }}
+              whileInView={{ x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
               style={{

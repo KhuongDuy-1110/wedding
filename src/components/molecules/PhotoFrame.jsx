@@ -16,7 +16,8 @@ const PhotoFrame = ({ src, alt, className = "" }) => {
         borderRadius: "4px",
         overflow: "visible",
         maxWidth: "90%",
-        margin: "20px auto",
+        width: "fit-content",
+        margin: "0 auto",
         boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
       }}
     >
@@ -39,7 +40,9 @@ const PhotoFrame = ({ src, alt, className = "" }) => {
         src={src}
         alt={alt}
         style={{
-          width: "100%",
+          width: "auto",
+          maxWidth: "100%",
+          maxHeight: "40vh",
           display: "block",
           borderRadius: "2px",
           position: "relative",

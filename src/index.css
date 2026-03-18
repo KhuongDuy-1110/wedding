@@ -36,7 +36,6 @@
   font-style: normal;
 }
 
-
 :root {
   --primary: #62050e; /* Deep Burgundy Red */
   --accent: #e7b547; /* Elegant Gold */
@@ -136,13 +135,13 @@ h3 {
 .design-card {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.03);
   overflow: hidden;
 }
 
 .section-padding {
-  padding: 60px 20px;
+  padding: 24px 20px;
 }
 
 .section-title {
@@ -238,11 +237,12 @@ h3 {
 }
 
 @media (max-width: 480px) {
-  .profile-grid, .profile-grid.reverse {
+  .profile-grid,
+  .profile-grid.reverse {
     grid-template-columns: 1fr;
     gap: 30px;
   }
-  
+
   .profile-grid.reverse {
     display: flex;
     flex-direction: column;

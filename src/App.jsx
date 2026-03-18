@@ -56,9 +56,9 @@ function App() {
       }}
     >
       {/* Opening Effect (Envelope/Curtain) */}
-      <OpeningEffect 
-        isOpened={isOpened} 
-        onOpen={handleOpen} 
+      <OpeningEffect
+        isOpened={isOpened}
+        onOpen={handleOpen}
         coupleName="Phạm Khải & Lê Nga"
         date="05.04.2026"
       />
@@ -102,7 +102,6 @@ function App() {
             animate={{ opacity: 1 }}
             transition={{ duration: 1.5 }}
           >
-
             {/* Hero Section */}
             <HeroSection coupleName="Phạm Khải & Lê Nga" date="05.04.2026" />
 
@@ -112,13 +111,12 @@ function App() {
             {/* Profile Section */}
             <ProfileSection />
 
-            {/* Calendar Section */}
-            <CalendarSection />
-
             {/* Countdown Section */}
             <div style={{ padding: "0 20px" }}>
               <WeddingCountdown targetDate="2026-04-05T10:00:00" />
             </div>
+            {/* Calendar Section */}
+            <CalendarSection />
 
             {/* Main Content Area */}
             <main>

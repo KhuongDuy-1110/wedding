@@ -26,12 +26,17 @@ const QuoteSection = () => {
         </p>
         
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-           <img 
-            src="https://thieucuoi-demo.vercel.app/images/heart-icon.png" 
-            alt="Heart"
-            style={{ width: "40px", height: "40px", objectFit: "contain" }}
-            onError={(e) => {
-              e.target.src = "https://cdn-icons-png.flaticon.com/512/833/833472.png"; // Simple red heart
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              backgroundColor: "#E54D42", // A vibrant red like in the screenshot
+              WebkitMaskImage: "url(/assets/trai-tim.svg)",
+              maskImage: "url(/assets/trai-tim.svg)",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
             }}
           />
         </div>

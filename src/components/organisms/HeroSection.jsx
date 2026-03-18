@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import DoubleHappiness from "../atoms/DoubleHappiness";
 import PhotoFrame from "../molecules/PhotoFrame";
 
 const HeroSection = ({ date, coupleName }) => {
@@ -19,10 +18,15 @@ const HeroSection = ({ date, coupleName }) => {
       className="hero-section"
       style={{
         textAlign: "center",
-        padding: "40px 0",
+        padding: "60px 20px",
         background: "var(--bg-light)",
         borderBottom: "4px solid var(--accent)",
         position: "relative",
+        minHeight: "100svh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       {/* Decorative Traditional Border Patterns (Greek Key) */}
@@ -80,6 +84,7 @@ const HeroSection = ({ date, coupleName }) => {
           fontSize: "14px",
           marginBottom: "10px",
           color: "#666",
+          marginTop: "15px",
         }}
       >
         WEDDING INVITATION
@@ -91,14 +96,45 @@ const HeroSection = ({ date, coupleName }) => {
         transition={{ duration: 1.2, delay: 0.3 }}
         className="font-brush"
         style={{
-          fontSize: "48px",
-          margin: "10px 0",
-          wordBreak: "keep-all",
-          lineHeight: "1.3",
+          fontSize: "44px",
+          color: "var(--primary)",
+          margin: "15px 0",
+          lineHeight: 1,
           fontWeight: "normal",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+          gap: "15px",
         }}
       >
-        {coupleName}
+        <span style={{ whiteSpace: "nowrap" }}>
+          {coupleName.split(" & ")[0]}
+        </span>
+        <div
+          style={{
+            zIndex: 1,
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              width: "35px",
+              height: "35px",
+              backgroundColor: "var(--primary)",
+              WebkitMaskImage: "url(/assets/trai-tim.svg)",
+              maskImage: "url(/assets/trai-tim.svg)",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              display: "block",
+            }}
+          />
+        </div>
+        <span style={{ whiteSpace: "nowrap" }}>
+          {coupleName.split(" & ")[1]}
+        </span>
       </motion.h1>
 
       <motion.p

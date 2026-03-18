@@ -38,6 +38,12 @@ const CalendarSection = () => {
     30,
   ];
   const weddingDate = 5;
+  const engagementDate = 4;
+  const handleDateClick = (day) => {
+    if (day === engagementDate || day === weddingDate) {
+      document.getElementById(`event-${day}`)?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <section
@@ -100,6 +106,7 @@ const CalendarSection = () => {
           {calendarData.map((day, index) => (
             <div
               key={index}
+              onClick={() => handleDateClick(day)}
               style={{
                 height: "40px",
                 display: "flex",
@@ -109,17 +116,35 @@ const CalendarSection = () => {
                 fontSize: "14px",
                 color: day === weddingDate ? "#fff" : "#333",
                 zIndex: 1,
+                cursor: (day === engagementDate || day === weddingDate) ? "pointer" : "default"
               }}
             >
               {day === weddingDate && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.1 }}
                   style={{
                     position: "absolute",
                     width: "35px",
                     height: "35px",
                     background: "var(--primary)",
+                    borderRadius: "50%",
+                    zIndex: -1,
+                  }}
+                />
+              )}
+              {day === engagementDate && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.1 }}
+                  style={{
+                    position: "absolute",
+                    width: "35px",
+                    height: "35px",
+                    background: "rgba(98, 5, 14, 0.15)",
+                    boxShadow: "0 0 10px rgba(98, 5, 14, 0.05)",
                     borderRadius: "50%",
                     zIndex: -1,
                   }}

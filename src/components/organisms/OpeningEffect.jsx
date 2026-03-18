@@ -1,6 +1,5 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import DoubleHappiness from "../atoms/DoubleHappiness";
 
 const OpeningEffect = ({
   isOpened,
@@ -86,8 +85,8 @@ const OpeningEffect = ({
               left: "50%",
               transform: "translate(-50%, -50%)",
               zIndex: 1001,
-              width: "92%",
-              maxWidth: "480px",
+              width: "95%",
+              maxWidth: "800px",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -101,7 +100,7 @@ const OpeningEffect = ({
               className="opening-card"
               style={{
                 background: "white",
-                padding: "12px",
+                padding: "20px",
                 borderRadius: "2px",
                 boxShadow: "0 20px 50px rgba(0,0,0,0.6)",
                 width: "100%",
@@ -127,10 +126,10 @@ const OpeningEffect = ({
               <div className="opening-card-info">
                 <p
                   style={{
-                    fontSize: "10px",
-                    letterSpacing: "3px",
+                    fontSize: "12px",
+                    letterSpacing: "4px",
                     color: "#999",
-                    margin: "0 0 5px 0",
+                    margin: "0 0 10px 0",
                     textTransform: "uppercase",
                   }}
                 >
@@ -140,14 +139,45 @@ const OpeningEffect = ({
                 <h2
                   className="script"
                   style={{
-                    margin: "10px 0",
-                    fontSize: "32px",
+                    margin: "15px 0",
+                    fontSize: "38px",
                     color: "#6b050d",
                     lineHeight: 1,
                     fontWeight: "normal",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    gap: "10px",
                   }}
                 >
-                  {coupleName}
+                  <span style={{ whiteSpace: "nowrap" }}>
+                    {coupleName.split(" & ")[0]}
+                  </span>
+                  <div
+                    style={{
+                      zIndex: 1,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "25px",
+                        height: "25px",
+                        backgroundColor: "#6b050d",
+                        WebkitMaskImage: "url(/assets/trai-tim.svg)",
+                        maskImage: "url(/assets/trai-tim.svg)",
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        display: "block",
+                      }}
+                    />
+                  </div>
+                  <span style={{ whiteSpace: "nowrap" }}>
+                    {coupleName.split(" & ")[1]}
+                  </span>
                 </h2>
 
                 <div
@@ -156,8 +186,8 @@ const OpeningEffect = ({
                     color: "#555",
                     borderTop: "1px solid #eee",
                     margin: "10px 0 0 0",
-                    paddingTop: "10px",
                     width: "80%",
+                    paddingTop: "10px",
                   }}
                 >
                   <p
@@ -165,6 +195,7 @@ const OpeningEffect = ({
                       letterSpacing: "1px",
                       textTransform: "uppercase",
                       fontSize: "10px",
+                      marginBottom: "5px",
                     }}
                   >
                     Save The Date
@@ -174,8 +205,8 @@ const OpeningEffect = ({
                     style={{
                       fontWeight: "normal",
                       color: "#6b050d",
-                      marginTop: "8px",
-                      fontSize: "18px",
+                      marginTop: "5px",
+                      fontSize: "24px",
                     }}
                   >
                     {date}
@@ -216,7 +247,7 @@ const OpeningEffect = ({
                   textTransform: "uppercase",
                 }}
               >
-                MỞ THƯ
+                MỞ THIỆP
               </motion.button>
               <p
                 style={{

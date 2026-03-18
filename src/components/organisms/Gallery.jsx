@@ -10,7 +10,7 @@ const Gallery = () => {
   ];
 
   return (
-    <section style={{ padding: "60px 24px" }}>
+    <section style={{ padding: "24px 24px" }}>
       <SectionHeading subtitle="với một vài khoảnh khắc đẹp">
         Album hình cưới
       </SectionHeading>

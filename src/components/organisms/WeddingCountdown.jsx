@@ -74,7 +74,7 @@ const WeddingCountdown = ({ targetDate }) => {
   );
 
   return (
-    <div style={{ padding: "40px 0" }}>
+    <div>
       <div
         style={{
           display: "flex",
