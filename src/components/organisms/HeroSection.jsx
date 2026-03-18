@@ -23,9 +23,6 @@ const HeroSection = ({ date, coupleName }) => {
         background: "var(--bg-light)",
         borderBottom: "4px solid var(--accent)",
         position: "relative",
-        backgroundImage: "url(/assets/hero_bg.png)",
-        backgroundSize: "cover",
-        backgroundBlendMode: "soft-light",
       }}
     >
       {/* Decorative Traditional Border Patterns (Greek Key) */}
