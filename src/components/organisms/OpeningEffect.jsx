@@ -2,7 +2,12 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DoubleHappiness from "../atoms/DoubleHappiness";
 
-const OpeningEffect = ({ isOpened, onOpen, coupleName = "Hùng & Thúy", date = "08.12.2024" }) => {
+const OpeningEffect = ({
+  isOpened,
+  onOpen,
+  coupleName = "Hùng & Thúy",
+  date = "08.12.2024",
+}) => {
   return (
     <AnimatePresence>
       {!isOpened && (
@@ -107,57 +112,71 @@ const OpeningEffect = ({ isOpened, onOpen, coupleName = "Hùng & Thúy", date = 
             >
               {/* Photo Area */}
               <div className="opening-card-image">
-                <img 
-                  src="https://thieucuoi-demo.vercel.app/images/opening.jpg" 
+                <img
+                  src="https://thieucuoi-demo.vercel.app/images/opening.jpg"
                   alt="Couple"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop";
+                    e.target.src =
+                      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop";
                   }}
                 />
               </div>
 
               {/* Information Area */}
               <div className="opening-card-info">
-                <p style={{ 
-                  fontSize: "10px", 
-                  letterSpacing: "3px", 
-                  color: "#999", 
-                  margin: "0 0 5px 0",
-                  textTransform: "uppercase"
-                }}>
+                <p
+                  style={{
+                    fontSize: "10px",
+                    letterSpacing: "3px",
+                    color: "#999",
+                    margin: "0 0 5px 0",
+                    textTransform: "uppercase",
+                  }}
+                >
                   Happy Wedding
                 </p>
-                
-                <div style={{ margin: "5px 0" }}>
-                  <DoubleHappiness color="#8a0b16" size={35} />
-                </div>
-                
-                <h2 
+
+                <h2
                   className="script"
-                  style={{ 
-                    margin: "10px 0", 
-                    fontSize: "32px", 
+                  style={{
+                    margin: "10px 0",
+                    fontSize: "32px",
                     color: "#6b050d",
                     lineHeight: 1,
-                    fontWeight: "normal"
+                    fontWeight: "normal",
                   }}
                 >
                   {coupleName}
                 </h2>
-                
-                <div style={{ 
-                  fontSize: "11px", 
-                  color: "#555", 
-                  borderTop: "1px solid #eee", 
-                  margin: "10px 0 0 0", 
-                  paddingTop: "10px",
-                  width: "80%"
-                }}>
-                  <p style={{ letterSpacing: "1px", textTransform: "uppercase", fontSize: "10px" }}>Save The Date</p>
-                  <p 
+
+                <div
+                  style={{
+                    fontSize: "11px",
+                    color: "#555",
+                    borderTop: "1px solid #eee",
+                    margin: "10px 0 0 0",
+                    paddingTop: "10px",
+                    width: "80%",
+                  }}
+                >
+                  <p
+                    style={{
+                      letterSpacing: "1px",
+                      textTransform: "uppercase",
+                      fontSize: "10px",
+                    }}
+                  >
+                    Save The Date
+                  </p>
+                  <p
                     className="font-brice"
-                    style={{ fontWeight: "normal", color: "#6b050d", marginTop: "8px", fontSize: "18px" }}
+                    style={{
+                      fontWeight: "normal",
+                      color: "#6b050d",
+                      marginTop: "8px",
+                      fontSize: "18px",
+                    }}
                   >
                     {date}
                   </p>
@@ -169,10 +188,18 @@ const OpeningEffect = ({ isOpened, onOpen, coupleName = "Hùng & Thúy", date = 
             <div style={{ textAlign: "center" }}>
               <motion.button
                 onClick={onOpen}
-                whileHover={{ scale: 1.05, background: "#8a0b16", color: "white" }}
+                whileHover={{
+                  scale: 1.05,
+                  background: "#8a0b16",
+                  color: "white",
+                }}
                 whileTap={{ scale: 0.95 }}
-                animate={{ 
-                  boxShadow: ["0 4px 15px rgba(255,255,255,0.2)", "0 4px 25px rgba(255,255,255,0.4)", "0 4px 15px rgba(255,255,255,0.2)"]
+                animate={{
+                  boxShadow: [
+                    "0 4px 15px rgba(255,255,255,0.2)",
+                    "0 4px 25px rgba(255,255,255,0.4)",
+                    "0 4px 15px rgba(255,255,255,0.2)",
+                  ],
                 }}
                 transition={{ repeat: Infinity, duration: 2 }}
                 style={{
@@ -186,18 +213,20 @@ const OpeningEffect = ({ isOpened, onOpen, coupleName = "Hùng & Thúy", date = 
                   letterSpacing: "5px",
                   cursor: "pointer",
                   transition: "all 0.3s ease",
-                  textTransform: "uppercase"
+                  textTransform: "uppercase",
                 }}
               >
                 MỞ THƯ
               </motion.button>
-              <p style={{ 
-                color: "rgba(255,255,255,0.6)", 
-                fontSize: "11px", 
-                marginTop: "15px",
-                letterSpacing: "1px",
-                fontStyle: "italic"
-              }}>
+              <p
+                style={{
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: "11px",
+                  marginTop: "15px",
+                  letterSpacing: "1px",
+                  fontStyle: "italic",
+                }}
+              >
                 Nhấn để xem lời mời
               </p>
             </div>
