@@ -29,7 +29,7 @@ const HeroSection = ({ date, coupleName }) => {
         justifyContent: "center",
       }}
     >
-      {/* Decorative Traditional Border Patterns (Greek Key) */}
+      {/* Decorative Traditional  Border Patterns (Greek Key) */}
       <div
         style={{
           position: "absolute",
@@ -73,6 +73,7 @@ const HeroSection = ({ date, coupleName }) => {
         >
           K / N
         </div>
+        
       </div> */}
 
       <motion.p
