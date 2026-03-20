@@ -353,7 +353,7 @@ app.get("/api/logs", async (req, res) => {
 });
 
 // SPA Fallback: All other GET requests serve index.html
-app.get("*", (req, res) => {
+app.use((req, res) => {
   if (fs.existsSync(path.join(distPath, "index.html"))) {
     res.sendFile(path.join(distPath, "index.html"));
   } else {
