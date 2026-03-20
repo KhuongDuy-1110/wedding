@@ -54,7 +54,7 @@ const WeddingCountdown = ({ targetDate }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, margin: "-50px" }}
+        viewport={{ once: true, margin: "-50px" }}
         className="text-center mb-s40"
       >
         <h2 className="font-serif text-[32px] text-[#222] font-normal tracking-[3px] mb-s15">

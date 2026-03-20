@@ -23,6 +23,7 @@ const Gallery = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.6, delay: idx * 0.1 }}
+            viewport={{ once: true, margin: "-50px" }}
             className={`${idx === 0 ? "aspect-auto col-span-2" : "aspect-square col-span-1"} rounded-lg overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] border-2 border-white`}
           >
             <img

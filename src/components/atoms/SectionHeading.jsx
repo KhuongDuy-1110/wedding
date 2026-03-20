@@ -14,6 +14,7 @@ const SectionHeading = ({ children, subtitle }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
+        viewport={{ once: true, margin: "-50px" }}
         className="script text-[32px] text-primary"
       >
         {children}

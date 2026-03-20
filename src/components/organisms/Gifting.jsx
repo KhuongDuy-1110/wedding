@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, QrCode, RefreshCcw } from "lucide-react";
+import { trackEvent } from "../../features/admin/utils/tracker";
 
 const GiftingCard = ({ acc, idx }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -93,25 +94,32 @@ const GiftingCard = ({ acc, idx }) => {
   );
 };
 
-const Gifting = () => {
+const Gifting = ({ side }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const accounts = [
+  const allAccounts = [
     {
-      bank: "MBBANK",
-      account: "8838683860",
-      name: "PHẠM VĂN KHẢI",
+      bank: "TECHCOMBANK",
+      account: "19036430751013",
+      name: "PHAM VAN KHAI",
       type: "NHÀ TRAI",
-      bankId: "MB",
+      qrSrc: "/assets/bank/chure.png",
+      role: "groom",
     },
     {
-      bank: "MBBANK",
-      account: "1234567890",
-      name: "LÊ NGA",
+      bank: "TECHCOMBANK",
+      account: "19036281687013",
+      name: "LE THI NGA",
       type: "NHÀ GÁI",
-      bankId: "MB",
+      qrSrc: "/assets/bank/codau.png",
+      role: "bride",
     },
   ];
+
+  // Filter accounts based on side, or show both if no side is matched
+  const accounts = side
+    ? allAccounts.filter((acc) => acc.role === side)
+    : allAccounts;
 
   return (
     <section className="section-padding bg-white overflow-hidden">
@@ -144,7 +152,10 @@ const Gifting = () => {
             </div>
 
             <button
-              onClick={() => setIsFlipped(true)}
+              onClick={() => {
+                setIsFlipped(true);
+                trackEvent("view_qr");
+              }}
               className="flex items-center gap-s10 text-primary text-[11px] font-bold tracking-[2px] border-b border-primary/20 pb-1 mt-s20 hover:opacity-75 transition-opacity"
             >
               <QrCode size={16} />
@@ -152,52 +163,53 @@ const Gifting = () => {
             </button>
           </div>
 
-          {/* Back Side: Two Accounts Row */}
+          {/* Back Side: Accounts Row */}
           <div
-            className="absolute inset-0 backface-hidden design-card p-s12 flex flex-col [transform:rotateY(180deg)]"
+            className="absolute inset-0 backface-hidden design-card p-s20 flex flex-col [transform:rotateY(180deg)]"
             style={{ backfaceVisibility: "hidden" }}
           >
-            <div className="flex flex-row gap-s8 flex-1 min-h-0">
+            <div className="flex flex-col gap-s15 flex-1 min-h-0 justify-center items-center">
               {accounts.map((acc, idx) => (
                 <div
                   key={idx}
-                  className="flex-1 flex flex-col min-w-0 bg-[#fefefe] border border-[#f0f0f0] rounded-[8px] p-s8 text-center relative"
+                  className={`flex flex-row items-center gap-s20  w-full max-w-[400px] relative`}
                 >
-                  <div className="text-[7px] font-bold text-primary absolute top-2 right-2 opacity-50">
-                    {acc.type}
-                  </div>
-
-                  <div className="flex-1 flex flex-col items-center justify-center mb-s5">
+                  <div className="w-[120px] aspect-square flex items-center justify-center">
                     <img
-                      src={`https://img.vietqr.io/image/${acc.bankId}-${acc.account}-compact.jpg?accountName=${encodeURIComponent(acc.name)}`}
+                      src={acc.qrSrc}
                       alt="QR Code"
-                      className="w-full max-w-[130px] aspect-square rounded-[6px] shadow-sm border border-white"
+                      className="w-full h-full rounded-[6px] object-contain border border-primary/5"
                     />
                   </div>
 
-                  <h4 className="font-brice text-[13px] text-primary mb-s1">
-                    {acc.bank}
-                  </h4>
-                  <p className="text-[9px] uppercase font-bold text-text-muted mb-s8 truncate w-full px-s2">
-                    {acc.name}
-                  </p>
+                  <div className="flex-1 flex flex-col text-left">
+                    <h4 className="font-brice text-[14px] text-primary mb-1">
+                      {acc.bank}
+                    </h4>
+                    <p className="text-[11px] font-bold text-text-muted uppercase mb-1">
+                      {acc.name}
+                    </p>
+                    <p className="text-[12px] font-mono font-medium text-text-muted mb-s10 select-all">
+                      {acc.account}
+                    </p>
 
-                  <button
-                    className="btn-primary py-[7px] text-[10px] w-full"
-                    onClick={() => {
-                      navigator.clipboard.writeText(acc.account);
-                      alert("Đã sao chép số tài khoản!");
-                    }}
-                  >
-                    SAO CHÉP
-                  </button>
+                    <button
+                      className="btn-primary py-s10 px-s18 text-[10px] w-fit rounded-full shadow-sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(acc.account);
+                        alert("Đã sao chép số tài khoản!");
+                      }}
+                    >
+                      SAO CHÉP
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
 
             <button
               onClick={() => setIsFlipped(false)}
-              className="mt-s10 flex items-center justify-center gap-s5 text-text-muted text-[10px] font-bold hover:text-primary transition-colors"
+              className="mt-s15 flex items-center justify-center gap-s5 text-text-muted text-[10px] font-bold hover:text-primary transition-colors"
             >
               <RefreshCcw size={14} /> QUAY LẠI
             </button>

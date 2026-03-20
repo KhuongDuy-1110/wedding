@@ -2,7 +2,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import { MapPin, Navigation } from "lucide-react";
 
-const EventDetails = () => {
+const EventDetails = ({ side }) => {
+  const isBride = side === "bride";
+
   return (
     <section className="section-padding bg-[#fdfdfd]">
       <div className="section-title">
@@ -10,21 +12,21 @@ const EventDetails = () => {
         <p>Vào tháng 04 năm 2026</p>
       </div>
 
-      <div className="responsive-flex mt-s40">
+      <div className={`flex flex-col md:flex-row gap-s30 px-s20 mt-s40 ${isBride ? "md:flex-row-reverse" : ""}`}>
         {/* Event 1: Tiệc mừng tại Nhà Gái */}
         <motion.div
           id="event-4"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, margin: "-50px" }}
-          className="design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s50"
+          viewport={{ once: true, margin: "-50px" }}
+          className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s50 flex-1 ${isBride ? "border-2 border-primary" : ""}`}
         >
           <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s24 text-[12px] font-bold tracking-[2px] uppercase">
             LỄ ĂN HỎI & TIỆC MỪNG
           </div>
 
           <h3 className="font-brice text-[22px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
-            Thứ Bảy - 17:00 - 04 Tháng 04
+            Thứ Bảy - 16:00 - 04 Tháng 04
           </h3>
           <p className="text-[#666] text-[14px] mb-s20">
             Tức Ngày 17 Tháng 02 Năm Bính Ngọ (Âm Lịch)
@@ -57,15 +59,15 @@ const EventDetails = () => {
           id="event-5"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, margin: "-50px" }}
-          className="design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s100"
+          viewport={{ once: true, margin: "-50px" }}
+          className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s100 flex-1 ${!isBride ? "border-2 border-primary" : ""}`}
         >
           <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s24 text-[12px] font-bold tracking-[2px] uppercase">
             LỄ CƯỚI CHÍNH
           </div>
 
           <h3 className="font-brice text-[22px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
-            Chủ Nhật - 05 Tháng 04
+            Chủ Nhật - 10:00 - 05 Tháng 04
           </h3>
           <p className="text-[#666] text-[14px] mb-s20">
             Tức Ngày 18 Tháng 02 Năm Bính Ngọ (Âm Lịch)

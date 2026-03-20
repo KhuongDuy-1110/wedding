@@ -7,6 +7,7 @@ const PhotoFrame = ({ src, alt, className = "" }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8 }}
+      viewport={{ once: true, margin: "-50px" }}
       className={`photo-frame ${className} relative p-3 bg-white border-[1.5px] border-accent rounded-[4px] overflow-visible max-w-[90%] w-fit mx-auto shadow-[0_20px_40px_rgba(0,0,0,0.1)]`}
     >
       {/* Decorative Gold Inner Border */}

@@ -76,7 +76,7 @@ const OpeningEffect = ({
                 </h2>
 
                 <div className="text-[11px] text-[#555] border-t border-[#eee] mt-s10 mx-0 mb-0 w-[80%] pt-s10">
-                  <p className="tracking-[1px] uppercase text-[10px] mb-s5">
+                  <p className="tracking-[1px] uppercase text-[10px] font-brice underline mb-s5">
                     Save The Date
                   </p>
                   <p className="font-brice font-normal text-[#6b050d] mt-s5 text-[24px]">

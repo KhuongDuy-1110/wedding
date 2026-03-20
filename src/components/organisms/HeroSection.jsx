@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import PhotoFrame from "../molecules/PhotoFrame";
 
-const HeroSection = ({ date, coupleName }) => {
+const HeroSection = ({ date, coupleName, timeLabel }) => {
   const [guestName, setGuestName] = useState("");
 
   useEffect(() => {
@@ -25,19 +25,6 @@ const HeroSection = ({ date, coupleName }) => {
         alt="Handsome Groom and Beautiful Bride"
         className="hero-photo"
       />
-
-      {/* Monogram / Header Style */}
-      {/* <div className="py-5 mx-0 my-5 mb-[10px]">
-        <div className="text-[12px] tracking-[3px] text-[#999] mb-s10">
-          SAVE THE DATE
-        </div>
-        <div
-          className="font-brice text-[28px] inline-block border-b border-[#333] pb-s10 text-[#333]"
-        >
-          K / N
-        </div>
-        
-      </div> */}
 
       <motion.p
         initial={{ opacity: 0, y: -20 }}
@@ -69,9 +56,9 @@ const HeroSection = ({ date, coupleName }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.6 }}
-        className="text-[1.2rem] font-bold"
+        className="text-[1.2rem] font-bold uppercase"
       >
-        CHỦ NHẬT - 10H00
+        {timeLabel}
       </motion.p>
 
       <motion.p

@@ -1,56 +1,42 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, CheckCircle2, User, MessageCircle, Users } from "lucide-react";
-import SectionHeading from "../atoms/SectionHeading";
+import SectionHeading from "../../../components/atoms/SectionHeading";
+import { useCreateWish } from "../hooks/use-wishes";
 
-const WishForm = ({ scriptUrl }) => {
+const WishForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     role: "GUEST",
     message: "",
   });
-  const [status, setStatus] = useState("idle"); // idle, loading, success, error
+
+  const createMutation = useCreateWish();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!scriptUrl) {
-      alert("Vui lòng cấu hình URL Google Sheets trước khi gửi!");
-      return;
-    }
-
-    setStatus("loading");
-
-    try {
-      const response = await fetch(scriptUrl, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      // Since Google Apps Script often uses redirects which trigger CORS errors in browsers
-      // despite working in 'no-cors' mode, we treat any response without as success.
-      setStatus("success");
-      setTimeout(() => setStatus("idle"), 5000);
-      setFormData({ name: "", phone: "", role: "GUEST", message: "" });
-    } catch (err) {
-      console.error(err);
-      setStatus("error");
-    }
+    createMutation.mutate(formData, {
+      onSuccess: () => {
+        setFormData({ name: "", phone: "", role: "GUEST", message: "" });
+      },
+    });
   };
 
   return (
-    <section className="py-s24 px-s24 bg-bg-light">
+    <section className="py-s40 px-s24 bg-bg-light">
       <SectionHeading subtitle="vui lòng dành ít thời gian">
-        Xác Nhận Tham Dự & Gửi Lời Chúc
+        Gửi Lời Chúc Đến Chúng Mình
       </SectionHeading>
 
       <motion.div
-        className="card p-s30 shadow-[0_15px_35px_rgba(0,0,0,0.05)] bg-white"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        className="card p-s30 shadow-[0_15px_35px_rgba(0,0,0,0.05)] bg-white max-w-[600px] mx-auto"
       >
         <AnimatePresence mode="wait">
-          {status === "success" ? (
+          {createMutation.isSuccess ? (
             <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -63,12 +49,16 @@ const WishForm = ({ scriptUrl }) => {
                 size={60}
                 className="mb-s20 mx-auto"
               />
-              <h3 className="text-[24px] mb-s10">
-                Cảm ơn bạn!
-              </h3>
+              <h3 className="text-[24px] mb-s10">Cảm ơn bạn!</h3>
               <p className="text-text-muted">
                 Món quà tinh thần ý nghĩa của bạn đã được gửi đến chúng tôi.
               </p>
+              <button
+                onClick={() => createMutation.reset()}
+                className="btn-accent mt-s24 text-white p-s10 px-s24"
+              >
+                Gửi Thêm Lời Chúc
+              </button>
             </motion.div>
           ) : (
             <motion.form
@@ -100,28 +90,43 @@ const WishForm = ({ scriptUrl }) => {
                 </div>
               </div>
 
-              <div>
-                <label className="text-[12px] font-bold mb-s8 block text-text-muted">
-                  QUAN HỆ
-                </label>
-                <div className="relative">
-                  <Users
-                    size={16}
-                    color="var(--color-accent)"
-                    className="absolute left-[12px] top-[15px]"
-                  />
-                  <select
-                    className="input-field appearance-none"
-                    value={formData.role}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-s20">
+                <div>
+                  <label className="text-[12px] font-bold mb-s8 block text-text-muted">
+                    SỐ ĐIỆN THOẠI
+                  </label>
+                  <input
+                    className="input-field"
+                    placeholder="Không bắt buộc"
+                    value={formData.phone}
                     onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
+                      setFormData({ ...formData, phone: e.target.value })
                     }
-                  >
-                    <option value="GUEST">Bạn của cô dâu & chú rể</option>
-                    <option value="FAMILY_GROOM">Gia đình nhà trai</option>
-                    <option value="FAMILY_BRIDE">Gia đình nhà gái</option>
-                    <option value="COLLEAGUE">Đồng nghiệp</option>
-                  </select>
+                  />
+                </div>
+                <div>
+                  <label className="text-[12px] font-bold mb-s8 block text-text-muted">
+                    QUAN HỆ
+                  </label>
+                  <div className="relative">
+                    <Users
+                      size={16}
+                      color="var(--color-accent)"
+                      className="absolute left-[12px] top-[15px]"
+                    />
+                    <select
+                      className="input-field appearance-none pl-[38px]"
+                      value={formData.role}
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: e.target.value })
+                      }
+                    >
+                      <option value="GUEST">Bạn của cô dâu & chú rể</option>
+                      <option value="FAMILY_GROOM">Gia đình nhà trai</option>
+                      <option value="FAMILY_BRIDE">Gia đình nhà gái</option>
+                      <option value="COLLEAGUE">Đồng nghiệp</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -149,10 +154,10 @@ const WishForm = ({ scriptUrl }) => {
 
               <button
                 type="submit"
-                disabled={status === "loading"}
+                disabled={createMutation.isPending}
                 className="btn-primary w-full p-s15 text-[18px] mt-s10"
               >
-                {status === "loading" ? (
+                {createMutation.isPending ? (
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 1 }}
@@ -160,9 +165,10 @@ const WishForm = ({ scriptUrl }) => {
                     ⏳
                   </motion.div>
                 ) : (
-                  <Send size={20} />
+                  <>
+                    <Send size={20} className="mr-s8" /> GỬI LỜI CHÚC
+                  </>
                 )}
-                GỬI LỜI CHÚC
               </button>
             </motion.form>
           )}

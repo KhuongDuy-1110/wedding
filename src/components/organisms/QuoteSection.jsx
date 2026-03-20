@@ -8,7 +8,7 @@ const QuoteSection = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        viewport={{ once: false, margin: "-50px" }}
+        viewport={{ once: true, margin: "-50px" }}
         className="relative max-w-[800px] mx-auto bg-[url('/assets/paper.png')] bg-[length:100%_100%] bg-no-repeat bg-center pt-s50 pr-s40 pb-s70 pl-s40 drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)] transition-all duration-300"
       >
         <p className="font-brush text-[24px] leading-[1.8] text-[#333] text-center relative z-[2]">

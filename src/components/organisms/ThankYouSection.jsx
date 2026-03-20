@@ -8,7 +8,7 @@ const ThankYouSection = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        viewport={{ once: false, margin: "-50px" }}
+        viewport={{ once: true, margin: "-50px" }}
         className="relative max-w-[800px] mx-auto bg-[url('/assets/paper.png')] bg-[length:100%_100%] bg-no-repeat bg-center pt-[50px] px-s40 pb-[70px] drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)]"
       >
         <p className="font-brush text-[24px] leading-[1.8] text-[#333] text-center relative z-[2] mb-0">
