@@ -17,17 +17,17 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
   const handleAddToCalendar = () => {
     const isBride = targetDate.includes("04-04");
     const summary = "Đám cưới Khải & Nga";
-    const mapLink = isBride 
+    const mapLink = isBride
       ? "https://maps.app.goo.gl/8Pj5kNwEWBXq3gk29"
       : "https://maps.app.goo.gl/VHEtWz2Urw9GKR3F8";
     const description = `Trân trọng kính mời bạn đến dự lễ thành hôn của chúng mình.\nBản đồ chỉ đường: ${mapLink}`;
-    const location = isBride 
+    const location = isBride
       ? "Nhà văn Hóa Xóm và - Tư Gia Nhà Gái, Tốt động, Chương Mỹ, Hà Nội"
       : "Nhà văn Hóa Xóm giữa - Tư Gia Nhà Trai, Tốt động, Chương Mỹ, Hà Nội";
-    
-    const dateStr = targetDate.replace(/[-:]/g, "").split(".")[0]; 
-    const startDate = dateStr; 
-    
+
+    const dateStr = targetDate.replace(/[-:]/g, "").split(".")[0];
+    const startDate = dateStr;
+
     const endDate = startDate.replace(/(\d{2})(\d{2})$/, (match, h, m) => {
       const newH = String(parseInt(h) + 4).padStart(2, "0");
       return newH + m;
@@ -54,7 +54,9 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
       window.location.href = dataUri;
     } catch (e) {
       // Fallback to blob if b64 fails
-      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const blob = new Blob([icsContent], {
+        type: "text/calendar;charset=utf-8",
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -159,25 +161,27 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
       className={`fixed left-0 top-[20%] md:top-1/2 md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${isHidden ? "pointer-events-none" : "pointer-events-auto"}`}
     >
       {/* Reminder Item - ONLY Saves Calendar */}
-      <motion.div
-        whileHover={{ x: 10 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleAddToCalendar();
-        }}
-        className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#d44848] transition-colors cursor-pointer"
-      >
-        <Bell size={18} className="text-white" />
-        <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">
-          Lưu lịch
-        </div>
-      </motion.div>
 
       {/* Countdown Items - ONLY Scroll to Calendar */}
-      <div className="flex flex-col gap-1 md:gap-2" onClick={handleScrollToCalendar}>
+      <div className="flex flex-col gap-1 md:gap-2">
+        <motion.div
+          whileHover={{ x: 10 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCalendar();
+          }}
+          className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#d44848] transition-colors cursor-pointer"
+        >
+          <Bell size={18} className="text-white" />
+          <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">
+            Lưu lịch
+          </div>
+        </motion.div>
+
         {items.map((item, index) => (
           <motion.div
             key={item.label}
+            onClick={handleScrollToCalendar}
             whileHover={{ x: 10 }}
             className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
           >
