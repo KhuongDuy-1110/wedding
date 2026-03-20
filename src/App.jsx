@@ -24,6 +24,16 @@ function App() {
   const audioRef = useRef(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get("name");
+    if (name) {
+      document.title = `Báo Hỷ Khải Nga - Kính mời ${name}`;
+    } else {
+      document.title = "Báo Hỷ Khải Nga";
+    }
+  }, []);
+
+  useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current
