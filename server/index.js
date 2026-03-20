@@ -15,6 +15,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the frontend build directory
+const distPath = path.join(__dirname, "../dist");
+app.use(express.static(distPath));
+
 const getSSLConfig = () => {
   try {
     if (process.env.DB_CA_CERT_CONTENT) {
@@ -345,6 +349,15 @@ app.get("/api/logs", async (req, res) => {
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// SPA Fallback: All other GET requests serve index.html
+app.get("*", (req, res) => {
+  if (fs.existsSync(path.join(distPath, "index.html"))) {
+    res.sendFile(path.join(distPath, "index.html"));
+  } else {
+    res.status(404).json({ error: "Frontend build not found. Run 'yarn build' first." });
   }
 });
 
