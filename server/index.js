@@ -21,18 +21,40 @@ app.use(express.static(distPath));
 
 const getSSLConfig = () => {
   try {
+    // 1. Check for certificate content in environment variable (Most reliable for Vercel)
     if (process.env.DB_CA_CERT_CONTENT) {
-      return { ca: process.env.DB_CA_CERT_CONTENT };
+      return { ca: process.env.DB_CA_CERT_CONTENT, rejectUnauthorized: true };
     }
     
+    // 2. Fallback to file path
     if (process.env.DB_CA_CERT) {
-      const certPath = path.join(__dirname, "../", process.env.DB_CA_CERT);
-      if (fs.existsSync(certPath)) {
-        return { ca: fs.readFileSync(certPath) };
+      // Try multiple potential paths
+      const potentialPaths = [
+        path.join(process.cwd(), process.env.DB_CA_CERT), // Root relative
+        path.join(__dirname, "../", process.env.DB_CA_CERT), // Module relative
+        path.resolve(process.env.DB_CA_CERT) // Absolute or cwd relative
+      ];
+
+      for (const certPath of potentialPaths) {
+        if (fs.existsSync(certPath)) {
+          try {
+            const certData = fs.readFileSync(certPath);
+            return { ca: certData, rejectUnauthorized: true };
+          } catch (readErr) {
+            console.error(`Error reading cert at ${certPath}:`, readErr.message);
+          }
+        }
       }
+      
+      console.warn("No DB_CA_CERT file found in checked paths. Proceeding with caution.");
+    }
+
+    // 3. If DB_SSL is true but no cert found, at least enable SSL with rejection (Aiven requires it)
+    if (process.env.DB_SSL === "true" || process.env.NODE_ENV === "production") {
+      return { rejectUnauthorized: true };
     }
   } catch (err) {
-    console.error("SSL Config error, proceeding without SSL if possible:", err.message);
+    console.error("SSL Config error:", err.message);
   }
   return null;
 };
