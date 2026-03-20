@@ -49,7 +49,7 @@ const CalendarSection = () => {
   };
 
   return (
-    <section className="py-s24 px-s24 bg-white text-center">
+    <section id="calendar-section" className="py-s24 px-s24 bg-white text-center">
       <div className="mb-s40">
         <div className="text-[20px] font-serif text-[#333]">
           Chủ nhật, Ngày 05 Tháng 04 năm 2026

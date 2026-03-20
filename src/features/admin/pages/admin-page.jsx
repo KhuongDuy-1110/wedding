@@ -31,15 +31,24 @@ const AdminPage = () => {
   });
   const [passInput, setPassInput] = useState("");
   const [passError, setPassError] = useState(false);
-  const [tab, setTab] = useState("logs");
+  const [tab, setTab] = useState(() => {
+    return localStorage.getItem("admin_active_tab") || "logs";
+  });
   const [logs, setLogs] = useState([]);
   const [wishes, setWishes] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (authed) {
+      localStorage.setItem("admin_active_tab", tab);
+    }
+  }, [tab, authed]);
 
   // Filters specific state
   const [selectedWishes, setSelectedWishes] = useState([]);
   const [wishFilter, setWishFilter] = useState("");
   const [wishSort, setWishSort] = useState("desc");
+  const [wishStatusFilter, setWishStatusFilter] = useState("all");
   const [logPathFilter, setLogPathFilter] = useState("all");
   const [logEventFilter, setLogEventFilter] = useState("all");
   const [selectedLogs, setSelectedLogs] = useState([]);
@@ -156,22 +165,31 @@ const AdminPage = () => {
   };
 
   const logStats = () => {
-    const totalVisits = logs.filter((l) => l.event === "page_visit").length;
-    const opened = logs.filter((l) => l.event === "open_invitation").length;
-    const scrolled100 = logs.filter((l) => l.scroll_percent === 100).length;
-    const qrViewed = logs.filter((l) => l.event === "view_qr").length;
-    const uniqueGuests = logs.length; // Records are deduplicated by (name, path)
+    // We calculate stats based on the path filter so the Stats tab is also filterable
+    const filteredForStats = logs.filter((log) => {
+      if (logPathFilter === "groom")
+        return log.path?.includes("/r") || log.path?.includes("/groom");
+      if (logPathFilter === "bride")
+        return log.path?.includes("/d") || log.path?.includes("/bride");
+      return true;
+    });
 
-    const pctOpened = uniqueGuests ? Math.round((opened / uniqueGuests) * 100) : 0;
-    const pctScrolled = uniqueGuests ? Math.round((scrolled100 / uniqueGuests) * 100) : 0;
+    const totalLogs = filteredForStats.length;
+    const opened = filteredForStats.filter((l) => l.is_opened).length;
+    const scrolled100 = filteredForStats.filter((l) => l.scroll_percent === 100).length;
+    const qrViewed = filteredForStats.filter((l) => l.is_qr_viewed).length;
+    const totalVisits = filteredForStats.reduce((acc, l) => acc + (l.visit_count || 1), 0);
+
+    const pctOpened = totalLogs ? Math.round((opened / totalLogs) * 100) : 0;
+    const pctScrolled = totalLogs ? Math.round((scrolled100 / totalLogs) * 100) : 0;
 
     return {
-      total: logs.length,
+      total: totalLogs,
       opened,
       qrViewed,
       pctOpened,
       pctScrolled,
-      uniqueGuests,
+      totalVisits,
     };
   };
 
@@ -188,7 +206,9 @@ const AdminPage = () => {
 
     // Filter event
     let matchEvent = true;
-    if (logEventFilter !== "all") matchEvent = log.event === logEventFilter;
+    if (logEventFilter === "opened") matchEvent = log.is_opened;
+    else if (logEventFilter === "qr") matchEvent = log.is_qr_viewed;
+    else if (logEventFilter !== "all") matchEvent = log.event === logEventFilter;
 
     return matchPath && matchEvent;
   });
@@ -197,10 +217,16 @@ const AdminPage = () => {
   const filteredWishes = wishes
     .filter((w) => {
       const search = wishFilter.toLowerCase();
-      return (
+      const matchKeyword =
         w.name.toLowerCase().includes(search) ||
-        w.message.toLowerCase().includes(search)
-      );
+        w.message.toLowerCase().includes(search);
+
+      // Status filter
+      let matchStatus = true;
+      if (wishStatusFilter === "visible") matchStatus = !w.hidden;
+      else if (wishStatusFilter === "hidden") matchStatus = w.hidden;
+
+      return matchKeyword && matchStatus;
     })
     .sort((a, b) => {
       const dateA = new Date(a.created_at).getTime();
@@ -301,12 +327,12 @@ const AdminPage = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             {[
               {
-                label: "Khách mời truy cập",
-                value: stats.uniqueGuests,
+                label: "Số khách (Unique)",
+                value: stats.total,
                 color: "from-blue-500 to-blue-400",
               },
               {
-                label: "Đã mở thiệp mời",
+                label: "Đã mở thiệp",
                 value: `${stats.pctOpened}%`,
                 color: "from-green-500 to-green-400",
               },
@@ -321,8 +347,8 @@ const AdminPage = () => {
                 color: "from-pink-500 to-pink-400",
               },
               {
-                label: "Tổng lượt tương tác",
-                value: logs.length,
+                label: "Số lượt xem (Total)",
+                value: stats.totalVisits,
                 color: "from-purple-500 to-purple-400",
               },
             ].map((s) => (
@@ -372,10 +398,10 @@ const AdminPage = () => {
                       onChange={(e) => setLogEventFilter(e.target.value)}
                       className="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none font-medium text-gray-600"
                     >
-                      <option value="all">Tất cả</option>
+                      <option value="all">Sự kiện: Tất cả</option>
+                      <option value="opened">Đã mở thiệp</option>
+                      <option value="qr">Đã xem QR</option>
                       <option value="page_visit">Truy cập</option>
-                      <option value="open_invitation">Mở thiệp</option>
-                      <option value="view_qr">Xem QR</option>
                       <option value="scroll_depth">Cuộn trang</option>
                       <option value="send_wish">Gửi lời chúc</option>
                     </select>
@@ -414,11 +440,11 @@ const AdminPage = () => {
                       />
                     </th>
                     <th className="px-5 py-3 text-left">Khách mời</th>
-                    <th className="px-5 py-3 text-left">Sự kiện</th>
-                    <th className="px-5 py-3 text-left">Scroll</th>
+                    <th className="px-5 py-3 text-left">Tiến độ</th>
+                    <th className="px-5 py-3 text-left">Lượt tập trung</th>
                     <th className="px-5 py-3 text-left">Path</th>
-                    <th className="px-5 py-3 text-left">Thời gian</th>
-                    <th className="px-5 py-3 text-left">Hành động</th>
+                    <th className="px-5 py-3 text-left">Cập nhật</th>
+                    <th className="px-5 py-3 text-left w-10"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -455,24 +481,28 @@ const AdminPage = () => {
                           )}
                         </td>
                         <td className="px-5 py-3">
-                          <Badge color={ev.color}>{ev.label}</Badge>
+                          <div className="flex flex-col gap-1.5">
+                            <div className="flex items-center gap-2">
+                               <div className={`w-2 h-2 rounded-full ${log.visit_count > 0 ? 'bg-blue-400' : 'bg-gray-200'}`} title="Đã truy cập" />
+                               <div className={`w-2 h-2 rounded-full ${log.is_opened ? 'bg-green-400' : 'bg-gray-200'}`} title="Đã mở thiệp" />
+                               <div className={`w-2 h-2 rounded-full ${log.is_qr_viewed ? 'bg-pink-400' : 'bg-gray-200'}`} title="Đã xem QR" />
+                               <span className="text-[10px] text-gray-400 ml-1 italic font-medium">({ev.label})</span>
+                            </div>
+                            {log.scroll_percent > 0 && (
+                               <div className="flex items-center gap-1.5">
+                                 <div className="w-12 h-1 bg-gray-100 rounded-full overflow-hidden">
+                                   <div className="h-full bg-orange-400" style={{ width: `${log.scroll_percent}%` }} />
+                                 </div>
+                                 <span className="text-[9px] text-gray-400 font-mono">{log.scroll_percent}%</span>
+                               </div>
+                            )}
+                          </div>
                         </td>
                         <td className="px-5 py-3">
-                          {log.scroll_percent > 0 ? (
-                            <div className="flex items-center gap-1.5">
-                              <div className="w-12 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-orange-400"
-                                  style={{ width: `${log.scroll_percent}%` }}
-                                />
-                              </div>
-                              <span className="text-[10px] text-gray-400 font-mono">
-                                {log.scroll_percent}%
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-gray-200">-</span>
-                          )}
+                          <div className="flex items-center gap-1.5 text-gray-600">
+                             <span className="text-xs font-bold">{log.visit_count || 1}</span>
+                             <span className="text-[10px] text-gray-400">lần</span>
+                          </div>
                         </td>
                         <td className="px-5 py-3 text-gray-400 text-xs font-mono">
                           {isSide === "groom" ? (
@@ -541,6 +571,16 @@ const AdminPage = () => {
                   <option value="asc">Cũ nhất</option>
                 </select>
 
+                <select
+                  value={wishStatusFilter}
+                  onChange={(e) => setWishStatusFilter(e.target.value)}
+                  className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none font-medium text-gray-600"
+                >
+                  <option value="all">Tất cả (Trạng thái)</option>
+                  <option value="visible">Đang hiển thị</option>
+                  <option value="hidden">Đã ẩn</option>
+                </select>
+
                 {selectedWishes.length > 0 && (
                   <button
                     onClick={handleBulkDelete}
@@ -567,7 +607,7 @@ const AdminPage = () => {
                         className="rounded border-gray-300 text-primary focus:ring-primary/20"
                       />
                     </th>
-                    <th className="px-5 py-3 text-left">Tên</th>
+                    <th className="px-5 py-3 text-left">Người gửi (URL)</th>
                     <th className="px-5 py-3 text-left">Lời chúc</th>
                     <th className="px-5 py-3 text-left">Trạng thái</th>
                     <th className="px-5 py-3 text-left">Thời gian</th>
@@ -578,7 +618,7 @@ const AdminPage = () => {
                   {filteredWishes.map((wish, i) => (
                     <tr
                       key={wish.id}
-                      className={`hover:bg-gray-50/60 transition-colors ${wish.hidden ? "opacity-50" : ""}`}
+                      className="hover:bg-gray-50/60 transition-colors"
                     >
                       <td className="px-5 py-3">
                         <input
@@ -588,8 +628,23 @@ const AdminPage = () => {
                           className="rounded border-gray-300 text-primary focus:ring-primary/20 cursor-pointer"
                         />
                       </td>
-                      <td className="px-5 py-3 font-semibold text-gray-700">
-                        {wish.name}
+                      <td className="px-5 py-3">
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-700">{wish.name}</span>
+                            {wish.flagged === 1 && (
+                              <span
+                                title="Lời chúc chứa từ ngữ nhạy cảm"
+                                className="text-red-500 animate-pulse"
+                              >
+                                ⚠️
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-[10px] text-gray-400 italic">
+                             Log: {wish.guest_path_name || "Không xác định"}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-5 py-3 text-gray-500 max-w-[260px]">
                         <p className="line-clamp-2 leading-relaxed">
@@ -597,11 +652,16 @@ const AdminPage = () => {
                         </p>
                       </td>
                       <td className="px-5 py-3">
-                        {wish.hidden ? (
-                          <Badge color="gray">Đã ẩn</Badge>
-                        ) : (
-                          <Badge color="green">Hiển thị</Badge>
-                        )}
+                        <div className="flex flex-col gap-1">
+                          {wish.flagged === 1 && (
+                            <Badge color="red">Vi phạm</Badge>
+                          )}
+                          {wish.hidden ? (
+                            <Badge color="gray">Đã ẩn</Badge>
+                          ) : (
+                            <Badge color="green">Hiển thị</Badge>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-3 text-gray-400 text-xs">
                         {formatDate(wish.created_at)}

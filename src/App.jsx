@@ -18,6 +18,7 @@ import CalendarSection from "./components/organisms/CalendarSection";
 import ThankYouSection from "./components/organisms/ThankYouSection";
 import FloatingHearts from "./components/atoms/FloatingHearts";
 import { trackEvent } from "./features/admin/utils/tracker";
+import SideCountdown from "./components/organisms/SideCountdown";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -211,6 +212,7 @@ function App() {
 
             <FloatingHearts />
             <FloatingWishChat />
+            <SideCountdown targetDate={currentConfig.targetDate} />
           </motion.div>
         )}
       </AnimatePresence>

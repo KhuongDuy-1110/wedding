@@ -19,19 +19,41 @@ const WishModal = ({ onClose, onSuccess }) => {
     return { name: params.get("name") || "", message: "" };
   });
   const inputRef = useRef(null);
+  const messageRef = useRef(null);
   const createMutation = useCreateWish();
 
   useEffect(() => {
-    // Auto focus name input
-    inputRef.current?.focus();
+    // Smart auto focus: if name exists (from URL params), focus message
+    if (formData.name) {
+      setTimeout(() => {
+        messageRef.current?.focus();
+      }, 500); // Wait for animation
+    }
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Anti-spam check: 60s cooldown
+    const lastWishTime = localStorage.getItem("last_wish_send_time");
+    const now = Date.now();
+    const cooldownPeriod = 60000; // 60 seconds
+
+    if (lastWishTime && now - parseInt(lastWishTime) < cooldownPeriod) {
+      const remaining = Math.ceil(
+        (cooldownPeriod - (now - parseInt(lastWishTime))) / 1000,
+      );
+      toast.error(
+        `Bạn vừa gửi lời chúc xong. Hãy quay lại sau ${remaining} giây nữa nhé!`,
+      );
+      return;
+    }
+
     createMutation.mutate(
       { ...formData, role: "GUEST", phone: "" },
       {
         onSuccess: (newWish) => {
+          localStorage.setItem("last_wish_send_time", Date.now().toString());
           onClose();
           confetti({
             particleCount: 150,
@@ -39,7 +61,6 @@ const WishModal = ({ onClose, onSuccess }) => {
             origin: { y: 0.6 },
             colors: ["#fd848e", "#e85d79", "#ffffff"],
           });
-          // Moved toast.success here to ensure it runs after confetti and onClose
           toast.success("Gửi lời chúc thành công!");
           onSuccess?.(newWish);
         },
@@ -93,6 +114,7 @@ const WishModal = ({ onClose, onSuccess }) => {
             className="w-full border border-primary/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-primary/60 transition-colors"
           />
           <textarea
+            ref={messageRef}
             required
             placeholder="Lời chúc của bạn"
             value={formData.message}
@@ -202,7 +224,7 @@ const FloatingWishChat = () => {
                         damping: 20,
                         stiffness: 200,
                       }}
-                      className="bg-[rgba(225,117,117,0.5)] text-[13px] backdrop-blur-sm md:text-[14px] px-s10 min-h-7 py-1 rounded-[15px] text-white shadow-lg pointer-events-auto w-fit max-w-full"
+                      className="bg-[rgba(225,117,117,0.5)]  text-[13px] md:text-[14px] px-s10 min-h-7 py-1 rounded-[15px] text-white shadow-lg pointer-events-auto w-fit max-w-full"
                     >
                       <span className="font-bold  mr-s4 ">{wish.name}: </span>
                       <span className=" pl-1 leading-relaxed">
@@ -225,7 +247,7 @@ const FloatingWishChat = () => {
             {/* Always show Avatar image */}
             <motion.div
               layout
-              className="w-[40px] h-[40px] rounded-full border-2 border-white overflow-hidden bg-white z-10 mb-2"
+              className="w-[32px] h-[32px] rounded-full border border-white overflow-hidden bg-white z-10 mb-1"
             >
               <img
                 src="https://thieucuoi-demo.vercel.app/images/opening.jpg"
@@ -241,7 +263,7 @@ const FloatingWishChat = () => {
             <motion.button
               layout
               onClick={() => setIsOpen((o) => !o)}
-              className="w-[40px] h-[40px] flex items-center justify-center text-white bg-transparent"
+              className="w-[32px] h-[32px] flex items-center justify-center text-white bg-transparent"
             >
               <AnimatePresence mode="wait">
                 {isOpen ? (
@@ -251,7 +273,7 @@ const FloatingWishChat = () => {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: 90, opacity: 0 }}
                   >
-                    <X size={20} strokeWidth={2.5} />
+                    <X size={16} strokeWidth={2.5} />
                   </motion.div>
                 ) : (
                   <motion.div
@@ -260,7 +282,7 @@ const FloatingWishChat = () => {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: -90, opacity: 0 }}
                   >
-                    <Menu size={20} strokeWidth={2.5} />
+                    <Menu size={16} strokeWidth={2.5} />
                   </motion.div>
                 )}
               </AnimatePresence>

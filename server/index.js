@@ -26,6 +26,26 @@ const dbConfig = {
   },
 };
 
+const blacklist = [
+  "địt", "đụ", "lồn", "cặc", "buồi", "vú", "đít", "dâm", "thú tính",
+  "đệt", "đêý", "cẹc", "bòi", "lìn", "lờ", "nứng", "chịch", "xoạc", "nện", "phang",
+  "đm", "đkm", "dcm", "vcl", "vkl", "vl", "vch", "cmn", "clgt", "tđn", "đéo", "đé0",
+  "duma", "dume", "dcmm", "đ.m", "v.l", "l0n", "c@c", "b.u.o.i",
+  "đê ca mờ", "đờ mờ", "vê lờ", "vãi chưởng", "vãi lúa", "vãi nồi",
+  "ngu", "đần", "óc chó", "óc lợn", "thiểu năng", "vô học", "thất học", "súc vật",
+  "đĩ", "phò", "điếm", "con giáp", "mặt dày", "khốn nạn", "khốn kiếp", " đồ chó",
+  "xạo lồn", "xl", "bốc phét", "hãm lồn", "hãm tài", "rác rưởi",
+  "bắc kỳ", "nam kỳ", "parky", "bake"
+];
+
+const checkBlacklist = (text = "") => {
+  const normalized = text.toLowerCase().replace(/\s+/g, "");
+  return blacklist.some((word) => {
+    const wordNoSpace = word.toLowerCase().replace(/\s+/g, "");
+    return normalized.includes(wordNoSpace);
+  });
+};
+
 const initDB = async () => {
   try {
     const connection = await mysql.createConnection(dbConfig);
@@ -39,6 +59,8 @@ const initDB = async () => {
         role VARCHAR(50),
         message TEXT NOT NULL,
         hidden TINYINT(1) DEFAULT 0,
+        flagged TINYINT(1) DEFAULT 0,
+        guest_path_name VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -49,6 +71,16 @@ const initDB = async () => {
         "ALTER TABLE wishes ADD COLUMN hidden BOOLEAN DEFAULT 0",
       );
     } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE wishes ADD COLUMN flagged BOOLEAN DEFAULT 0",
+      );
+    } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE wishes ADD COLUMN guest_path_name VARCHAR(255)",
+      );
+    } catch (_) {}
 
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS visitor_logs (
@@ -56,6 +88,7 @@ const initDB = async () => {
         guest_name VARCHAR(255),
         path VARCHAR(100),
         event VARCHAR(100) NOT NULL,
+        scroll_percent INT DEFAULT 0,
         user_agent TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -65,6 +98,21 @@ const initDB = async () => {
     try {
       await connection.execute(
         "ALTER TABLE visitor_logs ADD COLUMN scroll_percent INT DEFAULT 0",
+      );
+    } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE visitor_logs ADD COLUMN visit_count INT DEFAULT 1",
+      );
+    } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE visitor_logs ADD COLUMN is_opened TINYINT(1) DEFAULT 0",
+      );
+    } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE visitor_logs ADD COLUMN is_qr_viewed TINYINT(1) DEFAULT 0",
       );
     } catch (_) {}
     try {
@@ -98,19 +146,24 @@ app.get("/api/wishes", async (req, res) => {
 });
 
 app.post("/api/wishes", async (req, res) => {
-  const { name, phone, role, message } = req.body;
+  const { name, phone, role, message, guest_path_name } = req.body;
   if (!name || !message) {
     return res.status(400).json({ error: "Name and message are required" });
   }
 
+  const isFlagged = checkBlacklist(name) || checkBlacklist(message);
+  const hidden = isFlagged ? 1 : 0;
+  const flagged = isFlagged ? 1 : 0;
+  const pathName = guest_path_name || "Không xác định";
+
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
-      "INSERT INTO wishes (name, phone, role, message) VALUES (?, ?, ?, ?)",
-      [name, phone, role, message],
+      "INSERT INTO wishes (name, phone, role, message, hidden, flagged, guest_path_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [name, phone, role, message, hidden, flagged, pathName],
     );
     await connection.end();
-    res.status(201).json({ id: result.insertId, ...req.body });
+    res.status(201).json({ id: result.insertId, ...req.body, hidden, flagged, guest_path_name: pathName });
   } catch (err) {
     console.error("Error inserting wish:", err.message);
     res.status(500).json({ error: "Error saving wish" });
@@ -178,15 +231,32 @@ app.get("/api/admin/wishes", async (req, res) => {
 app.post("/api/logs", async (req, res) => {
   const { guest_name, path: visitPath, event, scroll_percent } = req.body;
   const user_agent = req.headers["user-agent"];
+
+  // Define event weights for "not overwriting backwards"
+  const eventWeights = {
+    page_visit: 1,
+    open_invitation: 2,
+    scroll_depth: 3,
+    view_qr: 4
+  };
+
   try {
     const connection = await mysql.createConnection(dbConfig);
-    // Use ON DUPLICATE KEY UPDATE so we merge logs by (guest_name, path)
+    
+    // Calculate new flags
+    const isAddingVisit = event === "page_visit" ? 1 : 0;
+    const isOpening = event === "open_invitation" ? 1 : 0;
+    const isViewingQR = event === "view_qr" ? 1 : 0;
+
+    // Use INSERT ... ON DUPLICATE KEY for flags and counts
     await connection.execute(
       `INSERT INTO visitor_logs 
-       (guest_name, path, event, scroll_percent, user_agent) 
-       VALUES (?, ?, ?, ?, ?) 
+       (guest_name, path, event, scroll_percent, visit_count, is_opened, is_qr_viewed, user_agent) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
        ON DUPLICATE KEY UPDATE 
-       event = VALUES(event),
+       visit_count = visit_count + VALUES(visit_count),
+       is_opened = GREATEST(is_opened, VALUES(is_opened)),
+       is_qr_viewed = GREATEST(is_qr_viewed, VALUES(is_qr_viewed)),
        scroll_percent = GREATEST(scroll_percent, VALUES(scroll_percent)),
        user_agent = VALUES(user_agent)`,
       [
@@ -194,12 +264,38 @@ app.post("/api/logs", async (req, res) => {
         visitPath || null,
         event,
         scroll_percent || 0,
+        isAddingVisit,
+        isOpening,
+        isViewingQR,
         user_agent,
-      ],
+      ]
     );
+
+    // Update the 'event' display string only if the new event is 'higher' 
+    // This avoids "going backwards" from QR -> visit
+    await connection.execute(`
+      UPDATE visitor_logs 
+      SET event = ? 
+      WHERE guest_name = ? AND path = ? AND (
+        CASE 
+          WHEN ? = 'view_qr' THEN 1
+          WHEN ? = 'scroll_depth' AND event != 'view_qr' THEN 1
+          WHEN ? = 'open_invitation' AND event NOT IN ('view_qr', 'scroll_depth', 'send_wish') THEN 1
+          WHEN ? = 'page_visit' AND event = 'page_visit' THEN 1
+          ELSE 0
+        END = 1
+      )
+    `, [
+      event, 
+      guest_name || null, 
+      visitPath || null, 
+      event, event, event, event
+    ]);
+
     await connection.end();
     res.status(201).json({ success: true });
   } catch (err) {
+    console.error("Log error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });

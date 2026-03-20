@@ -13,9 +13,13 @@ export const useCreateWish = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data) => wishesApi.createWish(data),
+    mutationFn: (data) => {
+      const guestName = sessionStorage.getItem("guest_name") || "Không xác định";
+      return wishesApi.createWish({ ...data, guest_path_name: guestName });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishes"] });
+      toast.success("Gửi lời chúc thành công! ❤️");
     },
     onError: (error) => {
       toast.error("Có lỗi xảy ra khi gửi lời chúc. Vui lòng thử lại!");
