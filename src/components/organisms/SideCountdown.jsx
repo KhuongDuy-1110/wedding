@@ -25,12 +25,9 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
       ? "Nhà văn Hóa Xóm và - Tư Gia Nhà Gái, Tốt động, Chương Mỹ, Hà Nội"
       : "Nhà văn Hóa Xóm giữa - Tư Gia Nhà Trai, Tốt động, Chương Mỹ, Hà Nội";
     
-    // 2026-04-05T10:00:00 -> 20260405T100000
-    // iPhone likes local time format for .ics if no TZ provided
     const dateStr = targetDate.replace(/[-:]/g, "").split(".")[0]; 
-    const startDate = dateStr.replace("T", "T"); 
+    const startDate = dateStr; 
     
-    // End date + 4 hours (approx)
     const endDate = startDate.replace(/(\d{2})(\d{2})$/, (match, h, m) => {
       const newH = String(parseInt(h) + 4).padStart(2, "0");
       return newH + m;
@@ -50,15 +47,21 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
       "END:VCALENDAR",
     ].join("\n");
 
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "wedding-khai-nga.ics");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      // Use Data URI for better iOS support
+      const base64 = btoa(unescape(encodeURIComponent(icsContent)));
+      const dataUri = `data:text/calendar;base64,${base64}`;
+      window.location.href = dataUri;
+    } catch (e) {
+      // Fallback to blob if b64 fails
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "wedding.ics");
+      link.click();
+      URL.revokeObjectURL(url);
+    }
   };
 
   useEffect(() => {
@@ -93,8 +96,7 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
 
   const handleAction = () => {
     handleScrollToCalendar();
-    // Use a small delay for calendar open to ensure scroll starts
-    setTimeout(handleAddToCalendar, 500);
+    handleAddToCalendar();
   };
 
   useEffect(() => {
@@ -160,19 +162,20 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
       {/* Reminder Item */}
       <motion.div
         whileHover={{ x: 10 }}
-        className="bg-[#c43838] px-1.5 py-2 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#d44848] transition-colors mb-1"
+        className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#d44848] transition-colors"
       >
-        <Bell size={18} className="text-white animate-pulse" />
-        <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-1">
+        <Bell size={18} className="text-white" />
+        <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">
           Lưu lịch
         </div>
       </motion.div>
 
       {items.map((item, index) => (
         <motion.div
-           key={item.label}
-           whileHover={{ x: 10 }}
-           className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#7a2424] transition-colors"
+          key={item.label}
+          whileHover={{ x: 10 }}
+          className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#7a2424] transition-colors"
+        >nter min-w-[45px] md:min-w-[65px] group-hover:bg-[#7a2424] transition-colors"
         >
           <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
             {item.value}

@@ -332,8 +332,23 @@ app.get("/api/logs", async (req, res) => {
   }
 });
 
+// Export the app for Vercel serverless functions
+export default app;
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, async () => {
-  await initDB();
-  console.log(`Server running on port ${PORT}`);
-});
+
+// Only start the server if not running on Vercel (standard Node environment)
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, async () => {
+    try {
+      await initDB();
+      console.log(`Server running on port ${PORT}`);
+    } catch (err) {
+      console.error("Failed to init DB:", err);
+    }
+  });
+} else {
+  // In production (Vercel), we still need to ensure DB is initialized
+  // but we don't call app.listen()
+  initDB().catch(err => console.error("Production DB init failed:", err));
+}
