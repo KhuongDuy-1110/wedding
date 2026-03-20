@@ -2,8 +2,8 @@
 .profile-wrapper {
   position: relative;
   width: 100%;
-  height: var(--profile-container-h, 520px);
-  margin-bottom: 80px;
+  height: var(--profile-container-h, 420px);
+  margin-bottom: 20px;
 }
 
 .profile-large {
@@ -13,8 +13,12 @@
   height: var(--profile-large-h, 420px);
   z-index: 1;
 }
-.profile-large.bride { left: 0; }
-.profile-large.groom { right: 0; }
+.profile-large.bride {
+  left: 0;
+}
+.profile-large.groom {
+  right: 0;
+}
 
 .profile-text-area {
   position: absolute;
@@ -23,8 +27,12 @@
   text-align: center;
   z-index: 2;
 }
-.profile-text-area.bride { right: 0; }
-.profile-text-area.groom { left: 0; }
+.profile-text-area.bride {
+  right: 0;
+}
+.profile-text-area.groom {
+  left: 0;
+}
 
 .profile-small-container {
   position: absolute;
@@ -46,16 +54,24 @@
 }
 
 /* Mobile Positions */
-.profile-small-img.p-1.bride { right: 49%; }
-.profile-small-img.p-2.bride { right: 4%; }
+.profile-small-img.p-1.bride {
+  right: 49%;
+}
+.profile-small-img.p-2.bride {
+  right: 4%;
+}
 
-.profile-small-img.p-1.groom { left: 4%; }
-.profile-small-img.p-2.groom { left: 49%; }
+.profile-small-img.p-1.groom {
+  left: 4%;
+}
+.profile-small-img.p-2.groom {
+  left: 49%;
+}
 
 /* Default styles */
 .profile-role-title {
   font-size: var(--profile-role-size, 18px);
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   color: #111;
   letter-spacing: 1px;
   font-weight: normal;
@@ -68,7 +84,6 @@
   line-height: 1;
 }
 
-
 /* --- DESKTOP LAYOUT --- */
 @media (min-width: 768px) {
   .profile-wrapper {
@@ -80,7 +95,7 @@
     height: 100%;
     left: 0;
   }
-  
+
   .profile-large.groom {
     width: 38%;
     height: 100%;

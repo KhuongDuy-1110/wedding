@@ -3,35 +3,15 @@ import { motion } from "framer-motion";
 
 const QuoteSection = () => {
   return (
-    <section style={{ padding: "24px 20px", background: "#fdfdfd" }}>
+    <section className="py-s24 px-s20 bg-[#fdfdfd]">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: false, margin: "-50px" }}
-        style={{
-          position: "relative",
-          maxWidth: "800px",
-          margin: "0 auto",
-          backgroundImage: "url('/assets/paper.png')",
-          backgroundSize: "100% 100%",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          padding: "50px 40px 70px 40px",
-          filter: "drop-shadow(0 15px 30px rgba(0,0,0,0.1))",
-        }}
+        className="relative max-w-[800px] mx-auto bg-[url('/assets/paper.png')] bg-[length:100%_100%] bg-no-repeat bg-center pt-s50 pr-s40 pb-s70 pl-s40 drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)] transition-all duration-300"
       >
-        <p
-          className="font-brush"
-          style={{
-            fontSize: "24px",
-            lineHeight: "1.8",
-            color: "#333",
-            textAlign: "center",
-            position: "relative",
-            zIndex: 2,
-          }}
-        >
+        <p className="font-brush text-[24px] leading-[1.8] text-[#333] text-center relative z-[2]">
           "Tình cảm ấy, chẳng cần cứ phải hét to lên cho cả thế giới biết, chỉ
           cần thỏ thẻ cho một người là cả thế giới của mình nghe là đủ rồi. Điều
           quan trọng nhất là đến cuối đường vẫn còn ở bên nhau, đi cạnh nhau,
@@ -40,16 +20,7 @@ const QuoteSection = () => {
         <img
           src="/assets/heart.png"
           alt="heart"
-          style={{
-            position: "absolute",
-            bottom: "50px",
-            right: "10px",
-            width: "120px",
-            height: "auto",
-            zIndex: 1,
-            opacity: 0.85,
-            mixBlendMode: "multiply",
-          }}
+          className="absolute bottom-s50 right-s10 w-[120px] h-auto z-[1] opacity-85 mix-blend-multiply"
         />
       </motion.div>
     </section>

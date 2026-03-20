@@ -7,60 +7,20 @@ const PhotoFrame = ({ src, alt, className = "" }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.8 }}
-      className={`photo-frame ${className}`}
-      style={{
-        position: "relative",
-        padding: "12px",
-        background: "white",
-        border: "1.5px solid var(--accent)",
-        borderRadius: "4px",
-        overflow: "visible",
-        maxWidth: "90%",
-        width: "fit-content",
-        margin: "0 auto",
-        boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
-      }}
+      className={`photo-frame ${className} relative p-3 bg-white border-[1.5px] border-accent rounded-[4px] overflow-visible max-w-[90%] w-fit mx-auto shadow-[0_20px_40px_rgba(0,0,0,0.1)]`}
     >
       {/* Decorative Gold Inner Border */}
-      <div
-        style={{
-          position: "absolute",
-          top: "4px",
-          bottom: "4px",
-          left: "4px",
-          right: "4px",
-          border: "1px solid rgba(231, 181, 71, 0.4)",
-          zIndex: 1,
-          pointerEvents: "none",
-        }}
-      />
+      <div className="absolute inset-1 border border-accent/40 z-[1] pointer-events-none" />
 
       {/* Main Image */}
       <img
         src={src}
         alt={alt}
-        style={{
-          width: "auto",
-          maxWidth: "100%",
-          maxHeight: "40vh",
-          display: "block",
-          borderRadius: "2px",
-          position: "relative",
-          zIndex: 0,
-        }}
+        className="w-auto max-w-full max-h-[40vh] block rounded-[2px] relative z-0"
       />
 
       {/* Decorative Traditional Corners */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-15px",
-          right: "-15px",
-          fontSize: "24px",
-          color: "var(--accent)",
-          transform: "rotate(-45deg)",
-        }}
-      >
+      <div className="absolute -bottom-[15px] -right-[15px] text-[24px] text-accent -rotate-45">
         💠
       </div>
     </motion.div>

@@ -3,10 +3,8 @@ import React from "react";
 const DoubleHappiness = ({ size = 60, color = "#AF0E13", glow = false }) => {
   return (
     <div
+      className="flex justify-center my-s10"
       style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        margin: "10px 0",
         filter: glow ? `drop-shadow(0 0 5px ${color})` : "none"
       }}
     >

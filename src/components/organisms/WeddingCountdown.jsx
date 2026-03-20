@@ -33,35 +33,11 @@ const WeddingCountdown = ({ targetDate }) => {
   }, [targetDate]);
 
   const Item = ({ value, label }) => (
-    <div
-      style={{
-        flex: 1,
-        textAlign: "center",
-        background: "#fff9f9",
-        padding: "24px 10px",
-        borderRadius: "16px",
-        boxShadow: "0 4px 15px rgba(0,0,0,0.02)",
-      }}
-    >
-      <div
-        style={{
-          fontSize: "42px",
-          fontWeight: "300",
-          color: "var(--primary)",
-          lineHeight: 1,
-        }}
-      >
+    <div className="flex-1 text-center bg-[#fff9f9] py-s24 px-s10 rounded-[16px] shadow-[0_4px_15px_rgba(0,0,0,0.02)]">
+      <div className="text-[42px] font-light text-primary leading-none">
         {value}
       </div>
-      <div
-        style={{
-          fontSize: "12px",
-          textTransform: "uppercase",
-          letterSpacing: "2px",
-          color: "#888",
-          marginTop: "10px",
-        }}
-      >
+      <div className="text-[12px] uppercase tracking-[2px] text-[#888] mt-s10">
         {label === "days"
           ? "Ngày"
           : label === "hours"
@@ -74,49 +50,22 @@ const WeddingCountdown = ({ targetDate }) => {
   );
 
   return (
-    <div style={{ padding: "20px 0 20px 0" }}>
+    <div className="py-s20 px-0">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false, margin: "-50px" }}
-        style={{ textAlign: "center", marginBottom: "40px" }}
+        className="text-center mb-s40"
       >
-        <h2
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "32px",
-            color: "#222",
-            fontWeight: "normal",
-            letterSpacing: "3px",
-            marginBottom: "15px",
-          }}
-        >
+        <h2 className="font-serif text-[32px] text-[#222] font-normal tracking-[3px] mb-s15">
           INVITATION
         </h2>
-        <p
-          style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: "13px",
-            color: "#444",
-            letterSpacing: "1px",
-            textTransform: "uppercase",
-            fontWeight: "500",
-          }}
-        >
+        <p className="font-sans text-[13px] text-[#444] tracking-[1px] uppercase font-medium">
           Đến dự đám cưới của chúng mình
         </p>
       </motion.div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          margin: "0 auto",
-          maxWidth: "480px",
-          padding: "0 10px",
-          justifyContent: "center",
-        }}
-      >
+      <div className="flex gap-s12 mx-auto max-w-[480px] px-s10 justify-center">
         <Item value={timeLeft.days} label="days" />
         <Item value={timeLeft.hours} label="hours" />
         <Item value={timeLeft.minutes} label="minutes" />

@@ -24,7 +24,7 @@ const ProfileSection = () => {
   };
 
   return (
-    <section style={{ background: "#fff", padding: "40px 20px" }}>
+    <section className="bg-white pt-s40 px-s20 overflow-hidden">
       {/* Bride Section */}
       <div className="profile-wrapper">
         {/* Large Image Left */}
@@ -32,12 +32,7 @@ const ProfileSection = () => {
           <img
             src={bride.images[0]}
             alt="Bride"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              filter: "grayscale(100%)",
-            }}
+            className="w-full h-full object-cover grayscale"
           />
         </div>
 
@@ -67,7 +62,7 @@ const ProfileSection = () => {
             <img
               src={bride.images[1]}
               alt="Bride 2"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="w-full h-full object-cover"
             />
           </div>
 
@@ -75,25 +70,20 @@ const ProfileSection = () => {
             <img
               src={bride.images[2]}
               alt="Bride 3"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="w-full h-full object-cover"
             />
           </div>
         </motion.div>
       </div>
 
       {/* Groom Section */}
-      <div className="profile-wrapper" style={{ marginBottom: "40px" }}>
+      <div className="profile-wrapper ">
         {/* Large Image Right */}
         <div className="profile-large groom">
           <img
             src={groom.images[0]}
             alt="Groom"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              filter: "grayscale(100%)",
-            }}
+            className="w-full h-full object-cover grayscale"
           />
         </div>
 
@@ -123,7 +113,7 @@ const ProfileSection = () => {
             <img
               src={groom.images[1]}
               alt="Groom 2"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="w-full h-full object-cover"
             />
           </div>
 
@@ -131,7 +121,7 @@ const ProfileSection = () => {
             <img
               src={groom.images[2]}
               alt="Groom 3"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="w-full h-full object-cover"
             />
           </div>
         </motion.div>

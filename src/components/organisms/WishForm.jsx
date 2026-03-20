@@ -41,18 +41,13 @@ const WishForm = ({ scriptUrl }) => {
   };
 
   return (
-    <section style={{ padding: "24px 24px", background: "var(--bg-light)" }}>
+    <section className="py-s24 px-s24 bg-bg-light">
       <SectionHeading subtitle="vui lòng dành ít thời gian">
         Xác Nhận Tham Dự & Gửi Lời Chúc
       </SectionHeading>
 
       <motion.div
-        className="card"
-        style={{
-          padding: "30px",
-          boxShadow: "0 15px 35px rgba(0,0,0,0.05)",
-          backgroundColor: "white",
-        }}
+        className="card p-s30 shadow-[0_15px_35px_rgba(0,0,0,0.05)] bg-white"
       >
         <AnimatePresence mode="wait">
           {status === "success" ? (
@@ -61,17 +56,17 @@ const WishForm = ({ scriptUrl }) => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              style={{ textAlign: "center", padding: "40px 0" }}
+              className="text-center py-s40 px-0"
             >
               <CheckCircle2
-                color="var(--primary)"
+                color="var(--color-primary)"
                 size={60}
-                style={{ marginBottom: "20px" }}
+                className="mb-s20 mx-auto"
               />
-              <h3 style={{ fontSize: "24px", marginBottom: "10px" }}>
+              <h3 className="text-[24px] mb-s10">
                 Cảm ơn bạn!
               </h3>
-              <p style={{ color: "var(--text-muted)" }}>
+              <p className="text-text-muted">
                 Món quà tinh thần ý nghĩa của bạn đã được gửi đến chúng tôi.
               </p>
             </motion.div>
@@ -81,36 +76,21 @@ const WishForm = ({ scriptUrl }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               onSubmit={handleSubmit}
-              style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+              className="flex flex-col gap-s20"
             >
               <div>
-                <label
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    marginBottom: "8px",
-                    display: "block",
-                    color: "var(--text-muted)",
-                  }}
-                >
+                <label className="text-[12px] font-bold mb-s8 block text-text-muted">
                   HỌ & TÊN
                 </label>
-                <div style={{ position: "relative" }}>
+                <div className="relative">
                   <User
                     size={16}
-                    color="var(--accent)"
-                    style={{ position: "absolute", left: "12px", top: "15px" }}
+                    color="var(--color-accent)"
+                    className="absolute left-[12px] top-[15px]"
                   />
                   <input
                     required
-                    className="input-focus"
-                    style={{
-                      width: "100%",
-                      padding: "12px 12px 12px 40px",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      fontSize: "16px",
-                    }}
+                    className="input-field"
                     placeholder="Nhập họ và tên của bạn"
                     value={formData.name}
                     onChange={(e) =>
@@ -121,32 +101,17 @@ const WishForm = ({ scriptUrl }) => {
               </div>
 
               <div>
-                <label
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    marginBottom: "8px",
-                    display: "block",
-                    color: "var(--text-muted)",
-                  }}
-                >
+                <label className="text-[12px] font-bold mb-s8 block text-text-muted">
                   QUAN HỆ
                 </label>
-                <div style={{ position: "relative" }}>
+                <div className="relative">
                   <Users
                     size={16}
-                    color="var(--accent)"
-                    style={{ position: "absolute", left: "12px", top: "15px" }}
+                    color="var(--color-accent)"
+                    className="absolute left-[12px] top-[15px]"
                   />
                   <select
-                    style={{
-                      width: "100%",
-                      padding: "12px 12px 12px 40px",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      fontSize: "16px",
-                      appearance: "none",
-                    }}
+                    className="input-field appearance-none"
                     value={formData.role}
                     onChange={(e) =>
                       setFormData({ ...formData, role: e.target.value })
@@ -161,33 +126,18 @@ const WishForm = ({ scriptUrl }) => {
               </div>
 
               <div>
-                <label
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    marginBottom: "8px",
-                    display: "block",
-                    color: "var(--text-muted)",
-                  }}
-                >
-                  LỜI CHÚC CỦA BẠN
+                <label className="text-[12px] font-bold mb-s8 block text-text-muted">
+                  LỜI CHÚC CỦÂ BẠN
                 </label>
-                <div style={{ position: "relative" }}>
+                <div className="relative">
                   <MessageCircle
                     size={16}
-                    color="var(--accent)"
-                    style={{ position: "absolute", left: "12px", top: "15px" }}
+                    color="var(--color-accent)"
+                    className="absolute left-[12px] top-[15px]"
                   />
                   <textarea
                     required
-                    style={{
-                      width: "100%",
-                      padding: "12px 12px 12px 40px",
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      fontSize: "16px",
-                      minHeight: "120px",
-                    }}
+                    className="input-field min-h-[120px]"
                     placeholder="Hãy viết vài lời chúc ngọt ngào cho chúng tôi nhé..."
                     value={formData.message}
                     onChange={(e) =>
@@ -200,13 +150,7 @@ const WishForm = ({ scriptUrl }) => {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="btn-primary"
-                style={{
-                  width: "100%",
-                  padding: "15px",
-                  fontSize: "18px",
-                  marginTop: "10px",
-                }}
+                className="btn-primary w-full p-s15 text-[18px] mt-s10"
               >
                 {status === "loading" ? (
                   <motion.div
@@ -224,10 +168,6 @@ const WishForm = ({ scriptUrl }) => {
           )}
         </AnimatePresence>
       </motion.div>
-
-      <style>{`
-        .input-focus:focus { outline: none; border-color: var(--primary) !important; box-shadow: 0 0 0 2px rgba(175, 14, 19, 0.1); }
-      `}</style>
     </section>
   );
 };

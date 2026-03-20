@@ -10,19 +10,12 @@ const Gallery = () => {
   ];
 
   return (
-    <section style={{ padding: "24px 24px" }}>
+    <section className="py-s24 px-s24">
       <SectionHeading subtitle="với một vài khoảnh khắc đẹp">
         Album hình cưới
       </SectionHeading>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "12px",
-          padding: "10px",
-        }}
-      >
+      <div className="grid grid-cols-2 gap-s12 p-s10">
         {images.map((img, idx) => (
           <motion.div
             key={idx}
@@ -30,19 +23,12 @@ const Gallery = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.6, delay: idx * 0.1 }}
-            style={{
-              aspectRatio: idx === 0 ? "unset" : "1/1",
-              gridColumn: idx === 0 ? "span 2" : "span 1",
-              borderRadius: "8px",
-              overflow: "hidden",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-              border: "2px solid white",
-            }}
+            className={`${idx === 0 ? "aspect-auto col-span-2" : "aspect-square col-span-1"} rounded-lg overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)] border-2 border-white`}
           >
             <img
               src={img.src}
               alt={img.alt}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="w-full h-full object-cover"
             />
           </motion.div>
         ))}

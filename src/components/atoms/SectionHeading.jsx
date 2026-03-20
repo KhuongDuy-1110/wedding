@@ -3,17 +3,9 @@ import { motion } from "framer-motion";
 
 const SectionHeading = ({ children, subtitle }) => {
   return (
-    <div style={{ textAlign: "center", marginBottom: "30px" }}>
+    <div className="text-center mb-s30">
       {subtitle && (
-        <p
-          style={{
-            fontSize: "12px",
-            textTransform: "uppercase",
-            letterSpacing: "3px",
-            color: "var(--text-muted)",
-            marginBottom: "5px",
-          }}
-        >
+        <p className="text-[12px] uppercase tracking-[3px] text-text-muted mb-s5">
           {subtitle}
         </p>
       )}
@@ -21,8 +13,7 @@ const SectionHeading = ({ children, subtitle }) => {
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="script"
-        style={{ fontSize: "32px", color: "var(--primary)" }}
+        className="script text-[32px] text-primary"
       >
         {children}
       </motion.h2>

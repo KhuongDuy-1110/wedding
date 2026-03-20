@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Music, MessageSquareText, Heart } from "lucide-react";
 import confetti from "canvas-confetti";
@@ -15,10 +15,25 @@ import ProfileSection from "./components/organisms/ProfileSection";
 import QuoteSection from "./components/organisms/QuoteSection";
 import CalendarSection from "./components/organisms/CalendarSection";
 import ThankYouSection from "./components/organisms/ThankYouSection";
+import FloatingHearts from "./components/atoms/FloatingHearts";
+import ScrollToTop from "./components/atoms/ScrollToTop";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current
+          .play()
+          .catch((err) => console.log("Audio play failed:", err));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
   // Replace this with your Google Apps Script URL
   const GOOGLE_SCRIPT_URL = "";
@@ -49,12 +64,11 @@ function App() {
 
   return (
     <div
-      className="max-width-container"
-      style={{
-        position: "relative",
-        overflow: isOpened ? "auto" : "hidden",
-        height: isOpened ? "auto" : "100vh",
-      }}
+      className={`max-width-container relative ${
+        isOpened
+          ? "overflow-x-hidden overflow-y-auto h-auto"
+          : "overflow-hidden h-screen"
+      }`}
     >
       {/* Opening Effect (Envelope/Curtain) */}
       <OpeningEffect
@@ -69,29 +83,13 @@ function App() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsPlaying(!isPlaying)}
-        className="glass"
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          left: "20px",
-          zIndex: 100,
-          width: "45px",
-          height: "45px",
-          borderRadius: "50%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-          border: "none",
-          opacity: isOpened ? 1 : 0,
-          pointerEvents: isOpened ? "auto" : "none",
-        }}
+        className={`glass fixed bottom-s20 left-s20 z-[100] w-[40px] h-[40px] rounded-full flex items-center justify-center cursor-pointer border-none ${isOpened ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       >
-        <Music
-          size={20}
-          color={isPlaying ? "var(--primary)" : "var(--text-muted)"}
-          style={{ animation: isPlaying ? "spin 3s linear infinite" : "none" }}
+        <img
+          src="/assets/disk.png"
+          alt="Music Disk"
+          className="w-full h-full object-contain animate-[spin_3s_linear_infinite]"
+          style={{ animationPlayState: isPlaying ? "running" : "paused" }}
         />
         <style>{`@keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }`}</style>
       </motion.button>
@@ -113,7 +111,7 @@ function App() {
             <QuoteSection />
 
             {/* Countdown Section */}
-            <div style={{ padding: "0 20px" }}>
+            <div className="px-s20">
               <WeddingCountdown targetDate="2026-04-05T10:00:00" />
             </div>
             {/* Calendar Section */}
@@ -126,15 +124,7 @@ function App() {
               {/* Gallery Section */}
               <Gallery />
               {/* <div
-                style={{
-                  background: "#111",
-                  color: "#ddd",
-                  padding: "15px 0",
-                  textAlign: "center",
-                  fontSize: "12px",
-                  letterSpacing: "4px",
-                  textTransform: "uppercase",
-                }}
+                className="bg-[#111] text-[#ddd] py-s15 px-0 text-center text-xs tracking-[4px] uppercase"
               >
                 {"<< Và thế giới đã mất đi 1 người cô đơn >>"}
               </div> */}
@@ -143,40 +133,26 @@ function App() {
               <Gifting />
 
               {/* Wish & RSVP Section */}
-              <div id="rsvp-section">
+              <div id="rsvp-section" className="scroll-mt-s20">
                 <WishForm scriptUrl={GOOGLE_SCRIPT_URL} />
               </div>
 
               {/* Thank You Section */}
               <ThankYouSection />
 
-              <footer
-                style={{
-                  padding: "60px 24px",
-                  textAlign: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: "16px",
-                    letterSpacing: "2px",
-                    fontFamily: "'Playfair Display', serif",
-                    textTransform: "uppercase",
-                    fontWeight: "normal",
-                    margin: 0,
-                  }}
-                >
-                  THANK YOU FOR WATCHING . I HOPE YOU LIKE IT
+              <footer className="py-s60 px-s24 text-center flex flex-col justify-center items-center">
+                <h3 className="text-base  tracking-[2px] font-serif uppercase font-brush m-0 text-primary">
+                  THANK YOU FOR WATCHING .<br />I HOPE YOU LIKE IT
                 </h3>
               </footer>
             </main>
+
+            <ScrollToTop />
+            <FloatingHearts />
           </motion.div>
         )}
       </AnimatePresence>
+      <audio ref={audioRef} src="/audio/i-do.mp3" loop />
     </div>
   );
 }
