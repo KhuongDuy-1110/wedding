@@ -175,7 +175,6 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
           key={item.label}
           whileHover={{ x: 10 }}
           className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#7a2424] transition-colors"
-        >nter min-w-[45px] md:min-w-[65px] group-hover:bg-[#7a2424] transition-colors"
         >
           <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
             {item.value}
