@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const QuoteSection = () => {
   return (
-    <section className="py-s24 px-s20 bg-[#fdfdfd]">
+    <section className="py-s24  px-s20 bg-[#fdfdfd]">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
