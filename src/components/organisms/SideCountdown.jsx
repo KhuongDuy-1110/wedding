@@ -25,46 +25,56 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
       ? "Nhà văn Hóa Xóm và - Tư Gia Nhà Gái, Tốt động, Chương Mỹ, Hà Nội"
       : "Nhà văn Hóa Xóm giữa - Tư Gia Nhà Trai, Tốt động, Chương Mỹ, Hà Nội";
 
-    const dateStr = targetDate.replace(/[-:]/g, "").split(".")[0];
-    const startDate = dateStr;
+    // Create proper Date objects
+    const startDateObj = new Date(targetDate);
+    const endDateObj = new Date(startDateObj.getTime() + 4 * 60 * 60 * 1000); // +4 hours
 
-    const endDate = startDate.replace(/(\d{2})(\d{2})$/, (match, h, m) => {
-      const newH = String(parseInt(h) + 4).padStart(2, "0");
-      return newH + m;
-    });
+    const formatICSDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    };
+
+    const startDate = formatICSDate(startDateObj);
+    const endDate = formatICSDate(endDateObj);
 
     const icsContent = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
+      "PRODID:-//Wedding//VN",
+      "CALSCALE:GREGORIAN",
       "BEGIN:VEVENT",
+      `DTSTART:${startDate}`,
+      `DTEND:${endDate}`,
       `SUMMARY:${summary}`,
       `DESCRIPTION:${description.replace(/\n/g, "\\n")}`,
       `LOCATION:${location}`,
-      `URL:${mapLink}`,
-      `DTSTART:${startDate}`,
-      `DTEND:${endDate}`,
+      `URL;VALUE=URI:${mapLink}`,
       "END:VEVENT",
       "END:VCALENDAR",
-    ].join("\n");
+    ].join("\r\n");
 
-    try {
-      // Use Data URI for better iOS support
-      const base64 = btoa(unescape(encodeURIComponent(icsContent)));
-      const dataUri = `data:text/calendar;base64,${base64}`;
-      window.location.href = dataUri;
-    } catch (e) {
-      // Fallback to blob if b64 fails
-      const blob = new Blob([icsContent], {
-        type: "text/calendar;charset=utf-8",
-      });
-      const url = URL.createObjectURL(blob);
+    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    // Dynamic handling for different platforms
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isIOS) {
+      // iOS Safari handles direct navigation to blob better for calendar files
+      window.location.href = url;
+    } else {
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", "wedding.ics");
+      document.body.appendChild(link);
       link.click();
-      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
     }
+
+    // Cleanup
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   };
+
 
   useEffect(() => {
     // Observer for calendar section visibility
