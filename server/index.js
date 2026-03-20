@@ -25,14 +25,14 @@ const getSSLConfig = () => {
     if (process.env.DB_CA_CERT_CONTENT) {
       return { ca: process.env.DB_CA_CERT_CONTENT, rejectUnauthorized: true };
     }
-    
+
     // 2. Fallback to file path
     if (process.env.DB_CA_CERT) {
       // Try multiple potential paths
       const potentialPaths = [
         path.join(process.cwd(), process.env.DB_CA_CERT), // Root relative
         path.join(__dirname, "../", process.env.DB_CA_CERT), // Module relative
-        path.resolve(process.env.DB_CA_CERT) // Absolute or cwd relative
+        path.resolve(process.env.DB_CA_CERT), // Absolute or cwd relative
       ];
 
       for (const certPath of potentialPaths) {
@@ -41,16 +41,24 @@ const getSSLConfig = () => {
             const certData = fs.readFileSync(certPath);
             return { ca: certData, rejectUnauthorized: true };
           } catch (readErr) {
-            console.error(`Error reading cert at ${certPath}:`, readErr.message);
+            console.error(
+              `Error reading cert at ${certPath}:`,
+              readErr.message,
+            );
           }
         }
       }
-      
-      console.warn("No DB_CA_CERT file found in checked paths. Proceeding with caution.");
+
+      console.warn(
+        "No DB_CA_CERT file found in checked paths. Proceeding with caution.",
+      );
     }
 
     // 3. If DB_SSL is true but no cert found, at least enable SSL with rejection (Aiven requires it)
-    if (process.env.DB_SSL === "true" || process.env.NODE_ENV === "production") {
+    if (
+      process.env.DB_SSL === "true" ||
+      process.env.NODE_ENV === "production"
+    ) {
       return { rejectUnauthorized: true };
     }
   } catch (err) {
@@ -69,15 +77,78 @@ const dbConfig = {
 };
 
 const blacklist = [
-  "địt", "đụ", "lồn", "cặc", "buồi", "vú", "đít", "dâm", "thú tính",
-  "đệt", "đêý", "cẹc", "bòi", "lìn", "lờ", "nứng", "chịch", "xoạc", "nện", "phang",
-  "đm", "đkm", "dcm", "vcl", "vkl", "vl", "vch", "cmn", "clgt", "tđn", "đéo", "đé0",
-  "duma", "dume", "dcmm", "đ.m", "v.l", "l0n", "c@c", "b.u.o.i",
-  "đê ca mờ", "đờ mờ", "vê lờ", "vãi chưởng", "vãi lúa", "vãi nồi",
-  "ngu", "đần", "óc chó", "óc lợn", "thiểu năng", "vô học", "thất học", "súc vật",
-  "đĩ", "phò", "điếm", "con giáp", "mặt dày", "khốn nạn", "khốn kiếp", " đồ chó",
-  "xạo lồn", "xl", "bốc phét", "hãm lồn", "hãm tài", "rác rưởi",
-  "bắc kỳ", "nam kỳ", "parky", "bake"
+  "địt",
+  "đụ",
+  "lồn",
+  "cặc",
+  "buồi",
+  "vú",
+  "đít",
+  "dâm",
+  "thú tính",
+  "đệt",
+  "đêý",
+  "cẹc",
+  "bòi",
+  "lìn",
+  "lờ",
+  "nứng",
+  "chịch",
+  "xoạc",
+  "nện",
+  "phang",
+  "đm",
+  "đkm",
+  "dcm",
+  "vcl",
+  "vkl",
+  "vl",
+  "vch",
+  "cmn",
+  "clgt",
+  "tđn",
+  "đéo",
+  "đé0",
+  "duma",
+  "dume",
+  "dcmm",
+  "đ.m",
+  "v.l",
+  "l0n",
+  "c@c",
+  "b.u.o.i",
+  "đê ca mờ",
+  "đờ mờ",
+  "vê lờ",
+  "vãi chưởng",
+  "vãi lúa",
+  "vãi nồi",
+  "ngu",
+  "đần",
+  "óc chó",
+  "óc lợn",
+  "thiểu năng",
+  "vô học",
+  "thất học",
+  "súc vật",
+  "đĩ",
+  "phò",
+  "điếm",
+  "con giáp",
+  "mặt dày",
+  "khốn nạn",
+  "khốn kiếp",
+  " đồ chó",
+  "xạo lồn",
+  "xl",
+  "bốc phét",
+  "hãm lồn",
+  "hãm tài",
+  "rác rưởi",
+  "bắc kỳ",
+  "nam kỳ",
+  "parky",
+  "bake",
 ];
 
 const checkBlacklist = (text = "") => {
@@ -205,7 +276,15 @@ app.post("/api/wishes", async (req, res) => {
       [name, phone, role, message, hidden, flagged, pathName],
     );
     await connection.end();
-    res.status(201).json({ id: result.insertId, ...req.body, hidden, flagged, guest_path_name: pathName });
+    res
+      .status(201)
+      .json({
+        id: result.insertId,
+        ...req.body,
+        hidden,
+        flagged,
+        guest_path_name: pathName,
+      });
   } catch (err) {
     console.error("Error inserting wish:", err.message);
     res.status(500).json({ error: "Error saving wish" });
@@ -215,7 +294,9 @@ app.post("/api/wishes", async (req, res) => {
 app.delete("/api/wishes/:id", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
-    await connection.execute("DELETE FROM wishes WHERE id = ?", [req.params.id]);
+    await connection.execute("DELETE FROM wishes WHERE id = ?", [
+      req.params.id,
+    ]);
     await connection.end();
     res.json({ success: true });
   } catch (err) {
@@ -279,12 +360,12 @@ app.post("/api/logs", async (req, res) => {
     page_visit: 1,
     open_invitation: 2,
     scroll_depth: 3,
-    view_qr: 4
+    view_qr: 4,
   };
 
   try {
     const connection = await mysql.createConnection(dbConfig);
-    
+
     // Calculate new flags
     const isAddingVisit = event === "page_visit" ? 1 : 0;
     const isOpening = event === "open_invitation" ? 1 : 0;
@@ -310,12 +391,13 @@ app.post("/api/logs", async (req, res) => {
         isOpening,
         isViewingQR,
         user_agent,
-      ]
+      ],
     );
 
-    // Update the 'event' display string only if the new event is 'higher' 
+    // Update the 'event' display string only if the new event is 'higher'
     // This avoids "going backwards" from QR -> visit
-    await connection.execute(`
+    await connection.execute(
+      `
       UPDATE visitor_logs 
       SET event = ? 
       WHERE guest_name = ? AND path = ? AND (
@@ -327,12 +409,17 @@ app.post("/api/logs", async (req, res) => {
           ELSE 0
         END = 1
       )
-    `, [
-      event, 
-      guest_name || null, 
-      visitPath || null, 
-      event, event, event, event
-    ]);
+    `,
+      [
+        event,
+        guest_name || null,
+        visitPath || null,
+        event,
+        event,
+        event,
+        event,
+      ],
+    );
 
     await connection.end();
     res.status(201).json({ success: true });
@@ -379,7 +466,9 @@ app.use((req, res) => {
   if (fs.existsSync(path.join(distPath, "index.html"))) {
     res.sendFile(path.join(distPath, "index.html"));
   } else {
-    res.status(404).json({ error: "Frontend build not found. Run 'yarn build' first." });
+    res
+      .status(404)
+      .json({ error: "Frontend build not found. Run 'yarn build' first." });
   }
 });
 
@@ -401,5 +490,5 @@ if (process.env.NODE_ENV !== "production") {
 } else {
   // In production (Vercel), we still need to ensure DB is initialized
   // but we don't call app.listen()
-  initDB().catch(err => console.error("Production DB init failed:", err));
+  initDB().catch((err) => console.error("Production DB init failed:", err));
 }
