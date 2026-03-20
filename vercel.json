@@ -6,6 +6,11 @@
       "destination": "/server/index.js"
     }
   ],
+  "functions": {
+    "server/index.js": {
+      "includeFiles": "certs/**"
+    }
+  },
   "builds": [
     {
       "src": "package.json",

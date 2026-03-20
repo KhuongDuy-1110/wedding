@@ -15,15 +15,31 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const getSSLConfig = () => {
+  try {
+    if (process.env.DB_CA_CERT_CONTENT) {
+      return { ca: process.env.DB_CA_CERT_CONTENT };
+    }
+    
+    if (process.env.DB_CA_CERT) {
+      const certPath = path.join(__dirname, "../", process.env.DB_CA_CERT);
+      if (fs.existsSync(certPath)) {
+        return { ca: fs.readFileSync(certPath) };
+      }
+    }
+  } catch (err) {
+    console.error("SSL Config error, proceeding without SSL if possible:", err.message);
+  }
+  return null;
+};
+
 const dbConfig = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  ssl: {
-    ca: fs.readFileSync(path.join(__dirname, "../", process.env.DB_CA_CERT)),
-  },
+  ssl: getSSLConfig(),
 };
 
 const blacklist = [

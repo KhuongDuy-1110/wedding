@@ -133,6 +133,14 @@ body {
   color: var(--color-text-dark);
   overflow-x: hidden;
   line-height: 1.6;
+  touch-action: manipulation;
+}
+
+/* Prevent auto-zoom on focus for iOS */
+input,
+textarea,
+select {
+  font-size: 16px !important;
 }
 
 h1,
