@@ -156,13 +156,16 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
         damping: 20,
         opacity: { duration: 0.2 },
       }}
-      onClick={handleAction}
-      className={`fixed left-0 top-[20%] md:top-1/2 md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 cursor-pointer group ${isHidden ? "pointer-events-none" : "pointer-events-auto"}`}
+      className={`fixed left-0 top-[20%] md:top-1/2 md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${isHidden ? "pointer-events-none" : "pointer-events-auto"}`}
     >
-      {/* Reminder Item */}
+      {/* Reminder Item - ONLY Saves Calendar */}
       <motion.div
         whileHover={{ x: 10 }}
-        className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#d44848] transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAddToCalendar();
+        }}
+        className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#d44848] transition-colors cursor-pointer"
       >
         <Bell size={18} className="text-white" />
         <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">
@@ -170,20 +173,23 @@ const SideCountdown = ({ targetDate = "2026-04-05T00:00:00" }) => {
         </div>
       </motion.div>
 
-      {items.map((item, index) => (
-        <motion.div
-          key={item.label}
-          whileHover={{ x: 10 }}
-          className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] group-hover:bg-[#7a2424] transition-colors"
-        >
-          <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
-            {item.value}
-          </div>
-          <div className="text-[8px] md:text-[10px] font-medium text-white/70 uppercase tracking-tighter">
-            {item.label}
-          </div>
-        </motion.div>
-      ))}
+      {/* Countdown Items - ONLY Scroll to Calendar */}
+      <div className="flex flex-col gap-1 md:gap-2" onClick={handleScrollToCalendar}>
+        {items.map((item, index) => (
+          <motion.div
+            key={item.label}
+            whileHover={{ x: 10 }}
+            className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl rounded-l-none shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
+          >
+            <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
+              {item.value}
+            </div>
+            <div className="text-[8px] md:text-[10px] font-medium text-white/70 uppercase tracking-tighter">
+              {item.label}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 };
