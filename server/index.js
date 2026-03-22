@@ -315,52 +315,102 @@ const initDB = async () => {
 
     // Migration for new columns and features
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD COLUMN scroll_percent INT DEFAULT 0",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD COLUMN scroll_percent INT DEFAULT 0");
     } catch (_) {}
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD COLUMN visit_count INT DEFAULT 1",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD COLUMN visit_count INT DEFAULT 1");
     } catch (_) {}
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD COLUMN is_opened TINYINT(1) DEFAULT 0",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD COLUMN is_opened TINYINT(1) DEFAULT 0");
     } catch (_) {}
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD COLUMN is_qr_viewed TINYINT(1) DEFAULT 0",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD COLUMN is_qr_viewed TINYINT(1) DEFAULT 0");
     } catch (_) {}
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
     } catch (_) {}
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD COLUMN visitor_id VARCHAR(100)",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD COLUMN visitor_id VARCHAR(100)");
     } catch (_) {}
     try {
-      // Drop old unique key if it exists
-      await connection.execute(
-        "ALTER TABLE visitor_logs DROP INDEX guest_path",
-      );
+      await connection.execute("ALTER TABLE visitor_logs DROP INDEX guest_path");
     } catch (_) {}
     try {
-      await connection.execute(
-        "ALTER TABLE visitor_logs ADD UNIQUE KEY visitor_path (visitor_id, path)",
-      );
+      await connection.execute("ALTER TABLE visitor_logs ADD UNIQUE KEY visitor_path (visitor_id, path)");
     } catch (_) {}
+
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS site_settings (
+        key_name VARCHAR(255) PRIMARY KEY,
+        value_content TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Initial settings for images if table is empty
+    const [settings] = await connection.execute("SELECT COUNT(*) as count FROM site_settings");
+    if (settings[0].count === 0) {
+      const defaultSettings = [
+        ['hero_bg', '/assets/hero.png'],
+        ['hero_couple', '/assets/couple.png'],
+        ['bride_main', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
+        ['bride_small_1', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
+        ['bride_small_2', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
+        ['groom_main', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
+        ['groom_small_1', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
+        ['groom_small_2', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
+        ['gallery_1', '/assets/gallery-1.png'],
+        ['gallery_2', '/assets/trai-tim.jpg'],
+        ['gallery_3', '/assets/couple.png'],
+      ];
+      
+      for (const [key, val] of defaultSettings) {
+        await connection.execute("INSERT INTO site_settings (key_name, value_content) VALUES (?, ?)", [key, val]);
+      }
+    }
 
     await connection.end();
   } catch (err) {
     console.error("Database connection failed:", err.message);
   }
 };
+
+// Site Settings APIs
+app.get("/api/settings", async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute("SELECT * FROM site_settings");
+    await connection.end();
+    
+    // Transform to object for easier use on frontend
+    const settings = rows.reduce((acc, row) => {
+      acc[row.key_name] = row.value_content;
+      return acc;
+    }, {});
+    
+    res.json(settings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/settings", async (req, res) => {
+  const { key_name, value_content } = req.body;
+  if (!key_name || value_content === undefined) {
+    return res.status(400).json({ error: "Key and value are required" });
+  }
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.execute(
+      "INSERT INTO site_settings (key_name, value_content) VALUES (?, ?) ON DUPLICATE KEY UPDATE value_content = ?",
+      [key_name, value_content, value_content]
+    );
+    await connection.end();
+    res.json({ success: true, key_name, value_content });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.get("/api/wishes", async (req, res) => {
   try {

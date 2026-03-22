@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { adminApi } from "../api/admin-api";
-import { Eye, EyeOff, Trash2, RefreshCw, LogOut, Users, MessageSquare, BarChart2 } from "lucide-react";
+import { Eye, EyeOff, Trash2, RefreshCw, LogOut, Users, MessageSquare, BarChart2, Image as ImageIcon, Upload, CheckSquare, Square, XCircle } from "lucide-react";
+import { useSiteSettings as useSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
+import axios from "axios";
 
 const ADMIN_PASS = "kaina2k";
 
@@ -275,6 +277,7 @@ const AdminPage = () => {
     { id: "logs", label: "Truy cập", icon: <BarChart2 size={15} /> },
     { id: "wishes", label: "Lời chúc", icon: <MessageSquare size={15} /> },
     { id: "stats", label: "Thống kê", icon: <Users size={15} /> },
+    { id: "images", label: "Quản lý ảnh", icon: <ImageIcon size={15} /> },
   ];
 
   return (
@@ -702,9 +705,296 @@ const AdminPage = () => {
             </div>
           </div>
         )}
+        {tab === "images" && <ImageManager />}
+      </div>
+    </div>
+  );
+};
+
+const ImageManager = () => {
+  const { data: settings, isLoading } = useSettings();
+  const updateMutation = useUpdateSetting();
+  const [uploading, setUploading] = useState(null);
+  const [selectedIndices, setSelectedIndices] = useState([]);
+
+  const SECTIONS = [
+    { id: "hero_bg", label: "Ảnh nền Hero", section: "Hero" },
+    { id: "hero_couple", label: "Ảnh cặp đôi Hero", section: "Hero" },
+    { id: "bride_main", label: "Ảnh chính Cô dâu", section: "Profile" },
+    { id: "bride_small_1", label: "Ảnh nhỏ 1 Cô dâu", section: "Profile" },
+    { id: "bride_small_2", label: "Ảnh nhỏ 2 Cô dâu", section: "Profile" },
+    { id: "groom_main", label: "Ảnh chính Chú rể", section: "Profile" },
+    { id: "groom_small_1", label: "Ảnh nhỏ 1 Chú rể", section: "Profile" },
+    { id: "groom_small_2", label: "Ảnh nhỏ 2 Chú rể", section: "Profile" },
+  ];
+
+  const safeParseGallery = (str) => {
+    try {
+      return str ? JSON.parse(str) : [];
+    } catch (e) {
+      console.error("Gallery parse error:", e);
+      return [];
+    }
+  };
+
+  const handleUpload = async (e, keyId, isGallery = false) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploading(keyId || "new_gallery");
+    // Reset input so same file can be selected again
+    const inputElement = e.target;
+
+    try {
+      if (isGallery) {
+        let currentList = safeParseGallery(settings?.gallery_list);
+        
+        // Upload all files
+        for (const file of files) {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", "didauday");
+          
+          const res = await axios.post(
+            `https://api.cloudinary.com/v1_1/dklus9slm/image/upload`,
+            formData
+          );
+          currentList.push(res.data.secure_url);
+        }
+
+        await updateMutation.mutateAsync({
+          key_name: "gallery_list",
+          value_content: JSON.stringify(currentList),
+        });
+      } else {
+        const file = files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "didauday");
+        
+        const res = await axios.post(
+          `https://api.cloudinary.com/v1_1/dklus9slm/image/upload`,
+          formData
+        );
+        
+        await updateMutation.mutateAsync({
+          key_name: keyId,
+          value_content: res.data.secure_url,
+        });
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Lỗi upload ảnh");
+    } finally {
+      setUploading(null);
+      inputElement.value = ""; 
+    }
+  };
+
+  const handleDeleteGallery = async (index) => {
+    if (!confirm("Xóa ảnh này khỏi album?")) return;
+    const currentList = safeParseGallery(settings?.gallery_list);
+    const newList = currentList.filter((_, i) => i !== index);
+    await updateMutation.mutateAsync({
+      key_name: "gallery_list",
+      value_content: JSON.stringify(newList),
+    });
+    setSelectedIndices(prev => prev.filter(i => i !== index).map(i => i > index ? i - 1 : i));
+  };
+
+  const toggleSelect = (index) => {
+    setSelectedIndices(prev => 
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIndices.length === 0) return;
+    if (!confirm(`Xóa ${selectedIndices.length} ảnh đã chọn khỏi album?`)) return;
+    
+    const currentList = safeParseGallery(settings?.gallery_list);
+    const newList = currentList.filter((_, i) => !selectedIndices.includes(i));
+    
+    await updateMutation.mutateAsync({
+      key_name: "gallery_list",
+      value_content: JSON.stringify(newList),
+    });
+    setSelectedIndices([]);
+  };
+
+  const toggleSelectAll = (galleryList) => {
+    if (selectedIndices.length === galleryList.length) {
+      setSelectedIndices([]);
+    } else {
+      setSelectedIndices(galleryList.map((_, i) => i));
+    }
+  };
+
+  if (isLoading) return <div className="p-8 text-center text-gray-400 font-medium">Đang tải cấu hình ảnh...</div>;
+
+  const groupedSections = SECTIONS.reduce((acc, item) => {
+    if (!acc[item.section]) acc[item.section] = [];
+    acc[item.section].push(item);
+    return acc;
+  }, {});
+
+  const galleryList = safeParseGallery(settings?.gallery_list);
+
+  return (
+    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      {Object.entries(groupedSections).map(([sectionName, items]) => (
+        <div key={sectionName} className="space-y-5">
+          <div className="flex items-center gap-3">
+             <div className="w-1 h-6 bg-gradient-to-b from-[#fd848e] to-[#f3425f] rounded-full" />
+             <h3 className="text-base font-bold text-gray-800 uppercase tracking-wider">
+               Section: {sectionName}
+             </h3>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {items.map((item) => (
+              <div key={item.id} className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 group transition-all hover:shadow-md hover:border-pink-100">
+                <div className="aspect-[3/4] rounded-xl relative bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-50">
+                  {settings?.[item.id] ? (
+                    <img 
+                      src={settings[item.id]} 
+                      alt={item.label} 
+                      className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
+                    />
+                  ) : (
+                    <ImageIcon size={32} className="text-gray-200" />
+                  )}
+                  
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 pointer-events-none" />
+                  
+                  {uploading === item.id && (
+                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[2px]">
+                      <RefreshCw className="text-primary animate-spin" size={20} />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="p-3">
+                  <h4 className="font-bold text-gray-800 text-[13px] line-clamp-1 mb-3">{item.label}</h4>
+                  
+                  <label className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-gray-50 hover:bg-primary hover:text-white rounded-xl text-[11px] font-bold text-gray-500 transition-all cursor-pointer group/label">
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={(e) => handleUpload(e, item.id)}
+                      disabled={uploading === item.id}
+                    />
+                    <Upload size={14} className={uploading === item.id ? "animate-bounce" : "group-hover/label:rotate-12 transition-transform"} />
+                    {uploading === item.id ? "ĐANG TẢI..." : "THAY ĐỔI ẢNH"}
+                  </label>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {/* Gallery Section */}
+      <div className="space-y-5">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-6 bg-gradient-to-b from-[#fd848e] to-[#f3425f] rounded-full" />
+            <h3 className="text-base font-bold text-gray-800 uppercase tracking-wider">
+              Album Ảnh ({galleryList.length})
+            </h3>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            {galleryList.length > 0 && (
+              <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100 mr-2">
+                <button 
+                  onClick={() => toggleSelectAll(galleryList)}
+                  className="flex items-center gap-2 px-3 py-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all text-[11px] font-bold text-gray-600"
+                >
+                  {selectedIndices.length === galleryList.length ? (
+                    <><XCircle size={14} /> Bỏ chọn</>
+                  ) : (
+                    <><CheckSquare size={14} /> Chọn tất cả</>
+                  )}
+                </button>
+                {selectedIndices.length > 0 && (
+                  <button 
+                    onClick={handleDeleteSelected}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-all text-[11px] font-bold"
+                  >
+                    <Trash2 size={14} /> Xóa {selectedIndices.length} ảnh
+                  </button>
+                )}
+              </div>
+            )}
+
+            <label className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl cursor-pointer hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+              <input 
+                type="file" 
+                className="hidden" 
+                accept="image/*"
+                multiple
+                onChange={(e) => handleUpload(e, null, true)}
+                disabled={uploading === "new_gallery"}
+              />
+              {uploading === "new_gallery" ? (
+                <RefreshCw className="animate-spin" size={14} />
+              ) : (
+                <Upload size={14} />
+              )}
+              THÊM NHIỀU ẢNH
+            </label>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {galleryList.map((url, index) => (
+            <div 
+              key={index} 
+              className={`bg-white rounded-2xl p-2 shadow-sm border transition-all group relative cursor-pointer ${
+                selectedIndices.includes(index) ? "border-primary ring-2 ring-primary/10 shadow-md ring-inset" : "border-gray-100"
+              }`}
+              onClick={() => toggleSelect(index)}
+            >
+              <div className="aspect-square rounded-xl overflow-hidden relative border border-gray-50">
+                <img src={url} alt={`Gallery ${index}`} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" />
+                
+                <div className="absolute top-2 right-2 flex gap-1 items-center">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteGallery(index);
+                    }}
+                    className="p-1.5 bg-red-100 text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-200 shadow-sm"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                  <div className={`p-1 rounded-lg transition-all ${
+                    selectedIndices.includes(index) ? "bg-primary text-white scale-110" : "bg-white/80 text-gray-400 opacity-0 group-hover:opacity-100"
+                  }`}>
+                    {selectedIndices.includes(index) ? <CheckSquare size={14} /> : <Square size={14} />}
+                  </div>
+                </div>
+
+                {selectedIndices.includes(index) && (
+                  <div className="absolute inset-0 bg-primary/10 transition-all pointer-events-none" />
+                )}
+              </div>
+            </div>
+          ))}
+          {galleryList.length === 0 && (
+            <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-100 rounded-3xl">
+               <ImageIcon size={40} className="mx-auto text-gray-100 mb-3" />
+               <p className="text-gray-400 text-sm font-medium">Chưa có ảnh nào trong album</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default AdminPage;
+
+

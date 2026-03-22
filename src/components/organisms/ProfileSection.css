@@ -1,8 +1,7 @@
-/* Mobile Layout Base */
 .profile-wrapper {
   position: relative;
   width: 100%;
-  height: var(--profile-container-h, 420px);
+  height: 380px;
   margin-bottom: 20px;
 }
 
@@ -10,7 +9,7 @@
   position: absolute;
   top: 0;
   width: 50%;
-  height: var(--profile-large-h, 420px);
+  height: 360px;
   z-index: 1;
 }
 .profile-large.bride {
@@ -24,14 +23,17 @@
   position: absolute;
   top: var(--profile-text-top, 40px);
   width: 50%;
-  text-align: center;
   z-index: 2;
 }
 .profile-text-area.bride {
   right: 0;
+  text-align: left;
+  padding-left: 10px;
 }
 .profile-text-area.groom {
   left: 0;
+  text-align: right;
+  padding-right: 10px;
 }
 
 .profile-small-container {
@@ -46,32 +48,34 @@
 
 .profile-small-img {
   position: absolute;
-  bottom: 0;
-  width: 43%;
-  height: var(--profile-small-h, 280px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  bottom: 40px;
+  width: 35%;
+  height: 180px;
   pointer-events: auto;
+  border: none;
+  background: transparent;
 }
 
 /* Mobile Positions */
-.profile-small-img.p-1.bride {
-  right: 49%;
+.profile-small-img.bride:nth-child(1) {
+  right: 42%;
 }
-.profile-small-img.p-2.bride {
+
+.profile-small-img.bride:nth-child(2) {
   right: 4%;
 }
 
-.profile-small-img.p-1.groom {
+.profile-small-img.groom:nth-child(1) {
   left: 4%;
 }
-.profile-small-img.p-2.groom {
-  left: 49%;
+.profile-small-img.groom:nth-child(2) {
+  left: 42%;
 }
 
 /* Default styles */
 .profile-role-title {
   font-size: var(--profile-role-size, 18px);
-  font-family: "Playfair Display", serif;
+  font-family: inherit;
   color: #111;
   letter-spacing: 1px;
   font-weight: normal;
@@ -84,65 +88,74 @@
   line-height: 1;
 }
 
+/* Heading & Torn Edge */
+.profile-heading-container {
+  position: relative;
+  width: calc(100% + 40px);
+  left: -20px;
+  background: white;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  padding-top: 50px;
+}
+
+.torn-edge-top {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background-image: url("/assets/net-dut.webp");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  z-index: 5;
+}
+
+.profile-heading-content {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.profile-story-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: #c4a484;
+  text-transform: uppercase;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.profile-story-title .font-couple {
+  font-size: 40px;
+  color: var(--color-primary);
+  opacity: 0.9;
+}
+
 /* --- DESKTOP LAYOUT --- */
 @media (min-width: 768px) {
   .profile-wrapper {
-    height: 600px; /* Taller container on desktop */
+    height: 620px;
+    margin-bottom: 40px;
   }
 
-  .profile-large.bride {
-    width: 38%;
-    height: 100%;
-    left: 0;
+  .profile-large {
+    height: 560px;
   }
 
-  .profile-large.groom {
-    width: 38%;
-    height: 100%;
-    right: 0;
-    left: auto;
+  .profile-text-area {
+    top: 60px;
   }
 
-  .profile-text-area.bride {
-    top: 0;
-    left: 40%;
-    right: auto;
-    width: 50%;
-    text-align: left;
-  }
-
-  .profile-text-area.groom {
-    top: 0;
-    right: 40%;
-    left: auto;
-    width: 50%;
-    text-align: right;
-  }
-
-  /* Desktop Small Images overlapping the large image slightly and spaced from bottom */
   .profile-small-img {
-    height: 50%; /* 1/2 of large image height (which is 100%) */
-    width: 28%;
-    margin-bottom: 0; /* Remove mobile margin */
-    bottom: 10%; /* Spaced from bottom */
-  }
-
-  .profile-small-img.p-1.bride {
-    left: 28%; /* Overlaps Large Image (which goes to 38%) */
-    right: auto;
-  }
-  .profile-small-img.p-2.bride {
-    left: 60%;
-    right: auto;
-  }
-
-  .profile-small-img.p-1.groom {
-    right: 28%;
-    left: auto;
-  }
-  .profile-small-img.p-2.groom {
-    right: 60%;
-    left: auto;
+    bottom: 80px;
+    height: 250px;
+    width: 30%;
   }
 
   .profile-role-title {
@@ -152,5 +165,14 @@
   .profile-name-text {
     font-size: 48px;
     margin-top: 10px;
+  }
+
+  .profile-story-title {
+    font-size: 48px;
+    gap: 20px;
+  }
+
+  .profile-story-title .font-couple {
+    font-size: 60px;
   }
 }

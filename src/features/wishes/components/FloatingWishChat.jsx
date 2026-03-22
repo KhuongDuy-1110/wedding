@@ -63,7 +63,6 @@ const WishModal = ({ onClose, onSuccess }) => {
           });
           onSuccess?.(newWish);
         },
-
       },
     );
   };
@@ -192,7 +191,6 @@ const FloatingWishChat = () => {
     return () => clearInterval(timerRef.current);
   }, [wishes]);
 
-
   return (
     <>
       <AnimatePresence>
@@ -210,7 +208,7 @@ const FloatingWishChat = () => {
         )}
       </AnimatePresence>
 
-      <div className="fixed inset-x-0 bottom-0 z-[90] pointer-events-none p-s20 pb-s10 md:pb-s40">
+      <div className="fixed inset-x-0 md:right-auto md:left-s20 bottom-0 md:bottom-s20 z-[90] pointer-events-none p-s20 md:p-s15 pb-s10 md:pb-s15 w-full md:w-[400px] md:bg-white/10 md:backdrop-blur-md md:rounded-[32px] md:border md:border-white/20 md:shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
         <div className="relative">
           {/* Chat list */}
           <AnimatePresence>
@@ -221,7 +219,7 @@ const FloatingWishChat = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 40 }}
                 transition={{ duration: 0.4 }}
-                className="flex flex-col justify-end gap-s8 px-s5 max-w-[85%] md:max-w-[55%] pointer-events-none"
+                className="flex flex-col justify-end items-start md:items-start gap-s8 px-s5 max-w-[85%] md:max-w-full pointer-events-none"
                 style={{ minHeight: "220px" }}
               >
                 <AnimatePresence mode="popLayout">
@@ -237,10 +235,10 @@ const FloatingWishChat = () => {
                         damping: 20,
                         stiffness: 200,
                       }}
-                      className="bg-[rgba(225,117,117,0.5)]  text-[13px] md:text-[14px] px-s10 min-h-7 py-1 rounded-[15px] text-white shadow-lg pointer-events-auto w-fit max-w-full"
+                      className="bg-[#f3425f]/50 text-[13px] md:text-[14px] px-s10 min-h-7 py-1 rounded-[15px] text-white shadow-lg pointer-events-auto w-fit max-w-full"
                     >
-                      <span className="font-bold  mr-s4 ">{wish.name}: </span>
-                      <span className=" pl-1 leading-relaxed">
+                      <span className="font-bold mr-s4">{wish.name}: </span>
+                      <span className="pl-1 leading-relaxed">
                         {wish.message}
                       </span>
                     </motion.div>
@@ -250,83 +248,51 @@ const FloatingWishChat = () => {
             )}
           </AnimatePresence>
 
-          {/* Avatar + Toggle button on right — Capsule is now always present */}
-          <motion.div
-            layout
-            className={`absolute right-0 flex flex-col items-center pointer-events-auto shadow-xl transition-all duration-300 bg-gradient-to-b from-[#fd848e] to-[#f3425f] p-1 rounded-full border-2 border-white/40 ${
-              isOpen ? "bottom-[85px]" : "bottom-0"
-            }`}
-          >
-            {/* Always show Avatar image */}
-            <motion.div
-              layout
-              className="w-[32px] h-[32px] rounded-full border border-white overflow-hidden bg-white z-10 mb-1"
-            >
-              <img
-                src="https://thieucuoi-demo.vercel.app/images/opening.jpg"
-                alt="Couple"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.src =
-                    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=120&q=80";
-                }}
-              />
-            </motion.div>
+          {/* Bottom action bar & Permanent Toggle */}
+          <div className="flex items-center justify-end gap-s10 pointer-events-auto h-[48px] mt-s10 md:mt-2 relative">
+            <AnimatePresence>
+              {isOpen && (
+                <motion.button
+                  key="input-bar"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  onClick={() => setShowModal(true)}
+                  className="flex-1 py-2 bg-[#f3425f]/60 backdrop-blur-md rounded-full px-s18 flex items-center justify-between text-white border border-white/20 hover:bg-[#f3425f]/80 transition-colors"
+                >
+                  <span className="text-[14px] opacity-90 truncate">Gửi lời chúc...</span>
+                  <MessageSquareText size={18} />
+                </motion.button>
+              )}
+            </AnimatePresence>
 
-            <motion.button
-              layout
-              onClick={() => setIsOpen((o) => !o)}
-              className="w-[32px] h-[32px] flex items-center justify-center text-white bg-transparent"
+            <button 
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-[48px] h-[48px] bg-[#f3425f]/60 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 shadow-md shrink-0 transition-transform active:scale-90"
             >
               <AnimatePresence mode="wait">
                 {isOpen ? (
                   <motion.div
-                    key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
+                    key="close-icon"
+                    initial={{ opacity: 0, rotate: -90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: 90 }}
                   >
-                    <X size={16} strokeWidth={2.5} />
+                    <X size={22} />
                   </motion.div>
                 ) : (
                   <motion.div
-                    key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
+                    key="chat-icon"
+                    initial={{ opacity: 0, rotate: 90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: -90 }}
                   >
-                    <Menu size={16} strokeWidth={2.5} />
+                    <MessageSquareText size={22} />
                   </motion.div>
                 )}
               </AnimatePresence>
-            </motion.button>
-          </motion.div>
-
-          {/* Bottom action bar */}
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                className="flex items-center gap-s10 pointer-events-auto h-[72px]"
-              >
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="flex-1 py-2 bg-[#f3425f]/50 backdrop-blur-md rounded-full px-s18 flex items-center justify-between text-white border border-white/20 hover:bg-black/50 transition-colors"
-                >
-                  <span className="text-[14px] opacity-80">
-                    Gửi lời chúc...
-                  </span>
-                  <MessageSquareText size={18} />
-                </button>
-
-                <button className="w-[48px] py-2 bg-[#f3425f] backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 shadow-md">
-                  <Gift size={22} />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </button>
+          </div>
         </div>
       </div>
     </>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import PhotoFrame from "../molecules/PhotoFrame";
+import { useSiteSettings } from "../../hooks/use-site-settings";
 
 const HeroSection = ({ date, coupleName, timeLabel }) => {
   const [guestName, setGuestName] = useState("");
+  const { data: settings } = useSiteSettings();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -14,80 +16,99 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
   }, []);
 
   return (
-    <section
-      className="hero-section text-center p-5 bg-bg-light border-b-4 border-accent relative min-h-[100svh] flex flex-col items-center justify-center"
-    >
-      {/* Decorative Traditional  Border Patterns (Greek Key) */}
-      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-accent via-transparent to-accent opacity-50" />
+    <section className="hero-section relative w-full flex flex-col bg-white min-h-[100svh]">
+      {/* Top Photo Part with Torn Edge */}
+      <div className="relative w-full h-[50svh] overflow-hidden">
+        <img
+          src={settings?.hero_couple || "/assets/couple.png"}
+          alt="Hero Couple"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/15"></div>
 
-      <PhotoFrame
-        src="/assets/couple.png"
-        alt="Handsome Groom and Beautiful Bride"
-        className="hero-photo"
-      />
-
-      <motion.p
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        className="tracking-[5px] text-[14px] mb-s10 text-[#666] mt-s15"
-      >
-        WEDDING INVITATION
-      </motion.p>
-
-      <motion.h1
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2, delay: 0.3 }}
-        className="font-brush text-[44px] text-primary my-s15 mx-0 leading-none font-normal flex items-center justify-center w-full gap-s15"
-      >
-        <span className="whitespace-nowrap">
-          {coupleName.split(" & ")[0]}
-        </span>
-        <div className="z-[1] shrink-0">
-          <div className="w-[35px] h-[35px] bg-primary [mask-image:url(/assets/trai-tim.svg)] [mask-size:contain] [mask-repeat:no-repeat] block" />
-        </div>
-        <span className="whitespace-nowrap">
-          {coupleName.split(" & ")[1]}
-        </span>
-      </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.6 }}
-        className="text-[1.2rem] font-bold uppercase"
-      >
-        {timeLabel}
-      </motion.p>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.8 }}
-        className="font-brice text-[3rem] font-bold text-primary tracking-[2px]"
-      >
-        {date}
-      </motion.p>
-
-      {guestName && (
+        {/* SAVE the DATE Overlay */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="mt-s30 inline-block w-[80%] max-w-[350px]"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1.2, delay: 0.3 }}
+          className="absolute bottom-[40px] left-[5%] md:left-[8%] flex flex-col items-start z-10"
         >
-          <p className="text-[12px] text-[#666] mb-s15 tracking-[2px] uppercase">
-            TRÂN TRỌNG KÍNH MỜI
-          </p>
-          <h3 className="font-brice text-[28px] text-primary capitalize">
-            {guestName}
-          </h3>
-          <p className="text-[13px] text-[#666] mt-s15 italic leading-[1.5]">
-            Đến chung vui cùng gia đình chúng tôi
-          </p>
+          <span className="font-serif text-[40px] md:text-[55px] text-white leading-[0.85] tracking-[3px] drop-shadow-md">
+            SAVE
+          </span>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="font-couple italic text-[30px] md:text-[45px] text-white lowercase drop-shadow-md leading-[0.85]">
+              the
+            </span>
+            <span className="font-serif text-[40px] md:text-[55px] text-white leading-[0.85] tracking-[3px] drop-shadow-md">
+              DATE
+            </span>
+          </div>
         </motion.div>
-      )}
+
+        {/* Torn Edge Separator */}
+        <div className="absolute bottom-[-90px] h-s200 left-0 w-full z-20 pointer-events-none">
+          <img
+            src="/assets/net-dut.webp"
+            alt="Torn Edge"
+            className="w-full h-[200px] object-cover block"
+            style={{ filter: "drop-shadow(rgba(0, 0, 0, 0.15) 0px -4px 8px)" }}
+          />
+        </div>
+      </div>
+
+      {/* Content Part Below */}
+      <div 
+        className="flex-1 flex flex-col items-center justify-start pt-s15 pb-s40 px-s20 relative z-20 bg-white"
+        style={{
+          backgroundImage: "linear-gradient(to bottom, white 0%, white 40px, transparent 100%), url('/assets/background.webp')",
+          backgroundSize: "140%",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
+        <motion.p
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="tracking-[4px] text-[12px] md:text-[14px] text-text-muted mb-s5"
+        >
+          WEDDING INVITATION
+        </motion.p>
+
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="font-brush text-[36px] md:text-[50px] text-primary my-s10 leading-tight flex items-center justify-center w-full gap-s10"
+        >
+          <span className="whitespace-nowrap">{coupleName.split(" & ")[0]}</span>
+          <div className="z-[1] shrink-0">
+            <div className="w-[30px] h-[30px] bg-primary [mask-image:url(/assets/trai-tim.svg)] [mask-size:contain] [mask-repeat:no-repeat]" />
+          </div>
+          <span className="whitespace-nowrap">{coupleName.split(" & ")[1]}</span>
+        </motion.h1>
+
+        <p className="text-primary font-bold tracking-[2px] mt-2 text-[13px] md:text-[14px] uppercase text-center">
+          {timeLabel} • {date}
+        </p>
+
+        {guestName && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="mt-s20 text-center"
+          >
+            <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
+              KÍNH MỜI
+            </p>
+            <h3 className="font-brice text-[22px] md:text-[26px] text-primary capitalize leading-tight">
+              {guestName}
+            </h3>
+          </motion.div>
+        )}
+      </div>
     </section>
   );
 };

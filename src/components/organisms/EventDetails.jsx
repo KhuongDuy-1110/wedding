@@ -4,9 +4,10 @@ import { MapPin, Navigation } from "lucide-react";
 
 const EventDetails = ({ side }) => {
   const isBride = side === "bride";
+  const isGroom = side === "groom";
 
   return (
-    <section className="section-padding bg-[#fdfdfd]">
+    <section className="pb-s20 bg-[#fdfdfd]">
       <div className="section-title">
         <h2>THÔNG TIN HÔN LỄ</h2>
         <p>Vào tháng 04 năm 2026</p>
@@ -21,7 +22,7 @@ const EventDetails = ({ side }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-50px" }}
-          className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s50 flex-1 ${isBride ? "border-2 border-primary" : ""}`}
+          className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s50 flex-1 ${isBride ? "border-2 border-primary shadow-lg" : ""}`}
         >
           <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s12 text-[12px] font-bold tracking-[2px] uppercase">
             LỄ ĂN HỎI & TIỆC MỪNG
@@ -62,7 +63,7 @@ const EventDetails = ({ side }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-50px" }}
-          className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s100 flex-1 ${!isBride ? "border-2 border-primary" : ""}`}
+          className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s100 flex-1 ${isGroom ? "border-2 border-primary shadow-lg" : ""}`}
         >
           <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s24 text-[12px] font-bold tracking-[2px] uppercase">
             LỄ CƯỚI CHÍNH

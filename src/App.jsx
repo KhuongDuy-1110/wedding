@@ -23,7 +23,7 @@ import SideCountdown from "./components/organisms/SideCountdown";
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
-  const [weddingSide, setWeddingSide] = useState("groom");
+  const [weddingSide, setWeddingSide] = useState("both");
   const audioRef = useRef(null);
 
   const hasTracked = useRef(false);
@@ -32,8 +32,10 @@ function App() {
     const path = window.location.pathname;
     if (path.includes("/d") || path.includes("/bride")) {
       setWeddingSide("bride");
-    } else {
+    } else if (path.includes("/r") || path.includes("/groom")) {
       setWeddingSide("groom");
+    } else {
+      setWeddingSide("both");
     }
 
     const params = new URLSearchParams(window.location.search);
@@ -77,7 +79,6 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-
   const weddingConfigs = {
     groom: {
       date: "05.04.2026",
@@ -88,6 +89,11 @@ function App() {
       date: "04.04.2026",
       time: "THỨ BẢY - 16H00",
       targetDate: "2026-04-04T16:00:00",
+    },
+    both: {
+      date: "05.04.2026",
+      time: "CHỦ NHẬT - 10H00",
+      targetDate: "2026-04-05T10:00:00",
     },
   };
 
@@ -210,7 +216,7 @@ function App() {
               {/* Thank You Section */}
               <ThankYouSection />
 
-              <footer className="py-s60 px-s24 text-center flex flex-col justify-center items-center">
+              <footer className="py-s20 px-s24 text-center flex flex-col justify-center items-center">
                 <h3 className="text-base  tracking-[2px] font-serif uppercase font-brice m-0 text-primary">
                   THANK YOU FOR WATCHING .<br />I HOPE YOU LIKE IT
                 </h3>

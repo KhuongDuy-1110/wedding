@@ -1,15 +1,18 @@
 import React from "react";
 import { motion } from "framer-motion";
 import "./ProfileSection.css";
+import { useSiteSettings } from "../../hooks/use-site-settings";
 
 const ProfileSection = () => {
+  const { data: settings } = useSiteSettings();
+
   const bride = {
     role: "Cô dâu",
     name: "Lê Thị Nga",
     images: [
-      "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.bride_main || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.bride_small_1 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.bride_small_2 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
     ],
   };
 
@@ -17,14 +20,27 @@ const ProfileSection = () => {
     role: "Chú rể",
     name: "Phạm Văn Khải",
     images: [
-      "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.groom_main || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.groom_small_1 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.groom_small_2 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
     ],
   };
 
   return (
-    <section className="bg-white pt-s40 px-s20 overflow-hidden">
+    <section className="bg-white pt-0 px-s20 overflow-hidden relative">
+      {/* Profile Heading */}
+      <div className="profile-heading-container">
+        <div className="profile-heading-content">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="profile-story-title"
+          >
+            THE STORY <span className="italic font-couple lowercase text-primary">of</span> LOVE
+          </motion.h2>
+        </div>
+      </div>
       {/* Bride Section */}
       <div className="profile-wrapper">
         {/* Large Image Left */}
@@ -58,7 +74,7 @@ const ProfileSection = () => {
           viewport={{ once: false, margin: "-50px" }}
           className="profile-small-container"
         >
-          <div className="profile-small-img p-1 bride">
+          <div className="profile-small-img bride">
             <img
               src={bride.images[1]}
               alt="Bride 2"
@@ -66,7 +82,7 @@ const ProfileSection = () => {
             />
           </div>
 
-          <div className="profile-small-img p-2 bride">
+          <div className="profile-small-img bride">
             <img
               src={bride.images[2]}
               alt="Bride 3"
@@ -109,7 +125,7 @@ const ProfileSection = () => {
           viewport={{ once: false, margin: "-50px" }}
           className="profile-small-container"
         >
-          <div className="profile-small-img p-1 groom">
+          <div className="profile-small-img groom">
             <img
               src={groom.images[1]}
               alt="Groom 2"
@@ -117,7 +133,7 @@ const ProfileSection = () => {
             />
           </div>
 
-          <div className="profile-small-img p-2 groom">
+          <div className="profile-small-img groom">
             <img
               src={groom.images[2]}
               alt="Groom 3"
@@ -125,6 +141,7 @@ const ProfileSection = () => {
             />
           </div>
         </motion.div>
+
       </div>
     </section>
   );

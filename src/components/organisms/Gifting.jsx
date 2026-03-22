@@ -1,7 +1,16 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, QrCode, RefreshCcw } from "lucide-react";
+import { Copy, QrCode, RefreshCcw, Download } from "lucide-react";
 import { trackEvent } from "../../features/admin/utils/tracker";
+
+const handleDownload = (url, name) => {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `QR_${name.replace(/\s+/g, "_")}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
 const GiftingCard = ({ acc, idx }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -72,15 +81,28 @@ const GiftingCard = ({ acc, idx }) => {
           </p>
 
           <div className="flex flex-col w-full gap-s8">
-            <button
-              className="btn-primary py-[8px] text-[10px] w-full"
-              onClick={() => {
-                navigator.clipboard.writeText(acc.account);
-                alert("Đã sao chép số tài khoản!");
-              }}
-            >
-              SAO CHÉP
-            </button>
+            <div className="flex gap-2">
+              <button
+                className="btn-primary py-[8px] text-[10px] flex-1"
+                onClick={() => {
+                  navigator.clipboard.writeText(acc.account);
+                  alert("Đã sao chép số tài khoản!");
+                }}
+              >
+                SAO CHÉP
+              </button>
+              <button
+                className="bg-gray-100 text-gray-700 py-[8px] text-[10px] flex-1 rounded-full font-bold hover:bg-gray-200 transition-all flex items-center justify-center gap-1"
+                onClick={() =>
+                  handleDownload(
+                    `https://img.vietqr.io/image/${acc.bankId}-${acc.account}-compact.jpg?accountName=${encodeURIComponent(acc.name)}`,
+                    acc.name,
+                  )
+                }
+              >
+                <Download size={12} /> TẢI QR
+              </button>
+            </div>
             <button
               onClick={() => setIsFlipped(false)}
               className="flex items-center justify-center gap-s5 text-text-muted text-[9px] font-semibold hover:text-primary transition-colors"
@@ -105,6 +127,7 @@ const Gifting = ({ side }) => {
       type: "NHÀ TRAI",
       qrSrc: "/assets/bank/chure.png",
       role: "groom",
+      bankId: "TCB",
     },
     {
       bank: "TECHCOMBANK",
@@ -113,22 +136,24 @@ const Gifting = ({ side }) => {
       type: "NHÀ GÁI",
       qrSrc: "/assets/bank/codau.png",
       role: "bride",
+      bankId: "TCB",
     },
   ];
 
-  // Filter accounts based on side, or show both if no side is matched
-  const accounts = side
-    ? allAccounts.filter((acc) => acc.role === side)
-    : allAccounts;
+  // Filter accounts based on side
+  const accounts =
+    side === "both"
+      ? allAccounts
+      : allAccounts.filter((acc) => acc.role === side);
 
   return (
-    <section className="section-padding bg-white overflow-hidden">
+    <section className="pb-s20 bg-white overflow-hidden">
       <div className="section-title">
         <h2>GỬI MỪNG CƯỚI</h2>
         <p>Với một vài chi tiết nhỏ</p>
       </div>
 
-      <div className="max-w-[600px] mx-auto px-s20 mt-s40 [perspective:1000px] h-[300px]">
+      <div className="max-w-[600px] mx-auto px-s20 mt-s40 [perspective:1000px]">
         <motion.div
           animate={{ rotateY: isFlipped ? 180 : 0 }}
           transition={{
@@ -137,7 +162,7 @@ const Gifting = ({ side }) => {
             stiffness: 100,
             damping: 20,
           }}
-          className="w-full h-full relative [transform-style:preserve-3d]"
+          className="w-full relative [transform-style:preserve-3d] min-h-[350px]"
         >
           {/* Front Side: Unified Message */}
           <div
@@ -165,43 +190,53 @@ const Gifting = ({ side }) => {
 
           {/* Back Side: Accounts Row */}
           <div
-            className="absolute inset-0 backface-hidden design-card p-s20 flex flex-col [transform:rotateY(180deg)]"
+            className="backface-hidden design-card p-s30 flex flex-col items-center [transform:rotateY(180deg)] min-h-full"
             style={{ backfaceVisibility: "hidden" }}
           >
-            <div className="flex flex-col gap-s15 flex-1 min-h-0 justify-center items-center">
+            <div className="w-full flex flex-col items-center gap-s30 mb-s30">
               {accounts.map((acc, idx) => (
                 <div
                   key={idx}
-                  className={`flex flex-row items-center gap-s20  w-full max-w-[400px] relative`}
+                  className={`flex flex-col sm:flex-row items-center gap-s20 w-full max-w-[400px] relative`}
                 >
-                  <div className="w-[120px] aspect-square flex items-center justify-center">
+                  <div className="w-[120px] aspect-square flex items-center justify-center bg-white rounded-xl shadow-sm border border-primary/5 p-2">
                     <img
                       src={acc.qrSrc}
                       alt="QR Code"
-                      className="w-full h-full rounded-[6px] object-contain border border-primary/5"
+                      className="w-full h-full object-contain"
                     />
                   </div>
 
-                  <div className="flex-1 flex flex-col text-left">
-                    <h4 className="font-brice text-[14px] text-primary mb-1">
+                  <div className="flex-1 flex flex-col text-center sm:text-left items-center sm:items-start">
+                    <h4 className="font-brice text-[15px] text-primary mb-1">
                       {acc.bank}
                     </h4>
-                    <p className="text-[11px] font-bold text-text-muted uppercase mb-1">
+                    <p className="font-bold text-text-muted uppercase mb-1">
                       {acc.name}
                     </p>
-                    <p className="text-[12px] font-mono font-medium text-text-muted mb-s10 select-all">
-                      {acc.account}
-                    </p>
+                    <div className="bg-gray-50 px-s12 py-s5 rounded-lg border border-gray-100 mb-s10 w-full">
+                      <p className="text-[13px] font-mono font-bold text-primary select-all">
+                        {acc.account}
+                      </p>
+                    </div>
 
-                    <button
-                      className="btn-primary py-s10 px-s18 text-[10px] w-fit rounded-full shadow-sm"
-                      onClick={() => {
-                        navigator.clipboard.writeText(acc.account);
-                        alert("Đã sao chép số tài khoản!");
-                      }}
-                    >
-                      SAO CHÉP
-                    </button>
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                      <button
+                        className="btn-primary py-s8 px-s15 text-[10px] rounded-full shadow-md"
+                        onClick={() => {
+                          navigator.clipboard.writeText(acc.account);
+                          alert("Đã sao chép số tài khoản!");
+                        }}
+                      >
+                        SAO CHÉP
+                      </button>
+                      <button
+                        className="bg-gray-100 text-gray-700 py-s8 px-s15 text-[10px] rounded-full font-bold hover:bg-gray-200 transition-all flex items-center gap-1 shadow-sm border border-gray-200"
+                        onClick={() => handleDownload(acc.qrSrc, acc.name)}
+                      >
+                        <Download size={12} /> TẢI QR
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -209,9 +244,9 @@ const Gifting = ({ side }) => {
 
             <button
               onClick={() => setIsFlipped(false)}
-              className="mt-s15 flex items-center justify-center gap-s5 text-text-muted text-[10px] font-bold hover:text-primary transition-colors"
+              className="flex items-center justify-center gap-s5 text-text-muted text-[10px] font-bold hover:text-primary transition-colors py-s8 px-s15 border border-gray-100 rounded-full hover:bg-gray-50"
             >
-              <RefreshCcw size={14} /> QUAY LẠI
+              <RefreshCcw size={12} /> QUAY LẠI
             </button>
           </div>
         </motion.div>
