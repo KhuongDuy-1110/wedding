@@ -37,7 +37,8 @@ const OpeningEffect = ({
           />
 
           {/* Center Content Card */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-[95%] max-w-[800px] flex flex-col items-center gap-[25px]">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-[95%] max-w-[500px] flex flex-col items-center gap-[25px]">
+
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

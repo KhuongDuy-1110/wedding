@@ -61,9 +61,9 @@ const WishModal = ({ onClose, onSuccess }) => {
             origin: { y: 0.6 },
             colors: ["#fd848e", "#e85d79", "#ffffff"],
           });
-          toast.success("Gửi lời chúc thành công!");
           onSuccess?.(newWish);
         },
+
       },
     );
   };
@@ -159,7 +159,7 @@ const FloatingWishChat = () => {
   const idCounter = useRef(0);
 
   const addNextWish = () => {
-    if (!wishes || wishes.length === 0) return;
+    if (!wishes || wishes.length <= 5) return;
     const wish = wishes[indexRef.current % wishes.length];
     indexRef.current += 1;
     idCounter.current += 1;
@@ -171,14 +171,27 @@ const FloatingWishChat = () => {
 
   useEffect(() => {
     if (!wishes || wishes.length === 0) return;
-    addNextWish();
+
+    if (wishes.length <= 5) {
+      // Just show all unique wishes without cycling
+      setActiveWishes(
+        wishes.map((w, idx) => ({ ...w, _key: `initial_${w.id}_${idx}` })),
+      );
+    } else {
+      // Reset index and start cycling
+      indexRef.current = 0;
+      addNextWish();
+    }
   }, [wishes]);
 
   useEffect(() => {
-    if (!wishes || wishes.length === 0) return;
+    // Only cycle if there are more than 5 wishes
+    if (!wishes || wishes.length <= 5) return;
+
     timerRef.current = setInterval(addNextWish, 4000);
     return () => clearInterval(timerRef.current);
   }, [wishes]);
+
 
   return (
     <>

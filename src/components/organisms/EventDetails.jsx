@@ -12,7 +12,9 @@ const EventDetails = ({ side }) => {
         <p>Vào tháng 04 năm 2026</p>
       </div>
 
-      <div className={`flex flex-col md:flex-row gap-s30 px-s20 mt-s40 ${isBride ? "md:flex-row-reverse" : ""}`}>
+      <div
+        className={`flex flex-col md:flex-row gap-s30 px-s20 mt-s40 ${isBride ? "md:flex-row-reverse" : ""}`}
+      >
         {/* Event 1: Tiệc mừng tại Nhà Gái */}
         <motion.div
           id="event-4"
@@ -21,7 +23,7 @@ const EventDetails = ({ side }) => {
           viewport={{ once: true, margin: "-50px" }}
           className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s50 flex-1 ${isBride ? "border-2 border-primary" : ""}`}
         >
-          <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s24 text-[12px] font-bold tracking-[2px] uppercase">
+          <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s12 text-[12px] font-bold tracking-[2px] uppercase">
             LỄ ĂN HỎI & TIỆC MỪNG
           </div>
 

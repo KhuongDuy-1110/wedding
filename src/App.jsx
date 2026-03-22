@@ -26,6 +26,8 @@ function App() {
   const [weddingSide, setWeddingSide] = useState("groom");
   const audioRef = useRef(null);
 
+  const hasTracked = useRef(false);
+
   useEffect(() => {
     const path = window.location.pathname;
     if (path.includes("/d") || path.includes("/bride")) {
@@ -42,7 +44,11 @@ function App() {
     } else {
       document.title = "Báo Hỷ Khải Nga";
     }
-    trackEvent("page_visit");
+
+    if (!hasTracked.current) {
+      trackEvent("page_visit");
+      hasTracked.current = true;
+    }
 
     // Track scroll depth
     const milestones = [25, 50, 75, 100];
@@ -70,6 +76,7 @@ function App() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
 
   const weddingConfigs = {
     groom: {

@@ -77,6 +77,7 @@ const dbConfig = {
 };
 
 const blacklist = [
+  // --- Nhóm từ thô tục gốc & Bộ phận cơ thể ---
   "địt",
   "đụ",
   "lồn",
@@ -85,70 +86,175 @@ const blacklist = [
   "vú",
   "đít",
   "dâm",
-  "thú tính",
-  "đệt",
-  "đêý",
-  "cẹc",
-  "bòi",
-  "lìn",
-  "lờ",
   "nứng",
+  "tiệt",
+  "hãm",
   "chịch",
   "xoạc",
   "nện",
   "phang",
+  "phập",
+  "mâm",
+  "thú tính",
+  "giao cấu",
+  "bướm",
+  "cu",
+  "khoai",
+  "bi",
+  "bì",
+  "háng",
+  "mông",
+  "âm hộ",
+  "dương vật",
+  "tinh trùng",
+  "xuất tinh",
+  "thẩm du",
+  "quay tay",
+  "sục cặc",
+  "bú cu",
+  "bú lồn",
+  "móc lốp",
+
+  // --- Nhóm viết tắt & Teencode lách luật ---
   "đm",
+  "dm",
   "đkm",
+  "dkv",
   "dcm",
+  "dct",
   "vcl",
   "vkl",
   "vl",
   "vch",
+  "vcl",
+  "vnd",
   "cmn",
   "clgt",
   "tđn",
   "đéo",
+  "deo",
   "đé0",
+  "dmm",
+  "đmm",
+  "cl",
+  "cc",
+  "loz",
+  "lìn",
+  "lờ",
+  "bòi",
+  "cẹc",
+  "kẹc",
+  "pắt",
+  "đýt",
+  "đýt",
+  "đjt",
+  "đjyt",
+  "đyt",
+  "đệch",
+  "đệt",
+  "đệt",
+  "đcmm",
+  "đm m",
+  "đ m",
+  "v l",
+  "v lz",
+  "v lờ",
+
+  // --- Nhóm biến thể âm tiết & Ký tự đặc biệt ---
   "duma",
   "dume",
-  "dcmm",
+  "đumá",
+  "đumẹ",
   "đ.m",
   "v.l",
+  "v_l",
   "l0n",
   "c@c",
   "b.u.o.i",
-  "đê ca mờ",
+  "đ.é.o",
   "đờ mờ",
   "vê lờ",
-  "vãi chưởng",
+  "vãi lờ",
   "vãi lúa",
+  "vãi chưởng",
   "vãi nồi",
+  "đê ca mờ",
+  "đm-",
+  "vcl-",
+  "cl-",
+  "d.m",
+  "d-m",
+  "d_m",
+  "v-l",
+  "v_l",
+
+  // --- Nhóm miệt thị, xúc phạm & Chửi bới ---
   "ngu",
-  "đần",
   "óc chó",
   "óc lợn",
+  "ngu lồn",
+  "thằng chó",
+  "con chó",
+  "đồ chó",
+  "súc vật",
   "thiểu năng",
+  "đần",
+  "đần độn",
   "vô học",
   "thất học",
-  "súc vật",
-  "đĩ",
-  "phò",
+  "rác rưởi",
+  "đồ hèn",
   "điếm",
+  "phò",
+  "đĩ",
   "con giáp",
+  "phản phúc",
   "mặt dày",
   "khốn nạn",
   "khốn kiếp",
-  " đồ chó",
   "xạo lồn",
   "xl",
-  "bốc phét",
   "hãm lồn",
   "hãm tài",
-  "rác rưởi",
+  "cút",
+  "mẹ mày",
+  "cha mày",
+  "tiên sư",
+
+  // --- Nhóm phân biệt vùng miền & Nhạy cảm ---
   "bắc kỳ",
   "nam kỳ",
+  "trung kỳ",
   "parky",
   "bake",
+  "nuke",
+  "tnt",
+  "mọi",
+  "mọi miên",
+  "phản động",
+  "ngụy",
+  "tộc",
+  "mường",
+  "mèo",
+  "mán",
+  "thanh nghệ tĩnh",
+  "bần nông",
+
+  // --- Nhóm từ lóng Gen Z & Từ mới ---
+  "cái nịt",
+  "xà lơ",
+  "bủh",
+  "dảk",
+  "atsm",
+  "trẻ trâu",
+  "sửu nhi",
+  "ngáo",
+  "ngáo đá",
+  "đào mỏ",
+  "đào lửa",
+  "lùa gà",
+  "phông bạt",
+  "cứt",
 ];
 
 const checkBlacklist = (text = "") => {
@@ -235,7 +341,18 @@ const initDB = async () => {
     } catch (_) {}
     try {
       await connection.execute(
-        "ALTER TABLE visitor_logs ADD UNIQUE KEY guest_path (guest_name, path)",
+        "ALTER TABLE visitor_logs ADD COLUMN visitor_id VARCHAR(100)",
+      );
+    } catch (_) {}
+    try {
+      // Drop old unique key if it exists
+      await connection.execute(
+        "ALTER TABLE visitor_logs DROP INDEX guest_path",
+      );
+    } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE visitor_logs ADD UNIQUE KEY visitor_path (visitor_id, path)",
       );
     } catch (_) {}
 
@@ -276,15 +393,13 @@ app.post("/api/wishes", async (req, res) => {
       [name, phone, role, message, hidden, flagged, pathName],
     );
     await connection.end();
-    res
-      .status(201)
-      .json({
-        id: result.insertId,
-        ...req.body,
-        hidden,
-        flagged,
-        guest_path_name: pathName,
-      });
+    res.status(201).json({
+      id: result.insertId,
+      ...req.body,
+      hidden,
+      flagged,
+      guest_path_name: pathName,
+    });
   } catch (err) {
     console.error("Error inserting wish:", err.message);
     res.status(500).json({ error: "Error saving wish" });
@@ -352,16 +467,14 @@ app.get("/api/admin/wishes", async (req, res) => {
 });
 
 app.post("/api/logs", async (req, res) => {
-  const { guest_name, path: visitPath, event, scroll_percent } = req.body;
+  const {
+    visitor_id,
+    guest_name,
+    path: visitPath,
+    event,
+    scroll_percent,
+  } = req.body;
   const user_agent = req.headers["user-agent"];
-
-  // Define event weights for "not overwriting backwards"
-  const eventWeights = {
-    page_visit: 1,
-    open_invitation: 2,
-    scroll_depth: 3,
-    view_qr: 4,
-  };
 
   try {
     const connection = await mysql.createConnection(dbConfig);
@@ -372,17 +485,20 @@ app.post("/api/logs", async (req, res) => {
     const isViewingQR = event === "view_qr" ? 1 : 0;
 
     // Use INSERT ... ON DUPLICATE KEY for flags and counts
+    // Update guest_name if it was null before but is provided now
     await connection.execute(
       `INSERT INTO visitor_logs 
-       (guest_name, path, event, scroll_percent, visit_count, is_opened, is_qr_viewed, user_agent) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
+       (visitor_id, guest_name, path, event, scroll_percent, visit_count, is_opened, is_qr_viewed, user_agent) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) 
        ON DUPLICATE KEY UPDATE 
+       guest_name = IFNULL(guest_name, VALUES(guest_name)),
        visit_count = visit_count + VALUES(visit_count),
        is_opened = GREATEST(is_opened, VALUES(is_opened)),
        is_qr_viewed = GREATEST(is_qr_viewed, VALUES(is_qr_viewed)),
        scroll_percent = GREATEST(scroll_percent, VALUES(scroll_percent)),
        user_agent = VALUES(user_agent)`,
       [
+        visitor_id || null,
         guest_name || null,
         visitPath || null,
         event,
@@ -395,12 +511,11 @@ app.post("/api/logs", async (req, res) => {
     );
 
     // Update the 'event' display string only if the new event is 'higher'
-    // This avoids "going backwards" from QR -> visit
     await connection.execute(
       `
       UPDATE visitor_logs 
       SET event = ? 
-      WHERE guest_name = ? AND path = ? AND (
+      WHERE visitor_id = ? AND path = ? AND (
         CASE 
           WHEN ? = 'view_qr' THEN 1
           WHEN ? = 'scroll_depth' AND event != 'view_qr' THEN 1
@@ -412,7 +527,7 @@ app.post("/api/logs", async (req, res) => {
     `,
       [
         event,
-        guest_name || null,
+        visitor_id || null,
         visitPath || null,
         event,
         event,
@@ -489,7 +604,7 @@ if (process.env.NODE_ENV !== "production") {
   });
 } else {
   // In production (Vercel/Cloud), initialize DB without app.listen()
-  initDB().catch((err) => console.error("Database initialization failed:", err));
+  initDB().catch((err) =>
+    console.error("Database initialization failed:", err),
+  );
 }
-
-

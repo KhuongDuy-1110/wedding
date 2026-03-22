@@ -17,8 +17,9 @@ const PhotoFrame = ({ src, alt, className = "" }) => {
       <img
         src={src}
         alt={alt}
-        className="w-auto max-w-full max-h-[40vh] block rounded-[2px] relative z-0"
+        className="w-auto max-w-full max-h-[35vh] md:max-h-[40vh] block rounded-[2px] relative z-0 object-contain"
       />
+
 
       {/* Decorative Traditional Corners */}
       <div className="absolute -bottom-[15px] -right-[15px] text-[24px] text-accent -rotate-45">
