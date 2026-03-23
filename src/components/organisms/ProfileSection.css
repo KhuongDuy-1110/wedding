@@ -48,28 +48,33 @@
 
 .profile-small-img {
   position: absolute;
-  bottom: 40px;
-  width: 35%;
-  height: 180px;
+  width: 26%;
+  height: 150px;
   pointer-events: auto;
   border: none;
   background: transparent;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  z-index: 4;
 }
 
-/* Mobile Positions */
+/* Mobile Positions - Aligned */
 .profile-small-img.bride:nth-child(1) {
-  right: 42%;
+  right: 32%;
+  bottom: 30px;
 }
 
 .profile-small-img.bride:nth-child(2) {
-  right: 4%;
+  right: 2%;
+  bottom: 30px;
 }
 
 .profile-small-img.groom:nth-child(1) {
-  left: 4%;
+  left: 2%;
+  bottom: 30px;
 }
 .profile-small-img.groom:nth-child(2) {
-  left: 42%;
+  left: 32%;
+  bottom: 30px;
 }
 
 /* Default styles */
@@ -153,9 +158,26 @@
   }
 
   .profile-small-img {
-    bottom: 80px;
     height: 250px;
-    width: 30%;
+    width: 20%;
+  }
+  
+  .profile-small-img.bride:nth-child(1) {
+    right: 28%;
+    bottom: 80px;
+  }
+  .profile-small-img.bride:nth-child(2) {
+    right: 0%;
+    bottom: 80px;
+  }
+
+  .profile-small-img.groom:nth-child(1) {
+    left: 0%;
+    bottom: 80px;
+  }
+  .profile-small-img.groom:nth-child(2) {
+    left: 28%;
+    bottom: 80px;
   }
 
   .profile-role-title {

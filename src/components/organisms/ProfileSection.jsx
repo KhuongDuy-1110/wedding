@@ -48,7 +48,7 @@ const ProfileSection = () => {
           <img
             src={bride.images[0]}
             alt="Bride"
-            className="w-full h-full object-cover grayscale"
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -99,7 +99,7 @@ const ProfileSection = () => {
           <img
             src={groom.images[0]}
             alt="Groom"
-            className="w-full h-full object-cover grayscale"
+            className="w-full h-full object-cover"
           />
         </div>
 
