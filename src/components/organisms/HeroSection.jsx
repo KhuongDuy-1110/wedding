@@ -110,7 +110,7 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
             <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
               TRÂN TRỌNG KÍNH MỜI
             </p>
-            <h3 className="font-brice text-[22px] md:text-[26px] text-primary capitalize leading-tight">
+            <h3 className="font-brice text-[22px] md:text-[26px] pb-s10 text-primary capitalize leading-tight">
               {guestName}
             </h3>
             <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">

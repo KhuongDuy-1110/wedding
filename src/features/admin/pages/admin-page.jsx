@@ -1,17 +1,48 @@
 import React, { useState, useEffect } from "react";
 import { adminApi } from "../api/admin-api";
-import { Eye, EyeOff, Trash2, RefreshCw, LogOut, Users, MessageSquare, BarChart2, Image as ImageIcon, Upload, CheckSquare, Square, XCircle } from "lucide-react";
-import { useSiteSettings as useSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
+import {
+  Eye,
+  EyeOff,
+  Trash2,
+  RefreshCw,
+  LogOut,
+  Users,
+  MessageSquare,
+  BarChart2,
+  Image as ImageIcon,
+  Upload,
+  CheckSquare,
+  Square,
+  XCircle,
+} from "lucide-react";
+import {
+  useSiteSettings as useSettings,
+  useUpdateSetting,
+} from "../../../hooks/use-site-settings";
 import axios from "axios";
 import { UAParser } from "ua-parser-js";
 
 const ADMIN_PASS = "kaina2k";
 
-const formatDate = (dt) =>
-  new Date(dt).toLocaleString("vi-VN", {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
+const formatDate = (dt) => {
+  if (!dt) return "Chưa rõ";
+  try {
+    // If real time is 17:08 ICT but DB stores it as 03:08Z (14h difference),
+    // it means the DB date is shifted back by 7 hours from UTC.
+    // We add 7 hours to the raw date first.
+    let date = new Date(dt);
+    // Add 7 hours in milliseconds (7 * 60 * 60 * 1000)
+    date = new Date(date.getTime() + 7 * 60 * 60 * 1000);
+
+    return date.toLocaleString("vi-VN", {
+      dateStyle: "short",
+      timeStyle: "short",
+      timeZone: "Asia/Ho_Chi_Minh",
+    });
+  } catch (e) {
+    return "Lỗi ngày";
+  }
+};
 
 const parseUA = (uaString) => {
   if (!uaString) return "Không rõ";
@@ -21,7 +52,12 @@ const parseUA = (uaString) => {
     const os = res.os.name || "";
     const vendor = res.device.vendor || "";
     const model = res.device.model || "";
-    const type = res.device.type === "mobile" ? "Mobile" : res.device.type === "tablet" ? "Tablet" : "PC";
+    const type =
+      res.device.type === "mobile"
+        ? "Mobile"
+        : res.device.type === "tablet"
+          ? "Tablet"
+          : "PC";
 
     if (vendor || model) {
       return `${os} (${vendor} ${model})`.trim();
@@ -41,7 +77,9 @@ const Badge = ({ children, color = "blue" }) => {
     pink: "bg-pink-100 text-pink-700",
   };
   return (
-    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${map[color]}`}>
+    <span
+      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${map[color]}`}
+    >
       {children}
     </span>
   );
@@ -181,7 +219,7 @@ const AdminPage = () => {
     await adminApi.hideWish(wish.id, newHidden);
     setWishes((prev) =>
       prev.map((w) =>
-        (w.id === wish.id ? { ...w, hidden: newHidden ? 1 : 0 } : w),
+        w.id === wish.id ? { ...w, hidden: newHidden ? 1 : 0 } : w,
       ),
     );
   };
@@ -198,12 +236,19 @@ const AdminPage = () => {
 
     const totalLogs = filteredForStats.length;
     const opened = filteredForStats.filter((l) => l.is_opened).length;
-    const scrolled100 = filteredForStats.filter((l) => l.scroll_percent === 100).length;
+    const scrolled100 = filteredForStats.filter(
+      (l) => l.scroll_percent === 100,
+    ).length;
     const qrViewed = filteredForStats.filter((l) => l.is_qr_viewed).length;
-    const totalVisits = filteredForStats.reduce((acc, l) => acc + (l.visit_count || 1), 0);
+    const totalVisits = filteredForStats.reduce(
+      (acc, l) => acc + (l.visit_count || 1),
+      0,
+    );
 
     const pctOpened = totalLogs ? Math.round((opened / totalLogs) * 100) : 0;
-    const pctScrolled = totalLogs ? Math.round((scrolled100 / totalLogs) * 100) : 0;
+    const pctScrolled = totalLogs
+      ? Math.round((scrolled100 / totalLogs) * 100)
+      : 0;
 
     return {
       total: totalLogs,
@@ -230,7 +275,8 @@ const AdminPage = () => {
     let matchEvent = true;
     if (logEventFilter === "opened") matchEvent = log.is_opened;
     else if (logEventFilter === "qr") matchEvent = log.is_qr_viewed;
-    else if (logEventFilter !== "all") matchEvent = log.event === logEventFilter;
+    else if (logEventFilter !== "all")
+      matchEvent = log.event === logEventFilter;
 
     return matchPath && matchEvent;
   });
@@ -305,7 +351,9 @@ const AdminPage = () => {
       <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-gray-800 text-base">💍 Admin Dashboard</h1>
+            <h1 className="font-bold text-gray-800 text-base">
+              💍 Admin Dashboard
+            </h1>
             <p className="text-[11px] text-gray-400">Khai & Nga · 2026</p>
           </div>
           <div className="flex items-center gap-2">
@@ -484,7 +532,13 @@ const AdminPage = () => {
                       label: log.event,
                       color: "gray",
                     };
-                    const isSide = log.path?.includes("/r") || log.path?.includes("/groom") ? "groom" : (log.path?.includes("/d") || log.path?.includes("/bride") ? "bride" : "none");
+                    const isSide =
+                      log.path?.includes("/r") || log.path?.includes("/groom")
+                        ? "groom"
+                        : log.path?.includes("/d") ||
+                            log.path?.includes("/bride")
+                          ? "bride"
+                          : "none";
 
                     return (
                       <tr
@@ -501,31 +555,53 @@ const AdminPage = () => {
                         </td>
                         <td className="px-5 py-3 font-medium text-gray-700">
                           {log.guest_name || (
-                            <span className="text-gray-300 italic">Ẩn danh</span>
+                            <span className="text-gray-300 italic">
+                              Ẩn danh
+                            </span>
                           )}
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex flex-col gap-1.5">
                             <div className="flex items-center gap-2">
-                               <div className={`w-2 h-2 rounded-full ${log.visit_count > 0 ? 'bg-blue-400' : 'bg-gray-200'}`} title="Đã truy cập" />
-                               <div className={`w-2 h-2 rounded-full ${log.is_opened ? 'bg-green-400' : 'bg-gray-200'}`} title="Đã mở thiệp" />
-                               <div className={`w-2 h-2 rounded-full ${log.is_qr_viewed ? 'bg-pink-400' : 'bg-gray-200'}`} title="Đã xem QR" />
-                               <span className="text-[10px] text-gray-400 ml-1 italic font-medium">({ev.label})</span>
+                              <div
+                                className={`w-2 h-2 rounded-full ${log.visit_count > 0 ? "bg-blue-400" : "bg-gray-200"}`}
+                                title="Đã truy cập"
+                              />
+                              <div
+                                className={`w-2 h-2 rounded-full ${log.is_opened ? "bg-green-400" : "bg-gray-200"}`}
+                                title="Đã mở thiệp"
+                              />
+                              <div
+                                className={`w-2 h-2 rounded-full ${log.is_qr_viewed ? "bg-pink-400" : "bg-gray-200"}`}
+                                title="Đã xem QR"
+                              />
+                              <span className="text-[10px] text-gray-400 ml-1 italic font-medium">
+                                ({ev.label})
+                              </span>
                             </div>
                             {log.scroll_percent > 0 && (
-                               <div className="flex items-center gap-1.5">
-                                 <div className="w-12 h-1 bg-gray-100 rounded-full overflow-hidden">
-                                   <div className="h-full bg-orange-400" style={{ width: `${log.scroll_percent}%` }} />
-                                 </div>
-                                 <span className="text-[9px] text-gray-400 font-mono">{log.scroll_percent}%</span>
-                               </div>
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-12 h-1 bg-gray-100 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-orange-400"
+                                    style={{ width: `${log.scroll_percent}%` }}
+                                  />
+                                </div>
+                                <span className="text-[9px] text-gray-400 font-mono">
+                                  {log.scroll_percent}%
+                                </span>
+                              </div>
                             )}
                           </div>
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-1.5 text-gray-600">
-                             <span className="text-xs font-bold">{log.visit_count || 1}</span>
-                             <span className="text-[10px] text-gray-400">lần</span>
+                            <span className="text-xs font-bold">
+                              {log.visit_count || 1}
+                            </span>
+                            <span className="text-[10px] text-gray-400">
+                              lần
+                            </span>
                           </div>
                         </td>
                         <td className="px-5 py-3 text-gray-400 text-xs font-mono">
@@ -537,10 +613,15 @@ const AdminPage = () => {
                             <span className="text-gray-300">/</span>
                           )}
                         </td>
-                        <td className="px-5 py-3 text-gray-500 text-[10px] leading-tight max-w-[120px] truncate" title={log.user_agent}>
+                        <td
+                          className="max-w-[120px] truncate px-5 py-3 text-[10px] leading-tight text-gray-500"
+                          title={log.user_agent}
+                        >
+                          <span className="text-blue-400 font-bold mr-1">[D:]</span>
                           {parseUA(log.user_agent)}
                         </td>
-                        <td className="px-5 py-3 text-gray-400 text-xs">
+                        <td className="px-5 py-3 text-xs text-gray-400">
+                          <span className="text-green-400 font-bold mr-1">[T:]</span>
                           {formatDate(log.updated_at || log.created_at)}
                         </td>
                         <td className="px-5 py-3">
@@ -658,7 +739,9 @@ const AdminPage = () => {
                       <td className="px-5 py-3">
                         <div className="flex flex-col">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-700">{wish.name}</span>
+                            <span className="font-semibold text-gray-700">
+                              {wish.name}
+                            </span>
                             {wish.flagged === 1 && (
                               <span
                                 title="Lời chúc chứa từ ngữ nhạy cảm"
@@ -669,7 +752,7 @@ const AdminPage = () => {
                             )}
                           </div>
                           <span className="text-[10px] text-gray-400 italic">
-                             Log: {wish.guest_path_name || "Không xác định"}
+                            Log: {wish.guest_path_name || "Không xác định"}
                           </span>
                         </div>
                       </td>
@@ -742,7 +825,11 @@ const ImageManager = () => {
   const [selectedIndices, setSelectedIndices] = useState([]);
 
   const SECTIONS = [
-    { id: "opening_image", label: "Ảnh màn mở thiệp (Card)", section: "Opening" },
+    {
+      id: "opening_image",
+      label: "Ảnh màn mở thiệp (Card)",
+      section: "Opening",
+    },
     { id: "hero_bg", label: "Ảnh nền Hero", section: "Hero" },
     { id: "hero_couple", label: "Ảnh cặp đôi Hero", section: "Hero" },
     { id: "bride_main", label: "Ảnh chính Cô dâu", section: "Profile" },
@@ -773,16 +860,16 @@ const ImageManager = () => {
     try {
       if (isGallery) {
         let currentList = safeParseGallery(settings?.gallery_list);
-        
+
         // Upload all files
         for (const file of files) {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("upload_preset", "didauday");
-          
+
           const res = await axios.post(
             `https://api.cloudinary.com/v1_1/dklus9slm/image/upload`,
-            formData
+            formData,
           );
           currentList.push(res.data.secure_url);
         }
@@ -796,12 +883,12 @@ const ImageManager = () => {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", "didauday");
-        
+
         const res = await axios.post(
           `https://api.cloudinary.com/v1_1/dklus9slm/image/upload`,
-          formData
+          formData,
         );
-        
+
         await updateMutation.mutateAsync({
           key_name: keyId,
           value_content: res.data.secure_url,
@@ -812,7 +899,7 @@ const ImageManager = () => {
       alert("Lỗi upload ảnh");
     } finally {
       setUploading(null);
-      inputElement.value = ""; 
+      inputElement.value = "";
     }
   };
 
@@ -824,22 +911,25 @@ const ImageManager = () => {
       key_name: "gallery_list",
       value_content: JSON.stringify(newList),
     });
-    setSelectedIndices(prev => prev.filter(i => i !== index).map(i => i > index ? i - 1 : i));
+    setSelectedIndices((prev) =>
+      prev.filter((i) => i !== index).map((i) => (i > index ? i - 1 : i)),
+    );
   };
 
   const toggleSelect = (index) => {
-    setSelectedIndices(prev => 
-      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    setSelectedIndices((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
   };
 
   const handleDeleteSelected = async () => {
     if (selectedIndices.length === 0) return;
-    if (!confirm(`Xóa ${selectedIndices.length} ảnh đã chọn khỏi album?`)) return;
-    
+    if (!confirm(`Xóa ${selectedIndices.length} ảnh đã chọn khỏi album?`))
+      return;
+
     const currentList = safeParseGallery(settings?.gallery_list);
     const newList = currentList.filter((_, i) => !selectedIndices.includes(i));
-    
+
     await updateMutation.mutateAsync({
       key_name: "gallery_list",
       value_content: JSON.stringify(newList),
@@ -855,7 +945,12 @@ const ImageManager = () => {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center text-gray-400 font-medium">Đang tải cấu hình ảnh...</div>;
+  if (isLoading)
+    return (
+      <div className="p-8 text-center text-gray-400 font-medium">
+        Đang tải cấu hình ảnh...
+      </div>
+    );
 
   const groupedSections = SECTIONS.reduce((acc, item) => {
     if (!acc[item.section]) acc[item.section] = [];
@@ -870,47 +965,62 @@ const ImageManager = () => {
       {Object.entries(groupedSections).map(([sectionName, items]) => (
         <div key={sectionName} className="space-y-5">
           <div className="flex items-center gap-3">
-             <div className="w-1 h-6 bg-gradient-to-b from-[#fd848e] to-[#f3425f] rounded-full" />
-             <h3 className="text-base font-bold text-gray-800 uppercase tracking-wider">
-               Section: {sectionName}
-             </h3>
+            <div className="w-1 h-6 bg-gradient-to-b from-[#fd848e] to-[#f3425f] rounded-full" />
+            <h3 className="text-base font-bold text-gray-800 uppercase tracking-wider">
+              Section: {sectionName}
+            </h3>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {items.map((item) => (
-              <div key={item.id} className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 group transition-all hover:shadow-md hover:border-pink-100">
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 group transition-all hover:shadow-md hover:border-pink-100"
+              >
                 <div className="aspect-[3/4] rounded-xl relative bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-50">
                   {settings?.[item.id] ? (
-                    <img 
-                      src={settings[item.id]} 
-                      alt={item.label} 
+                    <img
+                      src={settings[item.id]}
+                      alt={item.label}
                       className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
                     />
                   ) : (
                     <ImageIcon size={32} className="text-gray-200" />
                   )}
-                  
+
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 pointer-events-none" />
-                  
+
                   {uploading === item.id && (
                     <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[2px]">
-                      <RefreshCw className="text-primary animate-spin" size={20} />
+                      <RefreshCw
+                        className="text-primary animate-spin"
+                        size={20}
+                      />
                     </div>
                   )}
                 </div>
-                
+
                 <div className="p-3">
-                  <h4 className="font-bold text-gray-800 text-[13px] line-clamp-1 mb-3">{item.label}</h4>
-                  
+                  <h4 className="font-bold text-gray-800 text-[13px] line-clamp-1 mb-3">
+                    {item.label}
+                  </h4>
+
                   <label className="flex items-center justify-center gap-2 w-full py-2 px-4 bg-gray-50 hover:bg-primary hover:text-white rounded-xl text-[11px] font-bold text-gray-500 transition-all cursor-pointer group/label">
-                    <input 
-                      type="file" 
-                      className="hidden" 
+                    <input
+                      type="file"
+                      className="hidden"
                       accept="image/*"
                       onChange={(e) => handleUpload(e, item.id)}
                       disabled={uploading === item.id}
                     />
-                    <Upload size={14} className={uploading === item.id ? "animate-bounce" : "group-hover/label:rotate-12 transition-transform"} />
+                    <Upload
+                      size={14}
+                      className={
+                        uploading === item.id
+                          ? "animate-bounce"
+                          : "group-hover/label:rotate-12 transition-transform"
+                      }
+                    />
                     {uploading === item.id ? "ĐANG TẢI..." : "THAY ĐỔI ẢNH"}
                   </label>
                 </div>
@@ -929,22 +1039,26 @@ const ImageManager = () => {
               Album Ảnh ({galleryList.length})
             </h3>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {galleryList.length > 0 && (
               <div className="flex items-center p-1 bg-gray-50 rounded-xl border border-gray-100 mr-2">
-                <button 
+                <button
                   onClick={() => toggleSelectAll(galleryList)}
                   className="flex items-center gap-2 px-3 py-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all text-[11px] font-bold text-gray-600"
                 >
                   {selectedIndices.length === galleryList.length ? (
-                    <><XCircle size={14} /> Bỏ chọn</>
+                    <>
+                      <XCircle size={14} /> Bỏ chọn
+                    </>
                   ) : (
-                    <><CheckSquare size={14} /> Chọn tất cả</>
+                    <>
+                      <CheckSquare size={14} /> Chọn tất cả
+                    </>
                   )}
                 </button>
                 {selectedIndices.length > 0 && (
-                  <button 
+                  <button
                     onClick={handleDeleteSelected}
                     className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-all text-[11px] font-bold"
                   >
@@ -955,9 +1069,9 @@ const ImageManager = () => {
             )}
 
             <label className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl cursor-pointer hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
-              <input 
-                type="file" 
-                className="hidden" 
+              <input
+                type="file"
+                className="hidden"
                 accept="image/*"
                 multiple
                 onChange={(e) => handleUpload(e, null, true)}
@@ -975,18 +1089,24 @@ const ImageManager = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {galleryList.map((url, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`bg-white rounded-2xl p-2 shadow-sm border transition-all group relative cursor-pointer ${
-                selectedIndices.includes(index) ? "border-primary ring-2 ring-primary/10 shadow-md ring-inset" : "border-gray-100"
+                selectedIndices.includes(index)
+                  ? "border-primary ring-2 ring-primary/10 shadow-md ring-inset"
+                  : "border-gray-100"
               }`}
               onClick={() => toggleSelect(index)}
             >
               <div className="aspect-square rounded-xl overflow-hidden relative border border-gray-50">
-                <img src={url} alt={`Gallery ${index}`} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700" />
-                
+                <img
+                  src={url}
+                  alt={`Gallery ${index}`}
+                  className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
+                />
+
                 <div className="absolute top-2 right-2 flex gap-1 items-center">
-                  <button 
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteGallery(index);
@@ -995,10 +1115,18 @@ const ImageManager = () => {
                   >
                     <Trash2 size={12} />
                   </button>
-                  <div className={`p-1 rounded-lg transition-all ${
-                    selectedIndices.includes(index) ? "bg-primary text-white scale-110" : "bg-white/80 text-gray-400 opacity-0 group-hover:opacity-100"
-                  }`}>
-                    {selectedIndices.includes(index) ? <CheckSquare size={14} /> : <Square size={14} />}
+                  <div
+                    className={`p-1 rounded-lg transition-all ${
+                      selectedIndices.includes(index)
+                        ? "bg-primary text-white scale-110"
+                        : "bg-white/80 text-gray-400 opacity-0 group-hover:opacity-100"
+                    }`}
+                  >
+                    {selectedIndices.includes(index) ? (
+                      <CheckSquare size={14} />
+                    ) : (
+                      <Square size={14} />
+                    )}
                   </div>
                 </div>
 
@@ -1010,8 +1138,10 @@ const ImageManager = () => {
           ))}
           {galleryList.length === 0 && (
             <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-100 rounded-3xl">
-               <ImageIcon size={40} className="mx-auto text-gray-100 mb-3" />
-               <p className="text-gray-400 text-sm font-medium">Chưa có ảnh nào trong album</p>
+              <ImageIcon size={40} className="mx-auto text-gray-100 mb-3" />
+              <p className="text-gray-400 text-sm font-medium">
+                Chưa có ảnh nào trong album
+              </p>
             </div>
           )}
         </div>
@@ -1021,5 +1151,3 @@ const ImageManager = () => {
 };
 
 export default AdminPage;
-
-
