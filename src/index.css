@@ -272,7 +272,7 @@ h3 {
 }
 
 @utility opening-card-image {
-  @apply flex-[1.5] relative bg-[#f5f5f5] md:aspect-4/3 aspect-square overflow-hidden max-md:w-full max-h-[300px] md:max-h-none;
+  @apply flex-[0.8] relative bg-[#f5f5f5] aspect-square overflow-hidden max-md:w-full;
   & img {
     @apply object-cover object-center w-full h-full;
   }

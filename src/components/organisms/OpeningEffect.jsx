@@ -41,7 +41,6 @@ const OpeningEffect = ({
 
           {/* Center Content Card */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-[95%] max-w-[500px] md:max-w-[800px] flex flex-col items-center gap-[25px]">
-
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -49,13 +48,41 @@ const OpeningEffect = ({
               className="opening-card bg-white p-5 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.6)] w-full flex border border-[#ddd] overflow-hidden"
             >
               {/* Photo Area */}
-              <div className="opening-card-image">
+              <div className="opening-card-image relative">
                 {isReady ? (
-                  <img
-                    src={heroImage}
-                    alt="Couple"
-                    className="w-full h-full object-cover object-center"
-                  />
+                  <>
+                    <img
+                      src={heroImage}
+                      alt="Couple"
+                      className="w-full h-full object-cover object-center"
+                    />
+                    {/* Text Overlay on Image */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end items-center pb-s20 px-s10">
+                      <p
+                        className="text-[9px] pb-s10 tracking-[5px] m-0 mb-s5 uppercase font-medium"
+                        style={{ color: "white" }}
+                      >
+                        Happy Wedding
+                      </p>
+                      <h2
+                        className="script text-[32px] md:text-[36px] leading-none font-normal flex items-center justify-center w-full gap-s8"
+                        style={{ color: "white" }}
+                      >
+                        <span className="whitespace-nowrap">
+                          {coupleName.split(" & ")[0]}
+                        </span>
+                        <div className="z-[1] shrink-0">
+                          <div
+                            className="w-s20 h-s20 [mask-image:url(/assets/trai-tim.svg)] [mask-size:contain] [mask-repeat:no-repeat] block"
+                            style={{ backgroundColor: "white" }}
+                          />
+                        </div>
+                        <span className="whitespace-nowrap">
+                          {coupleName.split(" & ")[1]}
+                        </span>
+                      </h2>
+                    </div>
+                  </>
                 ) : (
                   <div className="w-full h-full bg-slate-100 animate-pulse" />
                 )}
@@ -63,37 +90,25 @@ const OpeningEffect = ({
 
               {/* Information Area */}
               <div className="opening-card-info">
-                {guestName && (
-                   <div className="mb-s10">
-                      <p className="text-[11px] text-[#999] uppercase tracking-[2px] mb-s5">Trân trọng kính mời</p>
-                      <p className="text-[18px] text-[#6b050d] font-semibold tracking-[0.5px] italic font-serif leading-tight">{guestName}</p>
-                   </div>
-                )}
-                
-                <p className="text-[10px] tracking-[4px] text-[#999] m-0 mb-s5 uppercase">
-                  Happy Wedding
-                </p>
-
-                <h2 className="script my-s15 mx-0 text-[38px] text-[#6b050d] leading-none font-normal flex items-center justify-center w-full gap-s10">
-                  <span className="whitespace-nowrap">
-                    {coupleName.split(" & ")[0]}
-                  </span>
-                  <div className="z-[1] shrink-0">
-                    <div className="w-s25 h-s25 bg-[#6b050d] [mask-image:url(/assets/trai-tim.svg)] [mask-size:contain] [mask-repeat:no-repeat] block" />
-                  </div>
-                  <span className="whitespace-nowrap">
-                    {coupleName.split(" & ")[1]}
-                  </span>
-                </h2>
-
-                <div className="text-[11px] text-[#555] border-t border-[#eee] mt-s10 mx-0 mb-0 w-[80%] pt-s10">
-                  <p className="tracking-[1px] uppercase text-[10px] font-brice underline mb-s5">
+                <div className="text-[11px] text-[#555] mt-s5 mx-0 mb-0 w-[80%] flex flex-col items-center">
+                  <p className="tracking-[1px] uppercase text-[12px] font-brice underline">
                     Save The Date
                   </p>
-                  <p className="font-brice font-normal text-[#6b050d] mt-s5 text-[24px]">
+                  <p className="font-brice font-normal text-[#6b050d] leading-6 mt-s5 text-[24px]">
                     {date}
                   </p>
                 </div>
+
+                {guestName && (
+                  <div className="mt-s15 pt-s15 border-t border-[#eee] w-[80%] text-center">
+                    <p className="text-[11px] text-[#999] uppercase tracking-[2px] mb-s5">
+                      Trân trọng kính mời
+                    </p>
+                    <p className="text-[18px] text-[#6b050d] font-semibold tracking-[0.5px] italic font-serif leading-tight">
+                      {guestName}
+                    </p>
+                  </div>
+                )}
               </div>
             </motion.div>
 
@@ -116,18 +131,20 @@ const OpeningEffect = ({
                     ],
                   }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="bg-white text-[#6b050d] border-none py-[14px] px-[50px] rounded-[40px] text-[15px] font-bold tracking-[5px] cursor-pointer transition-all duration-300 ease-in-out uppercase"
+                  className="bg-white text-[#6b050d] border-none py-[10px] px-[40px] rounded-[40px] text-[13px] font-bold tracking-[3px] cursor-pointer transition-all duration-300 ease-in-out uppercase"
                 >
                   MỞ THIỆP
                 </motion.button>
               ) : (
-                <div className="bg-white/20 text-white/80 py-[14px] px-[50px] rounded-[40px] text-[15px] font-bold tracking-[5px] flex items-center justify-center gap-2">
+                <div className="bg-white/20 text-white/80 py-[10px] px-[40px] rounded-[40px] text-[13px] font-bold tracking-[3px] flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
                   ĐANG TẢI...
                 </div>
               )}
               <p className="text-white/60 text-[11px] mt-s15 tracking-[1px] italic">
-                {isReady ? "Nhấn để xem lời mời" : "Vui lòng đợi trong giây lát"}
+                {isReady
+                  ? "Nhấn để xem lời mời"
+                  : "Vui lòng đợi trong giây lát"}
               </p>
             </div>
           </div>
