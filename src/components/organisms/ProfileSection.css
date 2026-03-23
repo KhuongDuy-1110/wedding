@@ -79,7 +79,7 @@
 
 /* Default styles */
 .profile-role-title {
-  font-size: var(--profile-role-size, 18px);
+  font-size: 14px;
   font-family: inherit;
   color: #111;
   letter-spacing: 1px;

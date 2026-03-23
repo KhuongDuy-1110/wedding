@@ -31,13 +31,17 @@ const ProfileSection = () => {
       {/* Profile Heading */}
       <div className="profile-heading-container">
         <div className="profile-heading-content">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="profile-story-title"
           >
-            THE STORY <span className="italic font-couple lowercase text-primary">of</span> LOVE
+            THE STORY{" "}
+            <span className="italic font-couple lowercase text-primary">
+              of
+            </span>{" "}
+            LOVE
           </motion.h2>
         </div>
       </div>
@@ -54,13 +58,13 @@ const ProfileSection = () => {
 
         {/* Text Area Right */}
         <div className="profile-text-area bride">
-          <h3 className="profile-role-title">{bride.role}</h3>
+          <p className="profile-role-title">{bride.role}</p>
           <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: false, margin: "-50px" }}
-            className="font-brush profile-name-text"
+            className="font-brush font-bold profile-name-text"
           >
             {bride.name}
           </motion.p>
@@ -111,7 +115,7 @@ const ProfileSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: false, margin: "-50px" }}
-            className="font-brush profile-name-text"
+            className="font-brush font-bold profile-name-text"
           >
             {groom.name}
           </motion.p>
@@ -141,7 +145,6 @@ const ProfileSection = () => {
             />
           </div>
         </motion.div>
-
       </div>
     </section>
   );

@@ -18,7 +18,9 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
   return (
     <section className="hero-section relative w-full flex flex-col bg-white min-h-[100svh]">
       {/* Top Photo Part with Torn Edge */}
-      <div className={`relative w-full ${guestName ? "h-[50svh]" : "h-[66svh]"} overflow-hidden transition-all duration-700`}>
+      <div
+        className={`relative w-full ${guestName ? "h-[50svh]" : "h-[66svh]"} overflow-hidden transition-all duration-700`}
+      >
         <img
           src={settings?.hero_couple || ""}
           alt="Hero Couple"
@@ -83,13 +85,13 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
           transition={{ duration: 1, delay: 0.2 }}
           className="font-brush text-[36px] md:text-[50px] text-primary my-s10 leading-tight flex items-center justify-center w-full gap-s10"
         >
-          <span className="whitespace-nowrap">
+          <span className="whitespace-nowrap font-bold">
             {coupleName.split(" & ")[0]}
           </span>
           <div className="z-[1] shrink-0">
             <div className="w-[30px] h-[30px] bg-primary [mask-image:url(/assets/trai-tim.svg)] [mask-size:contain] [mask-repeat:no-repeat]" />
           </div>
-          <span className="whitespace-nowrap">
+          <span className="whitespace-nowrap font-bold">
             {coupleName.split(" & ")[1]}
           </span>
         </motion.h1>

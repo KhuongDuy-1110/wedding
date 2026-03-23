@@ -3,6 +3,7 @@ import { adminApi } from "../api/admin-api";
 import { Eye, EyeOff, Trash2, RefreshCw, LogOut, Users, MessageSquare, BarChart2, Image as ImageIcon, Upload, CheckSquare, Square, XCircle } from "lucide-react";
 import { useSiteSettings as useSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
 import axios from "axios";
+import { UAParser } from "ua-parser-js";
 
 const ADMIN_PASS = "kaina2k";
 
@@ -11,6 +12,25 @@ const formatDate = (dt) =>
     dateStyle: "short",
     timeStyle: "short",
   });
+
+const parseUA = (uaString) => {
+  if (!uaString) return "Không rõ";
+  try {
+    const parser = new UAParser(uaString);
+    const res = parser.getResult();
+    const os = res.os.name || "";
+    const vendor = res.device.vendor || "";
+    const model = res.device.model || "";
+    const type = res.device.type === "mobile" ? "Mobile" : res.device.type === "tablet" ? "Tablet" : "PC";
+
+    if (vendor || model) {
+      return `${os} (${vendor} ${model})`.trim();
+    }
+    return `${os} (${type})`;
+  } catch (e) {
+    return "Thiết bị lạ";
+  }
+};
 
 const Badge = ({ children, color = "blue" }) => {
   const map = {
@@ -446,6 +466,7 @@ const AdminPage = () => {
                     <th className="px-5 py-3 text-left">Tiến độ</th>
                     <th className="px-5 py-3 text-left">Lượt tập trung</th>
                     <th className="px-5 py-3 text-left">Path</th>
+                    <th className="px-5 py-3 text-left">Thiết bị</th>
                     <th className="px-5 py-3 text-left">Cập nhật</th>
                     <th className="px-5 py-3 text-left w-10"></th>
                   </tr>
@@ -515,6 +536,9 @@ const AdminPage = () => {
                           ) : (
                             <span className="text-gray-300">/</span>
                           )}
+                        </td>
+                        <td className="px-5 py-3 text-gray-500 text-[10px] leading-tight max-w-[120px] truncate" title={log.user_agent}>
+                          {parseUA(log.user_agent)}
                         </td>
                         <td className="px-5 py-3 text-gray-400 text-xs">
                           {formatDate(log.updated_at || log.created_at)}
