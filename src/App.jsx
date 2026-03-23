@@ -187,6 +187,55 @@ function App() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
+  useEffect(() => {
+    if (!isOpened) return;
+
+    let requestRef;
+    let isAutoScrolling = true;
+
+    const stopAutoScroll = () => {
+      if (!isAutoScrolling) return; 
+      isAutoScrolling = false;
+      if (requestRef) cancelAnimationFrame(requestRef);
+      // Remove listeners once stopped
+      window.removeEventListener("wheel", stopAutoScroll);
+      window.removeEventListener("touchstart", stopAutoScroll);
+      window.removeEventListener("mousedown", stopAutoScroll);
+      window.removeEventListener("keydown", stopAutoScroll);
+    };
+
+    const scrollFunc = () => {
+      if (!isAutoScrolling) return;
+      
+      window.scrollBy(0, 0.4); // Very smooth scroll speed
+      
+      const isAtBottom = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 60;
+      if (isAtBottom) {
+        stopAutoScroll();
+        return;
+      }
+
+      requestRef = requestAnimationFrame(scrollFunc);
+    };
+
+    // Delay 3 seconds before starting auto-scroll after opening
+    const timeoutId = setTimeout(() => {
+      if (!isAutoScrolling) return;
+      
+      window.addEventListener("wheel", stopAutoScroll, { passive: true });
+      window.addEventListener("touchstart", stopAutoScroll, { passive: true });
+      window.addEventListener("mousedown", stopAutoScroll, { passive: true });
+      window.addEventListener("keydown", stopAutoScroll, { passive: true });
+      
+      requestRef = requestAnimationFrame(scrollFunc);
+    }, 3000); 
+
+    return () => {
+      clearTimeout(timeoutId);
+      stopAutoScroll();
+    };
+  }, [isOpened]);
+
   return (
     <div
       className={`max-width-container relative ${

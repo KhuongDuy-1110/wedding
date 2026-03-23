@@ -9,7 +9,7 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const name = params.get("name");
+    const name = params.get("name") || params.get("to");
     if (name) {
       setGuestName(name);
     }
@@ -18,7 +18,7 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
   return (
     <section className="hero-section relative w-full flex flex-col bg-white min-h-[100svh]">
       {/* Top Photo Part with Torn Edge */}
-      <div className="relative w-full h-[50svh] overflow-hidden">
+      <div className={`relative w-full ${guestName ? "h-[50svh]" : "h-[66svh]"} overflow-hidden transition-all duration-700`}>
         <img
           src={settings?.hero_couple || ""}
           alt="Hero Couple"
