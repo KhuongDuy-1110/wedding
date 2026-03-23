@@ -20,7 +20,7 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
       {/* Top Photo Part with Torn Edge */}
       <div className="relative w-full h-[50svh] overflow-hidden">
         <img
-          src={settings?.hero_couple || "/assets/couple.png"}
+          src={settings?.hero_couple || ""}
           alt="Hero Couple"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -58,13 +58,14 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
       </div>
 
       {/* Content Part Below */}
-      <div 
+      <div
         className="flex-1 flex flex-col items-center justify-start pt-s15 pb-s40 px-s20 relative z-20 bg-white"
         style={{
-          backgroundImage: "linear-gradient(to bottom, white 0%, white 40px, transparent 100%), url('/assets/background.webp')",
+          backgroundImage:
+            "linear-gradient(to bottom, white 0%, white 40px, transparent 100%), url('/assets/background.webp')",
           backgroundSize: "140%",
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat"
+          backgroundRepeat: "no-repeat",
         }}
       >
         <motion.p
@@ -82,11 +83,15 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
           transition={{ duration: 1, delay: 0.2 }}
           className="font-brush text-[36px] md:text-[50px] text-primary my-s10 leading-tight flex items-center justify-center w-full gap-s10"
         >
-          <span className="whitespace-nowrap">{coupleName.split(" & ")[0]}</span>
+          <span className="whitespace-nowrap">
+            {coupleName.split(" & ")[0]}
+          </span>
           <div className="z-[1] shrink-0">
             <div className="w-[30px] h-[30px] bg-primary [mask-image:url(/assets/trai-tim.svg)] [mask-size:contain] [mask-repeat:no-repeat]" />
           </div>
-          <span className="whitespace-nowrap">{coupleName.split(" & ")[1]}</span>
+          <span className="whitespace-nowrap">
+            {coupleName.split(" & ")[1]}
+          </span>
         </motion.h1>
 
         <p className="text-primary font-bold tracking-[2px] mt-2 text-[13px] md:text-[14px] uppercase text-center">
@@ -101,11 +106,14 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
             className="mt-s20 text-center"
           >
             <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
-              KÍNH MỜI
+              TRÂN TRỌNG KÍNH MỜI
             </p>
             <h3 className="font-brice text-[22px] md:text-[26px] text-primary capitalize leading-tight">
               {guestName}
             </h3>
+            <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
+              TỚI DỰ BỮA CƠM THÂN MẬT CHUNG VUI CÙNG GIA ĐÌNH CHỨNG TÔI
+            </p>
           </motion.div>
         )}
       </div>

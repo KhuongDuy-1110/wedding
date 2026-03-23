@@ -10,9 +10,9 @@ const ProfileSection = () => {
     role: "Cô dâu",
     name: "Lê Thị Nga",
     images: [
-      settings?.bride_main || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      settings?.bride_small_1 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      settings?.bride_small_2 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.bride_main || "",
+      settings?.bride_small_1 || "",
+      settings?.bride_small_2 || "",
     ],
   };
 
@@ -20,9 +20,9 @@ const ProfileSection = () => {
     role: "Chú rể",
     name: "Phạm Văn Khải",
     images: [
-      settings?.groom_main || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      settings?.groom_small_1 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
-      settings?.groom_small_2 || "https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg",
+      settings?.groom_main || "",
+      settings?.groom_small_1 || "",
+      settings?.groom_small_2 || "",
     ],
   };
 

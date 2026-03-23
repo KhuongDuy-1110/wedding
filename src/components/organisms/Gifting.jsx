@@ -197,9 +197,10 @@ const Gifting = ({ side }) => {
               {accounts.map((acc, idx) => (
                 <div
                   key={idx}
-                  className={`flex flex-col sm:flex-row items-center gap-s20 w-full max-w-[400px] relative`}
+                  className="flex items-start gap-s15 w-full max-w-[450px] relative p-s5 bg-transparent"
                 >
-                  <div className="w-[120px] aspect-square flex items-center justify-center bg-white rounded-xl shadow-sm border border-primary/5 p-2">
+                  {/* Left: QR Code */}
+                  <div className="w-[100px] aspect-square flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-xl p-s8">
                     <img
                       src={acc.qrSrc}
                       alt="QR Code"
@@ -207,22 +208,21 @@ const Gifting = ({ side }) => {
                     />
                   </div>
 
-                  <div className="flex-1 flex flex-col text-center sm:text-left items-center sm:items-start">
-                    <h4 className="font-brice text-[15px] text-primary mb-1">
+                  {/* Right: Info */}
+                  <div className="flex-1 flex flex-col text-left">
+                    <h4 className="font-brice text-[14px] text-primary mb-0.5">
                       {acc.bank}
                     </h4>
-                    <p className="font-bold text-text-muted uppercase mb-1">
+                    <p className="font-bold text-text-muted text-[12px] uppercase mb-1">
                       {acc.name}
                     </p>
-                    <div className="bg-gray-50 px-s12 py-s5 rounded-lg border border-gray-100 mb-s10 w-full">
-                      <p className="text-[13px] font-mono font-bold text-primary select-all">
-                        {acc.account}
-                      </p>
-                    </div>
+                    <p className="text-[14px] font-mono font-bold text-primary mb-s10 select-all tracking-wider">
+                      {acc.account}
+                    </p>
 
-                    <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                    <div className="flex gap-2">
                       <button
-                        className="btn-primary py-s8 px-s15 text-[10px] rounded-full shadow-md"
+                        className="bg-primary text-white py-s6 px-s12 text-[10px] rounded-full font-bold shadow-sm hover:bg-primary/90 transition-all"
                         onClick={() => {
                           navigator.clipboard.writeText(acc.account);
                           alert("Đã sao chép số tài khoản!");
@@ -231,10 +231,10 @@ const Gifting = ({ side }) => {
                         SAO CHÉP
                       </button>
                       <button
-                        className="bg-gray-100 text-gray-700 py-s8 px-s15 text-[10px] rounded-full font-bold hover:bg-gray-200 transition-all flex items-center gap-1 shadow-sm border border-gray-200"
+                        className="bg-gray-100 text-gray-700 py-s6 px-s12 text-[10px] rounded-full font-bold hover:bg-gray-200 transition-all flex items-center gap-1 border border-gray-200"
                         onClick={() => handleDownload(acc.qrSrc, acc.name)}
                       >
-                        <Download size={12} /> TẢI QR
+                        <Download size={10} /> TẢI QR
                       </button>
                     </div>
                   </div>

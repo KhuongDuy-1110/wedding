@@ -6,6 +6,9 @@ const OpeningEffect = ({
   onOpen,
   coupleName = "Hùng & Thúy",
   date = "08.12.2024",
+  isReady = false,
+  heroImage = "",
+  guestName = "",
 }) => {
   return (
     <AnimatePresence>
@@ -37,7 +40,7 @@ const OpeningEffect = ({
           />
 
           {/* Center Content Card */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-[95%] max-w-[500px] flex flex-col items-center gap-[25px]">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1001] w-[95%] max-w-[500px] md:max-w-[800px] flex flex-col items-center gap-[25px]">
 
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -47,20 +50,27 @@ const OpeningEffect = ({
             >
               {/* Photo Area */}
               <div className="opening-card-image">
-                <img
-                  src="https://thieucuoi-demo.vercel.app/images/opening.jpg"
-                  alt="Couple"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.src =
-                      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop";
-                  }}
-                />
+                {isReady ? (
+                  <img
+                    src={heroImage}
+                    alt="Couple"
+                    className="w-full h-full object-cover object-center"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-slate-100 animate-pulse" />
+                )}
               </div>
 
               {/* Information Area */}
               <div className="opening-card-info">
-                <p className="text-[12px] tracking-[4px] text-[#999] m-0 mb-s10 uppercase">
+                {guestName && (
+                   <div className="mb-s10">
+                      <p className="text-[11px] text-[#999] uppercase tracking-[2px] mb-s5">Trân trọng kính mời</p>
+                      <p className="text-[18px] text-[#6b050d] font-semibold tracking-[0.5px] italic font-serif leading-tight">{guestName}</p>
+                   </div>
+                )}
+                
+                <p className="text-[10px] tracking-[4px] text-[#999] m-0 mb-s5 uppercase">
                   Happy Wedding
                 </p>
 
@@ -89,28 +99,35 @@ const OpeningEffect = ({
 
             {/* Pulsing Open Button */}
             <div className="text-center">
-              <motion.button
-                onClick={onOpen}
-                whileHover={{
-                  scale: 1.05,
-                  background: "#8a0b16",
-                  color: "white",
-                }}
-                whileTap={{ scale: 0.95 }}
-                animate={{
-                  boxShadow: [
-                    "0 4px 15px rgba(255,255,255,0.2)",
-                    "0 4px 25px rgba(255,255,255,0.4)",
-                    "0 4px 15px rgba(255,255,255,0.2)",
-                  ],
-                }}
-                transition={{ repeat: Infinity, duration: 2 }}
-                className="bg-white text-[#6b050d] border-none py-[14px] px-[50px] rounded-[40px] text-[15px] font-bold tracking-[5px] cursor-pointer transition-all duration-300 ease-in-out uppercase"
-              >
-                MỞ THIỆP
-              </motion.button>
+              {isReady ? (
+                <motion.button
+                  onClick={onOpen}
+                  whileHover={{
+                    scale: 1.05,
+                    background: "#8a0b16",
+                    color: "white",
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{
+                    boxShadow: [
+                      "0 4px 15px rgba(255,255,255,0.2)",
+                      "0 4px 25px rgba(255,255,255,0.4)",
+                      "0 4px 15px rgba(255,255,255,0.2)",
+                    ],
+                  }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  className="bg-white text-[#6b050d] border-none py-[14px] px-[50px] rounded-[40px] text-[15px] font-bold tracking-[5px] cursor-pointer transition-all duration-300 ease-in-out uppercase"
+                >
+                  MỞ THIỆP
+                </motion.button>
+              ) : (
+                <div className="bg-white/20 text-white/80 py-[14px] px-[50px] rounded-[40px] text-[15px] font-bold tracking-[5px] flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+                  ĐANG TẢI...
+                </div>
+              )}
               <p className="text-white/60 text-[11px] mt-s15 tracking-[1px] italic">
-                Nhấn để xem lời mời
+                {isReady ? "Nhấn để xem lời mời" : "Vui lòng đợi trong giây lát"}
               </p>
             </div>
           </div>

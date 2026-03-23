@@ -18,15 +18,62 @@ import CalendarSection from "./components/organisms/CalendarSection";
 import ThankYouSection from "./components/organisms/ThankYouSection";
 import FloatingHearts from "./components/atoms/FloatingHearts";
 import { trackEvent } from "./features/admin/utils/tracker";
+import { useSiteSettings } from "./hooks/use-site-settings";
 import SideCountdown from "./components/organisms/SideCountdown";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
   const [weddingSide, setWeddingSide] = useState("both");
+  const [isReady, setIsReady] = useState(false);
+  const [guestName, setGuestName] = useState("");
   const audioRef = useRef(null);
+  const { data: settings, isLoading: isSettingsLoading } = useSiteSettings();
 
   const hasTracked = useRef(false);
+
+  // Image Preloading Logic
+  useEffect(() => {
+    if (!settings) return;
+
+    const criticalImages = [
+      settings.opening_image,
+      settings.hero_couple,
+      settings.bride_main,
+      settings.groom_main,
+      settings.bride_small_1,
+      settings.bride_small_2,
+      settings.groom_small_1,
+      settings.groom_small_2,
+      "/assets/background.webp",
+      "/assets/net-dut.webp"
+    ].filter(Boolean);
+
+    let loadedCount = 0;
+    const totalToLoad = criticalImages.length;
+
+    if (totalToLoad === 0) {
+      setIsReady(true);
+      return;
+    }
+
+    criticalImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount === totalToLoad) {
+          setIsReady(true);
+        }
+      };
+      img.onerror = () => {
+        loadedCount++; // Count as loaded even on error to avoid blocking forever
+        if (loadedCount === totalToLoad) {
+          setIsReady(true);
+        }
+      };
+    });
+  }, [settings]);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -39,8 +86,9 @@ function App() {
     }
 
     const params = new URLSearchParams(window.location.search);
-    const name = params.get("name");
+    const name = params.get("name") || params.get("to");
     if (name) {
+      setGuestName(name);
       document.title = `Báo Hỷ Khải Nga - Kính mời ${name}`;
       sessionStorage.setItem("guest_name", name);
     } else {
@@ -153,6 +201,9 @@ function App() {
         onOpen={handleOpen}
         coupleName="Phạm Khải & Lê Nga"
         date={currentConfig.date}
+        isReady={isReady && !isSettingsLoading}
+        heroImage={settings?.opening_image || settings?.hero_couple}
+        guestName={guestName}
       />
 
       {/* Floating Audio Control */}

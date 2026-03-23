@@ -4,6 +4,35 @@ import SectionHeading from "../atoms/SectionHeading";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSiteSettings } from "../../hooks/use-site-settings";
 
+const GalleryImage = ({ img, idx, onSelect }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const isLarge = idx === 6;
+
+  return (
+    <div
+      onClick={() => onSelect(idx)}
+      className={`relative rounded-xl overflow-hidden shadow-sm cursor-pointer bg-slate-100 ${
+        isLarge ? "col-span-2 row-span-2" : "col-span-1 row-span-1"
+      }`}
+    >
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-slate-200 animate-pulse flex items-center justify-center">
+          <div className="w-10 h-10 border-2 border-primary/10 border-t-primary/30 rounded-full animate-spin" />
+        </div>
+      )}
+      <img
+        src={img.src}
+        alt={img.alt}
+        onLoad={() => setIsLoaded(true)}
+        className={`w-full h-full object-cover transition-opacity duration-500 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+      <div className="absolute inset-0 bg-black/5 hover:bg-black/0 transition-colors" />
+    </div>
+  );
+};
+
 const Gallery = () => {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const { data: settings } = useSiteSettings();
@@ -35,32 +64,9 @@ const Gallery = () => {
       </SectionHeading>
 
       <div className="grid grid-cols-3 gap-s8 p-s10 auto-rows-[100px] md:auto-rows-[150px]">
-        {images.map((img, idx) => {
-          // Define pattern: index 6 (7th image) is large
-          const isLarge = idx === 6;
-          
-          return (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.6, delay: (idx % 9) * 0.05 }}
-              viewport={{ once: true, margin: "-20px" }}
-              onClick={() => setSelectedIndex(idx)}
-              className={`relative rounded-xl overflow-hidden shadow-sm cursor-pointer ${
-                isLarge ? "col-span-2 row-span-2" : "col-span-1 row-span-1"
-              }`}
-            >
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/5 hover:bg-black/0 transition-colors" />
-            </motion.div>
-          );
-        })}
+        {images.map((img, idx) => (
+          <GalleryImage key={idx} img={img} idx={idx} onSelect={setSelectedIndex} />
+        ))}
       </div>
 
       {/* Lightbox Overlay */}

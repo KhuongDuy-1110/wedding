@@ -718,6 +718,7 @@ const ImageManager = () => {
   const [selectedIndices, setSelectedIndices] = useState([]);
 
   const SECTIONS = [
+    { id: "opening_image", label: "Ảnh màn mở thiệp (Card)", section: "Opening" },
     { id: "hero_bg", label: "Ảnh nền Hero", section: "Hero" },
     { id: "hero_couple", label: "Ảnh cặp đôi Hero", section: "Hero" },
     { id: "bride_main", label: "Ảnh chính Cô dâu", section: "Profile" },
