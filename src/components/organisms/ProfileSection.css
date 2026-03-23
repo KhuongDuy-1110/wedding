@@ -48,7 +48,7 @@
 
 .profile-small-img {
   position: absolute;
-  width: 32%;
+  width: 28%;
   aspect-ratio: 3.2 / 4.8;
   pointer-events: auto;
   border: none;
@@ -59,22 +59,22 @@
 
 /* Mobile Positions - Aligned */
 .profile-small-img.bride:nth-child(1) {
-  right: 36%;
-  bottom: 20px;
+  right: 30%;
+  bottom: 40px;
 }
 
 .profile-small-img.bride:nth-child(2) {
-  right: 2%;
-  bottom: 20px;
+  right: 0%;
+  bottom: 40px;
 }
 
 .profile-small-img.groom:nth-child(1) {
-  left: 2%;
-  bottom: 20px;
+  left: 0%;
+  bottom: 40px;
 }
 .profile-small-img.groom:nth-child(2) {
-  left: 36%;
-  bottom: 20px;
+  left: 30%;
+  bottom: 40px;
 }
 
 /* Default styles */
@@ -179,12 +179,12 @@
   }
 
   .profile-role-title {
-    font-size: 24px;
-    letter-spacing: 3px;
+    font-size: 18px;
+    /* letter-spacing: 3px; */
   }
   .profile-name-text {
-    font-size: 48px;
-    margin-top: 10px;
+    font-size: 38px;
+    /* margin-top: 10px; */
   }
 
   .profile-story-title {
