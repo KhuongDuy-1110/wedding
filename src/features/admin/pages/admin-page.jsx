@@ -1020,7 +1020,6 @@ const InvitationManager = () => {
     }
     const path = guest.side === "bride" ? "/d" : "/r";
     const params = new URLSearchParams();
-
     params.set("name", guest.name);
     return `${origin}${path}?${params.toString()}`;
   };
