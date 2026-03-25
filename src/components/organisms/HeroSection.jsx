@@ -100,24 +100,25 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
           {timeLabel} • {date}
         </p>
 
-        {guestName && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="mt-s20 text-center"
-          >
-            <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
-              TRÂN TRỌNG KÍNH MỜI
-            </p>
-            <h3 className="font-brice text-[22px] md:text-[26px] pb-s10 text-primary capitalize leading-tight">
-              {guestName}
-            </h3>
-            <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
-              TỚI DỰ BỮA CƠM THÂN MẬT CHUNG VUI CÙNG GIA ĐÌNH CHỨNG TÔI
-            </p>
-          </motion.div>
-        )}
+        <div className="mt-s20 text-center">
+          <p className="text-[18px] text-text-muted mb-s5 tracking-[2px] uppercase">
+            TRÂN TRỌNG KÍNH MỜI
+          </p>
+          {guestName && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.4 }}
+            >
+              <h3 className="font-brice text-[22px] md:text-[26px] pb-s10 text-primary capitalize leading-tight">
+                {guestName}
+              </h3>
+              <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
+                TỚI DỰ BỮA CƠM THÂN MẬT CHUNG VUI CÙNG GIA ĐÌNH CHỨNG TÔI
+              </p>
+            </motion.div>
+          )}
+        </div>
       </div>
     </section>
   );

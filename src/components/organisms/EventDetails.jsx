@@ -28,9 +28,9 @@ const EventDetails = ({ side }) => {
             LỄ ĂN HỎI & TIỆC MỪNG
           </div>
 
-          <h3 className="font-brice text-[22px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
+          <h4 className="font-brice text-[20px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
             Thứ Bảy - 16:00 - 04 Tháng 04
-          </h3>
+          </h4>
           <p className="text-[#666] text-[14px] mb-s20">
             Tức Ngày 17 Tháng 02 Năm Bính Ngọ (Âm Lịch)
           </p>
@@ -69,9 +69,9 @@ const EventDetails = ({ side }) => {
             LỄ CƯỚI CHÍNH
           </div>
 
-          <h3 className="font-brice text-[22px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
+          <h4 className="font-brice text-[20px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
             Chủ Nhật - 10:00 - 05 Tháng 04
-          </h3>
+          </h4>
           <p className="text-[#666] text-[14px] mb-s20">
             Tức Ngày 18 Tháng 02 Năm Bính Ngọ (Âm Lịch)
           </p>

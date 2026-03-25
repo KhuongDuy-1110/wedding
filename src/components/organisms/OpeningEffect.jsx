@@ -99,16 +99,14 @@ const OpeningEffect = ({
                   </p>
                 </div>
 
-                {guestName && (
-                  <div className="mt-s15 pt-s15 border-t border-[#eee] w-[80%] text-center">
-                    <p className="text-[11px] text-[#999] uppercase tracking-[2px] mb-s5">
-                      Trân trọng kính mời
-                    </p>
-                    <p className="text-[18px] text-[#6b050d] font-semibold tracking-[0.5px] italic font-serif leading-tight">
-                      {guestName}
-                    </p>
-                  </div>
-                )}
+                <div className="mt-s15 pt-s15 border-t border-[#eee] w-[80%] text-center">
+                  <p className="text-[11px] text-[#999] uppercase tracking-[2px] mb-s5">
+                    Trân trọng kính mời
+                  </p>
+                  <p className="text-[18px] text-[#6b050d] font-semibold tracking-[0.5px] italic font-serif leading-tight">
+                    {guestName || ""}
+                  </p>
+                </div>
               </div>
             </motion.div>
 
