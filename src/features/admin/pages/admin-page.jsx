@@ -623,11 +623,15 @@ const AdminPage = () => {
                           className="max-w-[120px] truncate px-5 py-3 text-[10px] leading-tight text-gray-500"
                           title={log.user_agent}
                         >
-                          <span className="text-blue-400 font-bold mr-1">[D:]</span>
+                          <span className="text-blue-400 font-bold mr-1">
+                            [D:]
+                          </span>
                           {parseUA(log.user_agent)}
                         </td>
                         <td className="px-5 py-3 text-xs text-gray-400">
-                          <span className="text-green-400 font-bold mr-1">[T:]</span>
+                          <span className="text-green-400 font-bold mr-1">
+                            [T:]
+                          </span>
                           {formatDate(log.updated_at || log.created_at)}
                         </td>
                         <td className="px-5 py-3">
@@ -840,7 +844,9 @@ const InvitationManager = () => {
   const textareaRef = useRef(null);
 
   const activeTemplateKey =
-    side === "bride" ? "invitation_template_bride" : "invitation_template_groom";
+    side === "bride"
+      ? "invitation_template_bride"
+      : "invitation_template_groom";
 
   useEffect(() => {
     if (settings) {
@@ -935,7 +941,9 @@ const InvitationManager = () => {
       if (names.length === 1) {
         await adminApi.createInvitation(names[0], side);
       } else {
-        await adminApi.bulkCreateInvitations(names.map((n) => ({ name: n, side })));
+        await adminApi.bulkCreateInvitations(
+          names.map((n) => ({ name: n, side })),
+        );
       }
       setNewName("");
       fetchGuests();
@@ -956,7 +964,9 @@ const InvitationManager = () => {
 
   const bulkDelete = async () => {
     if (
-      !confirm(`Xóa ${selectedIds.length} khách mời đã chọn? Thao tác này không thể hoàn tác.`)
+      !confirm(
+        `Xóa ${selectedIds.length} khách mời đã chọn? Thao tác này không thể hoàn tác.`,
+      )
     )
       return;
     try {
@@ -992,7 +1002,9 @@ const InvitationManager = () => {
     try {
       await adminApi.updateInvitation(editingId, capitalizedName);
       setGuests(
-        guests.map((g) => (g.id === editingId ? { ...g, name: capitalizedName } : g)),
+        guests.map((g) =>
+          g.id === editingId ? { ...g, name: capitalizedName } : g,
+        ),
       );
       setEditingId(null);
     } catch (e) {
@@ -1008,13 +1020,16 @@ const InvitationManager = () => {
     }
     const path = guest.side === "bride" ? "/d" : "/r";
     const params = new URLSearchParams();
+
     params.set("name", guest.name);
     return `${origin}${path}?${params.toString()}`;
   };
 
   const generateInvitation = (guest) => {
     const link = getLink(guest);
-    return localTemplate.replaceAll("[name]", guest.name).replaceAll("[link]", link);
+    return localTemplate
+      .replaceAll("[name]", guest.name)
+      .replaceAll("[link]", link);
   };
 
   const handleCopy = async (guest) => {
@@ -1129,7 +1144,9 @@ const InvitationManager = () => {
                   side === "bride" ? "bg-pink-500" : "bg-blue-500"
                 }`}
               />
-              <h4 className="text-xs font-bold text-gray-700">Thêm khách mời</h4>
+              <h4 className="text-xs font-bold text-gray-700">
+                Thêm khách mời
+              </h4>
             </div>
             <form onSubmit={addGuest} className="space-y-3">
               <textarea
@@ -1159,9 +1176,12 @@ const InvitationManager = () => {
                   <input
                     type="checkbox"
                     checked={
-                      filteredGuests.length > 0 && selectedIds.length === filteredGuests.length
+                      filteredGuests.length > 0 &&
+                      selectedIds.length === filteredGuests.length
                     }
-                    onChange={(e) => handleSelectAll(e.target.checked, filteredGuests)}
+                    onChange={(e) =>
+                      handleSelectAll(e.target.checked, filteredGuests)
+                    }
                     className="rounded border-gray-300 focus:ring-primary/20"
                   />
                 </th>
@@ -1174,7 +1194,10 @@ const InvitationManager = () => {
             <tbody className="divide-y divide-gray-50">
               {isLoadingGuests ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-gray-400"
+                  >
                     Đang tải danh sách...
                   </td>
                 </tr>
@@ -1213,7 +1236,9 @@ const InvitationManager = () => {
                         </div>
                       ) : (
                         <div className="flex flex-col">
-                          <span className="font-medium text-gray-700">{guest.name}</span>
+                          <span className="font-medium text-gray-700">
+                            {guest.name}
+                          </span>
                           {guest.is_sent === 1 && (
                             <span className="text-[10px] text-emerald-500 font-medium">
                               ✓ Đã gửi/Copy
@@ -1274,7 +1299,10 @@ const InvitationManager = () => {
               )}
               {!isLoadingGuests && filteredGuests.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-300 text-sm italic">
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-gray-300 text-sm italic"
+                  >
                     Chưa có khách mời nào ở phía này.
                   </td>
                 </tr>
