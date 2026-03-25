@@ -759,20 +759,30 @@ app.get("/api/invitations/by-id/:shortId", async (req, res) => {
 app.use(async (req, res) => {
   if (req.method !== "GET") return res.status(404).json({ error: "Not found" });
   
-  const urlPath = req.path.substring(1); // Remove leading slash
+  const segments = req.path.split("/").filter(Boolean);
+  const potentialId = segments.length > 1 ? segments[1] : (segments.length === 1 ? segments[0] : null);
   let guestInfo = null;
 
   try {
     const connection = await mysql.createConnection(dbConfig);
-    if (urlPath.length >= 6 && urlPath.length <= 10) {
-      const [rows] = await connection.execute("SELECT * FROM invitations WHERE short_id = ?", [urlPath]);
+    if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
+      const [rows] = await connection.execute("SELECT * FROM invitations WHERE short_id = ?", [potentialId]);
       if (rows.length > 0) guestInfo = rows[0];
     }
     
-    // Also check query params if direct d/r path
-    if (!guestInfo && (req.path === "/d" || req.path === "/r" || req.path === "/")) {
-      const name = req.query.name || req.query.to;
-      if (name) guestInfo = { name, side: req.path === "/d" ? "bride" : (req.path === "/r" ? "groom" : "both") };
+    // Also check query params if direct d/r path or no guestId found yet
+    if (!guestInfo) {
+      const firstSegment = segments[0] || "";
+      const isSidePath = firstSegment === "d" || firstSegment === "r" || segments.length === 0;
+      if (isSidePath) {
+        const name = req.query.name || req.query.to;
+        if (name) {
+          guestInfo = { 
+            name, 
+            side: firstSegment === "d" ? "bride" : (firstSegment === "r" ? "groom" : "both") 
+          };
+        }
+      }
     }
     
     await connection.end();

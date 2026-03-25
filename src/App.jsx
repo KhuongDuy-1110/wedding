@@ -77,18 +77,18 @@ function App() {
   }, [settings]);
 
   useEffect(() => {
-    const path = window.location.pathname;
-    const cleanPath = path.substring(1); // Remove leading slash
+    const segments = window.location.pathname.split("/").filter(Boolean);
+    const potentialId = segments.length > 1 ? segments[1] : (segments.length === 1 ? segments[0] : null);
 
-    if (path.includes("/d") || path.includes("/bride")) {
+    if (window.location.pathname.includes("/d") || window.location.pathname.includes("/bride")) {
       setWeddingSide("bride");
-    } else if (path.includes("/r") || path.includes("/groom")) {
+    } else if (window.location.pathname.includes("/r") || window.location.pathname.includes("/groom")) {
       setWeddingSide("groom");
     } else {
       setWeddingSide("both");
     }
 
-    // Logic for short_id (e.g. /ABC123)
+    // Logic for short_id (e.g. /ABC123 or /d/ABC123)
     const params = new URLSearchParams(window.location.search);
     const nameParam = params.get("name") || params.get("to");
 
@@ -96,12 +96,12 @@ function App() {
       setGuestName(nameParam);
       document.title = `Báo Hỷ Khải Nga - Kính mời ${nameParam}`;
       sessionStorage.setItem("guest_name", nameParam);
-    } else if (cleanPath.length >= 6 && cleanPath.length <= 10) {
+    } else if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
       // Try fetching by short_id
-      console.log("Detecting short_id:", cleanPath);
+      console.log("Detecting short_id:", potentialId);
       const fetchGuest = async () => {
         try {
-          const guest = await adminApi.getInvitationByShortId(cleanPath);
+          const guest = await adminApi.getInvitationByShortId(potentialId);
           console.log("Found guest:", guest);
           if (guest) {
             setGuestName(guest.name);

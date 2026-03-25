@@ -1003,7 +1003,8 @@ const InvitationManager = () => {
   const getLink = (guest) => {
     const origin = window.location.origin;
     if (guest.short_id) {
-      return `${origin}/${guest.short_id}`;
+      const sidePath = guest.side === "bride" ? "/d" : "/r";
+      return `${origin}${sidePath}/${guest.short_id}`;
     }
     const path = guest.side === "bride" ? "/d" : "/r";
     const params = new URLSearchParams();
