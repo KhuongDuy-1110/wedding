@@ -28,4 +28,36 @@ export const adminApi = {
     const res = await api.patch(`/wishes/${id}/hide`, { hidden });
     return res.data;
   },
+  getInvitations: async () => {
+    const res = await api.get("/invitations");
+    return res.data;
+  },
+  createInvitation: async (name, side) => {
+    const res = await api.post("/invitations", { name, side });
+    return res.data;
+  },
+  bulkCreateInvitations: async (guests) => {
+    const res = await api.post("/invitations/bulk", { guests });
+    return res.data;
+  },
+  updateInvitation: async (id, name) => {
+    const res = await api.patch(`/invitations/${id}`, { name });
+    return res.data;
+  },
+  deleteInvitation: async (id) => {
+    const res = await api.delete(`/invitations/${id}`);
+    return res.data;
+  },
+  getInvitationByShortId: async (shortId) => {
+    const res = await api.get(`/invitations/by-id/${shortId}`);
+    return res.data;
+  },
+  markInvitationSent: async (id, isSent) => {
+    const res = await api.patch(`/invitations/${id}/sent`, { is_sent: isSent });
+    return res.data;
+  },
+  bulkDeleteInvitations: async (ids) => {
+    const res = await api.post("/invitations/bulk-delete", { ids });
+    return res.data;
+  },
 };

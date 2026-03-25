@@ -3,23 +3,14 @@ import { motion } from "framer-motion";
 import PhotoFrame from "../molecules/PhotoFrame";
 import { useSiteSettings } from "../../hooks/use-site-settings";
 
-const HeroSection = ({ date, coupleName, timeLabel }) => {
-  const [guestName, setGuestName] = useState("");
+const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
   const { data: settings } = useSiteSettings();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get("name") || params.get("to");
-    if (name) {
-      setGuestName(name);
-    }
-  }, []);
 
   return (
     <section className="hero-section relative w-full flex flex-col bg-white min-h-[100svh]">
       {/* Top Photo Part with Torn Edge */}
       <div
-        className={`relative w-full ${guestName ? "h-[50svh]" : "h-[66svh]"} overflow-hidden transition-all duration-700`}
+        className={`relative w-full ${guestName ? "h-[55svh]" : "h-[70svh]"} overflow-hidden transition-all duration-700`}
       >
         <img
           src={settings?.hero_couple || ""}
@@ -114,7 +105,7 @@ const HeroSection = ({ date, coupleName, timeLabel }) => {
                 {guestName}
               </h3>
               <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
-                TỚI DỰ BỮA CƠM THÂN MẬT CHUNG VUI CÙNG GIA ĐÌNH CHỨNG TÔI
+                TỚI DỰ BỮA CƠM THÂN MẬT CHUNG VUI CÙNG GIA ĐÌNH CHÚNG TÔI
               </p>
             </motion.div>
           )}

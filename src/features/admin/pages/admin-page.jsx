@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { adminApi } from "../api/admin-api";
 import {
   Eye,
@@ -14,6 +14,11 @@ import {
   CheckSquare,
   Square,
   XCircle,
+  Send,
+  Plus,
+  Copy,
+  Edit2,
+  ExternalLink,
 } from "lucide-react";
 import {
   useSiteSettings as useSettings,
@@ -342,6 +347,7 @@ const AdminPage = () => {
   const tabs = [
     { id: "logs", label: "Truy cập", icon: <BarChart2 size={15} /> },
     { id: "wishes", label: "Lời chúc", icon: <MessageSquare size={15} /> },
+    { id: "invitations", label: "Mời khách", icon: <Send size={15} /> },
     { id: "stats", label: "Thống kê", icon: <Users size={15} /> },
     { id: "images", label: "Quản lý ảnh", icon: <ImageIcon size={15} /> },
   ];
@@ -812,7 +818,469 @@ const AdminPage = () => {
             </div>
           </div>
         )}
+        {tab === "invitations" && <InvitationManager />}
         {tab === "images" && <ImageManager />}
+      </div>
+    </div>
+  );
+};
+
+const InvitationManager = () => {
+  const { data: settings, isLoading: isSettingsLoading } = useSettings();
+  const updateMutation = useUpdateSetting();
+
+  const [side, setSide] = useState("groom"); // groom or bride
+  const [guests, setGuests] = useState([]);
+  const [isLoadingGuests, setIsLoadingGuests] = useState(true);
+  const [newName, setNewName] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [localTemplate, setLocalTemplate] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const textareaRef = useRef(null);
+
+  const activeTemplateKey =
+    side === "bride" ? "invitation_template_bride" : "invitation_template_groom";
+
+  useEffect(() => {
+    if (settings) {
+      setLocalTemplate(
+        settings[activeTemplateKey] ||
+          "Trân trọng kính mời [name] tới dự lễ cưới của chúng mình tại [link] !",
+      );
+    }
+  }, [settings, side, activeTemplateKey]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [side]);
+
+  const insertPlaceholder = (tag) => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = localTemplate;
+    const before = text.substring(0, start);
+    const after = text.substring(end, text.length);
+
+    const newValue = before + tag + after;
+    setLocalTemplate(newValue);
+
+    // Reset cursor after state update (using timeout to let React render)
+    setTimeout(() => {
+      el.focus();
+      el.setSelectionRange(start + tag.length, start + tag.length);
+    }, 0);
+  };
+
+  const fetchGuests = async () => {
+    setIsLoadingGuests(true);
+    try {
+      const data = await adminApi.getInvitations();
+      setGuests(data);
+    } catch (e) {
+      console.error(e);
+    }
+    setIsLoadingGuests(false);
+  };
+
+  useEffect(() => {
+    fetchGuests();
+  }, []);
+
+  const handleSaveTemplate = async () => {
+    try {
+      await updateMutation.mutateAsync({
+        key_name: activeTemplateKey,
+        value_content: localTemplate,
+      });
+      alert("Đã lưu mẫu lời mời!");
+    } catch (e) {
+      console.error(e);
+      alert("Lỗi khi lưu mẫu!");
+    }
+  };
+
+  const capitalizeName = (str) => {
+    if (!str) return "";
+    return str
+      .split(/(\s+)/)
+      .map((part) => {
+        if (part.trim().length > 0) {
+          return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+        }
+        return part;
+      })
+      .join("");
+  };
+
+  const handleNameChange = (val) => {
+    // We want to capitalize words while typing, but carefully
+    // If the last character was a space or newline, we should capitalize the current input
+    setNewName(capitalizeName(val));
+  };
+
+  const addGuest = async (e) => {
+    e.preventDefault();
+    if (!newName.trim()) return;
+
+    const names = newName
+      .split("\n")
+      .filter((n) => n.trim())
+      .map((n) => n.trim()); // Already capitalized by onChange
+
+    try {
+      if (names.length === 1) {
+        await adminApi.createInvitation(names[0], side);
+      } else {
+        await adminApi.bulkCreateInvitations(names.map((n) => ({ name: n, side })));
+      }
+      setNewName("");
+      fetchGuests();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const deleteGuest = async (id) => {
+    if (!confirm("Xóa khách mời này?")) return;
+    try {
+      await adminApi.deleteInvitation(id);
+      setGuests(guests.filter((g) => g.id !== id));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (
+      !confirm(`Xóa ${selectedIds.length} khách mời đã chọn? Thao tác này không thể hoàn tác.`)
+    )
+      return;
+    try {
+      await adminApi.bulkDeleteInvitations(selectedIds);
+      setGuests(guests.filter((g) => !selectedIds.includes(g.id)));
+      setSelectedIds([]);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const handleSelectAll = (checked, filteredGuests) => {
+    if (checked) {
+      setSelectedIds(filteredGuests.map((g) => g.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const startEdit = (guest) => {
+    setEditingId(guest.id);
+    setEditValue(guest.name);
+  };
+
+  const saveEdit = async () => {
+    const capitalizedName = capitalizeName(editValue);
+    try {
+      await adminApi.updateInvitation(editingId, capitalizedName);
+      setGuests(
+        guests.map((g) => (g.id === editingId ? { ...g, name: capitalizedName } : g)),
+      );
+      setEditingId(null);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const getLink = (guest) => {
+    const origin = window.location.origin;
+    if (guest.short_id) {
+      return `${origin}/${guest.short_id}`;
+    }
+    const path = guest.side === "bride" ? "/d" : "/r";
+    const params = new URLSearchParams();
+    params.set("name", guest.name);
+    return `${origin}${path}?${params.toString()}`;
+  };
+
+  const generateInvitation = (guest) => {
+    const link = getLink(guest);
+    return localTemplate.replaceAll("[name]", guest.name).replaceAll("[link]", link);
+  };
+
+  const handleCopy = async (guest) => {
+    const inviteHtml = generateInvitation(guest);
+    navigator.clipboard.writeText(inviteHtml);
+
+    try {
+      await adminApi.markInvitationSent(guest.id, true);
+      setGuests(
+        guests.map((g) => (g.id === guest.id ? { ...g, is_sent: 1 } : g)),
+      );
+      // alert(`Đã copy lời mời cho: ${guest.name}`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const filteredGuests = guests.filter((g) => g.side === side);
+
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Top Header with Tabs */}
+        <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSide("groom")}
+              className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${
+                side === "groom"
+                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+                  : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100"
+              }`}
+            >
+              Nhà trai
+            </button>
+            <button
+              onClick={() => setSide("bride")}
+              className={`px-6 py-2 rounded-xl text-xs font-bold transition-all ${
+                side === "bride"
+                  ? "bg-pink-500 text-white shadow-lg shadow-pink-500/20"
+                  : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-100"
+              }`}
+            >
+              Nhà gái
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            {selectedIds.length > 0 && (
+              <button
+                onClick={bulkDelete}
+                className="text-[11px] font-bold text-rose-500 bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100 hover:bg-rose-100 transition-colors"
+              >
+                Xóa {selectedIds.length} mục
+              </button>
+            )}
+            <Badge color={side === "groom" ? "blue" : "pink"}>
+              {isLoadingGuests ? "..." : filteredGuests.length} khách mời
+            </Badge>
+          </div>
+        </div>
+
+        {/* Configuration Row: Template & Add Guest */}
+        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 border-b border-gray-50">
+          {/* Template Column */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-1 h-4 rounded-full ${
+                    side === "bride" ? "bg-pink-500" : "bg-blue-500"
+                  }`}
+                />
+                <h4 className="text-xs font-bold text-gray-700">Mẫu lời mời</h4>
+              </div>
+              <button
+                onClick={handleSaveTemplate}
+                disabled={updateMutation.isPending}
+                className="text-[10px] font-bold text-blue-600 hover:underline disabled:opacity-50"
+              >
+                {updateMutation.isPending ? "ĐANG LƯU..." : "LƯU MẪU"}
+              </button>
+            </div>
+            <textarea
+              ref={textareaRef}
+              value={localTemplate}
+              onChange={(e) => setLocalTemplate(e.target.value)}
+              rows={3}
+              className="w-full text-sm border border-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-gray-50/50"
+              placeholder="Nhập mẫu lời mời..."
+            />
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => insertPlaceholder(" [name]")}
+                className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded hover:bg-gray-200"
+              >
+                [name]
+              </button>
+              <button
+                onClick={() => insertPlaceholder(" [link]")}
+                className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded hover:bg-gray-200"
+              >
+                [link]
+              </button>
+            </div>
+          </div>
+
+          {/* Add Guest Column */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-1 h-4 rounded-full ${
+                  side === "bride" ? "bg-pink-500" : "bg-blue-500"
+                }`}
+              />
+              <h4 className="text-xs font-bold text-gray-700">Thêm khách mời</h4>
+            </div>
+            <form onSubmit={addGuest} className="space-y-3">
+              <textarea
+                value={newName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="Nhập danh sách tên khách, mỗi dòng 1 tên..."
+                className="w-full text-sm border border-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 bg-gray-50/50"
+                rows={3}
+              />
+              <button
+                type="submit"
+                disabled={!newName.trim()}
+                className="w-full py-2.5 bg-gradient-to-r from-[#fd848e] to-[#f3425f] text-white rounded-xl text-xs font-bold shadow-md hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Plus size={16} /> THÊM VÀO DANH SÁCH
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Guest Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 text-[11px] text-gray-400 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center">
+                  <input
+                    type="checkbox"
+                    checked={
+                      filteredGuests.length > 0 && selectedIds.length === filteredGuests.length
+                    }
+                    onChange={(e) => handleSelectAll(e.target.checked, filteredGuests)}
+                    className="rounded border-gray-300 focus:ring-primary/20"
+                  />
+                </th>
+                <th className="px-6 py-3 text-left">Tên khách mời</th>
+                <th className="px-6 py-3 text-left">Mã mời</th>
+                <th className="px-6 py-3 text-left">Link chi tiết</th>
+                <th className="px-6 py-3 text-right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {isLoadingGuests ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-gray-400">
+                    Đang tải danh sách...
+                  </td>
+                </tr>
+              ) : (
+                filteredGuests.map((guest) => (
+                  <tr
+                    key={guest.id}
+                    className={`hover:bg-gray-50/50 transition-colors ${
+                      selectedIds.includes(guest.id) ? "bg-primary/5" : ""
+                    }`}
+                  >
+                    <td className="px-4 py-4 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(guest.id)}
+                        onChange={() => toggleSelect(guest.id)}
+                        className="rounded border-gray-300 focus:ring-primary/20"
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      {editingId === guest.id ? (
+                        <div className="flex gap-2">
+                          <input
+                            autoFocus
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && saveEdit()}
+                            className="text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none"
+                          />
+                          <button
+                            onClick={saveEdit}
+                            className="text-blue-500 text-xs font-bold"
+                          >
+                            Lưu
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-700">{guest.name}</span>
+                          {guest.is_sent === 1 && (
+                            <span className="text-[10px] text-emerald-500 font-medium">
+                              ✓ Đã gửi/Copy
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-mono">
+                        {guest.short_id || "---"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2 max-w-[200px]">
+                        <span className="text-[11px] text-gray-400 truncate">
+                          {getLink(guest)}
+                        </span>
+                        <a
+                          href={getLink(guest)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-gray-300 hover:text-blue-500"
+                        >
+                          <ExternalLink size={12} />
+                        </a>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleCopy(guest)}
+                          className={`flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors border ${
+                            guest.is_sent
+                              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                              : "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100"
+                          }`}
+                        >
+                          <Copy size={13} />
+                          {guest.is_sent ? "Đã Copy" : "Copy Lời mời"}
+                        </button>
+                        <button
+                          onClick={() => startEdit(guest)}
+                          className="p-1.5 text-gray-400 hover:text-blue-500 rounded-lg"
+                        >
+                          <Edit2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => deleteGuest(guest.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+              {!isLoadingGuests && filteredGuests.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-gray-300 text-sm italic">
+                    Chưa có khách mời nào ở phía này.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

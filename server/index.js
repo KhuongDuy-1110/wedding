@@ -265,6 +265,15 @@ const checkBlacklist = (text = "") => {
   });
 };
 
+const generateShortId = () => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let res = "";
+  for (let i = 0; i < 6; i++) {
+    res += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return res;
+};
+
 const initDB = async () => {
   try {
     const connection = await mysql.createConnection(dbConfig);
@@ -347,6 +356,24 @@ const initDB = async () => {
       )
     `);
 
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS invitations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        short_id VARCHAR(10) UNIQUE,
+        name VARCHAR(255) NOT NULL,
+        side VARCHAR(50) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // Migration for short_id & is_sent
+    try {
+      await connection.execute("ALTER TABLE invitations ADD COLUMN short_id VARCHAR(10) UNIQUE AFTER id");
+    } catch (_) {}
+    try {
+      await connection.execute("ALTER TABLE invitations ADD COLUMN is_sent BOOLEAN DEFAULT 0 AFTER side");
+    } catch (_) {}
+
     // Initial settings for images if table is empty
     const [settings] = await connection.execute("SELECT COUNT(*) as count FROM site_settings");
     if (settings[0].count === 0) {
@@ -362,6 +389,8 @@ const initDB = async () => {
         ['gallery_1', '/assets/gallery-1.png'],
         ['gallery_2', '/assets/trai-tim.jpg'],
         ['gallery_3', '/assets/couple.png'],
+        ['invitation_template_groom', 'Trân trọng kính mời [name] tới dự lễ cưới của chúng mình tại [link] !'],
+        ['invitation_template_bride', 'Trân trọng kính mời [name] tới dự lễ ăn hỏi & tiệc mừng của chúng mình tại [link] !'],
       ];
       
       for (const [key, val] of defaultSettings) {
@@ -626,14 +655,165 @@ app.get("/api/logs", async (req, res) => {
   }
 });
 
-// SPA Fallback: All other GET requests serve index.html
-app.use((req, res) => {
-  if (fs.existsSync(path.join(distPath, "index.html"))) {
-    res.sendFile(path.join(distPath, "index.html"));
+app.get("/api/invitations", async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute("SELECT * FROM invitations ORDER BY created_at DESC");
+    await connection.end();
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/invitations", async (req, res) => {
+  const { name, side } = req.body;
+  if (!name || !side) return res.status(400).json({ error: "Name and side are required" });
+  const shortId = generateShortId();
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute("INSERT INTO invitations (short_id, name, side) VALUES (?, ?, ?)", [shortId, name, side]);
+    await connection.end();
+    res.status(201).json({ id: result.insertId, short_id: shortId, name, side });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/invitations/bulk", async (req, res) => {
+  const { guests } = req.body;
+  if (!guests || !Array.isArray(guests)) return res.status(400).json({ error: "Guests array required" });
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const values = guests.map(g => [generateShortId(), g.name, g.side]);
+    // Use .query instead of .execute for bulk inserts with arrays of arrays
+    await connection.query("INSERT INTO invitations (short_id, name, side) VALUES ?", [values]);
+    await connection.end();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch("/api/invitations/:id", async (req, res) => {
+  const { name } = req.body;
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.execute("UPDATE invitations SET name = ? WHERE id = ?", [name, req.params.id]);
+    await connection.end();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/invitations/:id", async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.execute("DELETE FROM invitations WHERE id = ?", [req.params.id]);
+    await connection.end();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/invitations/bulk-delete", async (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids)) return res.status(400).json({ error: "IDs array required" });
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.query("DELETE FROM invitations WHERE id IN (?)", [ids]);
+    await connection.end();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch("/api/invitations/:id/sent", async (req, res) => {
+  const { is_sent } = req.body;
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    await connection.execute("UPDATE invitations SET is_sent = ? WHERE id = ?", [is_sent ? 1 : 0, req.params.id]);
+    await connection.end();
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/invitations/by-id/:shortId", async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute("SELECT * FROM invitations WHERE short_id = ?", [req.params.shortId]);
+    await connection.end();
+    if (rows.length === 0) return res.status(404).json({ error: "Not found" });
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// SPA Fallback: All other requests serve index.html with dynamic meta tags
+app.use(async (req, res) => {
+  if (req.method !== "GET") return res.status(404).json({ error: "Not found" });
+  
+  const urlPath = req.path.substring(1); // Remove leading slash
+  let guestInfo = null;
+
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    if (urlPath.length >= 6 && urlPath.length <= 10) {
+      const [rows] = await connection.execute("SELECT * FROM invitations WHERE short_id = ?", [urlPath]);
+      if (rows.length > 0) guestInfo = rows[0];
+    }
+    
+    // Also check query params if direct d/r path
+    if (!guestInfo && (req.path === "/d" || req.path === "/r" || req.path === "/")) {
+      const name = req.query.name || req.query.to;
+      if (name) guestInfo = { name, side: req.path === "/d" ? "bride" : (req.path === "/r" ? "groom" : "both") };
+    }
+    
+    await connection.end();
+  } catch (e) {
+    console.error("Error fetching guest for meta:", e);
+  }
+
+  const indexPath = path.join(distPath, "index.html");
+  if (fs.existsSync(indexPath)) {
+    let html = fs.readFileSync(indexPath, "utf8");
+    
+    const title = guestInfo ? `Lời mời trân trọng tới ${guestInfo.name}` : "Báo Hỷ: Khải & Nga";
+    const description = "Trân trọng kính mời bạn tới tham dự buổi tiệc vui cùng gia đình chúng mình!";
+    // This is a placeholder image, ideally should be a real one from the project
+    const image = "https://res.cloudinary.com/du7sy9ixt/image/upload/v1740342371/wedding-thumbnail.jpg";
+    const currentUrl = `https://thiepdientu-alpha.vercel.app${req.originalUrl}`;
+
+    const metaTags = `
+      <title>${title}</title>
+      <meta name="description" content="${description}">
+      <meta property="og:title" content="${title}">
+      <meta property="og:description" content="${description}">
+      <meta property="og:image" content="${image}">
+      <meta property="og:url" content="${currentUrl}">
+      <meta property="og:type" content="website">
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="${title}">
+      <meta name="twitter:description" content="${description}">
+      <meta name="twitter:image" content="${image}">
+    `;
+
+    // Replace default meta or placeholder if it exists, otherwise insert into head
+    if (html.includes("<!-- OG_TAGS -->")) {
+      html = html.replace("<!-- OG_TAGS -->", metaTags);
+    } else {
+      html = html.replace("<head>", `<head>${metaTags}`);
+    }
+
+    res.send(html);
   } else {
-    res
-      .status(404)
-      .json({ error: "Frontend build not found. Run 'yarn build' first." });
+    res.status(404).send("Application not built. Run 'yarn build' first.");
   }
 });
 

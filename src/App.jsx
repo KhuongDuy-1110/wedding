@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Music, MessageSquareText, Heart } from "lucide-react";
+import { adminApi } from "./features/admin/api/admin-api";
 import confetti from "canvas-confetti";
 
 // Import Components
@@ -77,6 +78,8 @@ function App() {
 
   useEffect(() => {
     const path = window.location.pathname;
+    const cleanPath = path.substring(1); // Remove leading slash
+
     if (path.includes("/d") || path.includes("/bride")) {
       setWeddingSide("bride");
     } else if (path.includes("/r") || path.includes("/groom")) {
@@ -85,12 +88,32 @@ function App() {
       setWeddingSide("both");
     }
 
+    // Logic for short_id (e.g. /ABC123)
     const params = new URLSearchParams(window.location.search);
-    const name = params.get("name") || params.get("to");
-    if (name) {
-      setGuestName(name);
-      document.title = `Báo Hỷ Khải Nga - Kính mời ${name}`;
-      sessionStorage.setItem("guest_name", name);
+    const nameParam = params.get("name") || params.get("to");
+
+    if (nameParam) {
+      setGuestName(nameParam);
+      document.title = `Báo Hỷ Khải Nga - Kính mời ${nameParam}`;
+      sessionStorage.setItem("guest_name", nameParam);
+    } else if (cleanPath.length >= 6 && cleanPath.length <= 10) {
+      // Try fetching by short_id
+      console.log("Detecting short_id:", cleanPath);
+      const fetchGuest = async () => {
+        try {
+          const guest = await adminApi.getInvitationByShortId(cleanPath);
+          console.log("Found guest:", guest);
+          if (guest) {
+            setGuestName(guest.name);
+            setWeddingSide(guest.side);
+            document.title = `Báo Hỷ Khải Nga - Kính mời ${guest.name}`;
+            sessionStorage.setItem("guest_name", guest.name);
+          }
+        } catch (e) {
+          console.error("Short ID not found:", e);
+        }
+      };
+      fetchGuest();
     } else {
       document.title = "Báo Hỷ Khải Nga";
     }
@@ -283,6 +306,7 @@ function App() {
               coupleName="Phạm Khải & Lê Nga"
               date={currentConfig.date}
               timeLabel={currentConfig.time}
+              guestName={guestName}
             />
 
             {/* Profile Section */}
