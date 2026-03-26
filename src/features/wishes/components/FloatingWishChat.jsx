@@ -9,35 +9,48 @@ import {
   X,
   Send,
   Menu,
+  Loader2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "react-hot-toast";
 
-const WishModal = ({ onClose, onSuccess }) => {
+const getChatPath = (side) => {
+  const path = window.location.pathname.toLowerCase();
+  
+  // Strict checks for groom
+  if (path === "/r" || path.startsWith("/r/") || path.includes("/groom") || side === "groom") {
+    return "/r";
+  }
+  
+  // Strict checks for bride
+  if (path === "/d" || path.startsWith("/d/") || path.includes("/bride") || side === "bride") {
+    return "/d";
+  }
+  
+  return "/";
+};
+
+const WishModal = ({ onClose, onSuccess, guestName, side }) => {
   const [formData, setFormData] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return { name: params.get("name") || "", message: "" };
+    return { name: guestName || params.get("name") || "", message: "" };
   });
+
+  useEffect(() => {
+    if (guestName) {
+      setFormData((prev) => ({ ...prev, name: guestName }));
+    }
+  }, [guestName]);
   const inputRef = useRef(null);
   const messageRef = useRef(null);
   const createMutation = useCreateWish();
 
-  useEffect(() => {
-    // Smart auto focus: if name exists (from URL params), focus message
-    if (formData.name) {
-      setTimeout(() => {
-        messageRef.current?.focus();
-      }, 500); // Wait for animation
-    }
-  }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Anti-spam check: 60s cooldown
     const lastWishTime = localStorage.getItem("last_wish_send_time");
     const now = Date.now();
-    const cooldownPeriod = 60000; // 60 seconds
+    const cooldownPeriod = 60000;
 
     if (lastWishTime && now - parseInt(lastWishTime) < cooldownPeriod) {
       const remaining = Math.ceil(
@@ -49,8 +62,41 @@ const WishModal = ({ onClose, onSuccess }) => {
       return;
     }
 
+    let targetPath = getChatPath(side);
+    let finalMessage = formData.message.trim();
+    let role = "GUEST";
+
+    if (finalMessage.toLowerCase().startsWith("/r ")) {
+      targetPath = "/r";
+      role = "FAMILY_GROOM";
+      finalMessage = finalMessage.substring(3).trim();
+    } else if (finalMessage.toLowerCase().startsWith("/d ")) {
+      targetPath = "/d";
+      role = "FAMILY_BRIDE";
+      finalMessage = finalMessage.substring(3).trim();
+    } else if (finalMessage.toLowerCase() === "/r") {
+      targetPath = "/r";
+      role = "FAMILY_GROOM";
+      finalMessage = "";
+    } else if (finalMessage.toLowerCase() === "/d") {
+      targetPath = "/d";
+      role = "FAMILY_BRIDE";
+      finalMessage = "";
+    }
+
+    if (!finalMessage && !formData.message.includes("/")) {
+      toast.error("Vui lòng nhập lời chúc!");
+      return;
+    }
+
     createMutation.mutate(
-      { ...formData, role: "GUEST", phone: "" },
+      {
+        ...formData,
+        message: finalMessage || formData.message,
+        role: role,
+        phone: "",
+        guest_path_name: targetPath,
+      },
       {
         onSuccess: (newWish) => {
           localStorage.setItem("last_wish_send_time", Date.now().toString());
@@ -59,13 +105,27 @@ const WishModal = ({ onClose, onSuccess }) => {
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: ["#fd848e", "#e85d79", "#ffffff"],
+            colors: targetPath === "/r"
+              ? ["#3b82f6", "#2563eb", "#ffffff"]
+              : targetPath === "/d"
+              ? ["#fd848e", "#e85d79", "#ffffff"]
+              : ["#b39164", "#8d714b", "#ffffff"],
           });
           onSuccess?.(newWish);
         },
       },
     );
   };
+
+  const isGroomPath =
+    getChatPath(side) === "/r" ||
+    formData.message.toLowerCase().startsWith("/r ") ||
+    formData.message.toLowerCase() === "/r";
+
+  const isBridePath =
+    getChatPath(side) === "/d" ||
+    formData.message.toLowerCase().startsWith("/d ") ||
+    formData.message.toLowerCase() === "/d";
 
   return (
     <motion.div
@@ -86,7 +146,7 @@ const WishModal = ({ onClose, onSuccess }) => {
       >
         <button
           onClick={onClose}
-          className="absolute top-s24 right-s24 text-[#aaa] hover:text-[#666] transition-colors"
+          className="absolute top-s24 right-s24 text-[#5c1a1a] hover:opacity-70 transition-colors"
         >
           <X size={24} />
         </button>
@@ -110,7 +170,7 @@ const WishModal = ({ onClose, onSuccess }) => {
             placeholder="Tên của bạn"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full border border-primary/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-primary/60 transition-colors"
+            className="w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors"
           />
           <textarea
             ref={messageRef}
@@ -121,19 +181,25 @@ const WishModal = ({ onClose, onSuccess }) => {
               setFormData({ ...formData, message: e.target.value })
             }
             rows={5}
-            className="w-full border border-primary/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-primary/60 transition-colors resize-none"
+            className="w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors resize-none"
           />
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="w-full py-s15 rounded-full bg-gradient-to-r from-[#fd848e] to-[#e85d79] text-white font-bold text-[16px] tracking-wide shadow-lg shadow-primary/30 mt-s10 transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-s10"
+            className={`w-full py-s15 rounded-full text-white font-bold text-[16px] tracking-wide shadow-lg mt-s10 transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-s10 ${
+              isGroomPath
+                ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-blue-500/30"
+                : isBridePath
+                ? "bg-gradient-to-r from-[#fd848e] to-[#e85d79] shadow-pink-200/50"
+                : "bg-gradient-to-r from-[#b39164] to-[#8d714b] shadow-amber-900/20"
+            }`}
           >
             {createMutation.isPending ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 1 }}
               >
-                ⏳
+                <Loader2 size={18} />
               </motion.div>
             ) : (
               <>
@@ -147,15 +213,30 @@ const WishModal = ({ onClose, onSuccess }) => {
   );
 };
 
-const FloatingWishChat = () => {
+const FloatingWishChat = ({ guestName, side }) => {
   const { data: wishes } = useWishes();
   const [activeWishes, setActiveWishes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
-  const [likeCount, setLikeCount] = useState(18);
   const indexRef = useRef(0);
   const timerRef = useRef(null);
   const idCounter = useRef(0);
+  const createMutation = useCreateWish();
+
+  const [desktopData, setDesktopData] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return { name: guestName || params.get("name") || "", message: "" };
+  });
+
+  useEffect(() => {
+    if (guestName) {
+      setDesktopData((prev) => ({ ...prev, name: guestName }));
+    }
+  }, [guestName]);
+
+  const currentPathType = getChatPath(side);
+  const isGroomPath = currentPathType === "/r";
+  const isBridePath = currentPathType === "/d";
 
   const addNextWish = () => {
     if (!wishes || wishes.length <= 5) return;
@@ -171,25 +252,82 @@ const FloatingWishChat = () => {
   useEffect(() => {
     if (!wishes || wishes.length === 0) return;
 
-    if (wishes.length <= 5) {
-      // Just show all unique wishes without cycling
-      setActiveWishes(
-        wishes.map((w, idx) => ({ ...w, _key: `initial_${w.id}_${idx}` })),
-      );
-    } else {
-      // Reset index and start cycling
-      indexRef.current = 0;
-      addNextWish();
+    // Only initialize list if it's currently empty to avoid UI reset
+    if (activeWishes.length === 0) {
+      if (wishes.length <= 5) {
+        setActiveWishes(
+          wishes.map((w, idx) => ({ ...w, _key: `initial_${w.id}_${idx}` })),
+        );
+      } else {
+        // Start from a random index to make it feel dynamic on load
+        indexRef.current = Math.floor(Math.random() * wishes.length);
+        addNextWish();
+      }
     }
   }, [wishes]);
 
   useEffect(() => {
-    // Only cycle if there are more than 5 wishes
     if (!wishes || wishes.length <= 5) return;
-
     timerRef.current = setInterval(addNextWish, 4000);
     return () => clearInterval(timerRef.current);
   }, [wishes]);
+
+  const handleDesktopSubmit = (e) => {
+    e.preventDefault();
+    if (!desktopData.name || !desktopData.message) return;
+
+    let targetPath = getChatPath(side);
+    let finalMessage = desktopData.message.trim();
+    let role = "GUEST";
+
+    if (finalMessage.toLowerCase().startsWith("/r ")) {
+      targetPath = "/r";
+      role = "FAMILY_GROOM";
+      finalMessage = finalMessage.substring(3).trim();
+    } else if (finalMessage.toLowerCase().startsWith("/d ")) {
+      targetPath = "/d";
+      role = "FAMILY_BRIDE";
+      finalMessage = finalMessage.substring(3).trim();
+    } else if (finalMessage.toLowerCase() === "/r") {
+      targetPath = "/r";
+      role = "FAMILY_GROOM";
+      finalMessage = "";
+    } else if (finalMessage.toLowerCase() === "/d") {
+      targetPath = "/d";
+      role = "FAMILY_BRIDE";
+      finalMessage = "";
+    }
+
+    createMutation.mutate(
+      {
+        ...desktopData,
+        message: finalMessage || desktopData.message,
+        role: role,
+        phone: "",
+        guest_path_name: targetPath,
+      },
+      {
+        onSuccess: (newWish) => {
+          setDesktopData({ ...desktopData, message: "" });
+          idCounter.current += 1;
+          setActiveWishes((prev) => [
+            ...prev.slice(-4),
+            { ...newWish, _key: idCounter.current },
+          ]);
+          confetti({
+            particleCount: 100,
+            spread: 50,
+            origin: { x: 0.1, y: 0.9 },
+            colors: targetPath === "/r"
+              ? ["#3b82f6", "#2563eb", "#ffffff"]
+              : targetPath === "/d"
+              ? ["#fd848e", "#e85d79", "#ffffff"]
+              : ["#b39164", "#8d714b", "#ffffff"],
+          });
+        },
+      },
+    );
+  };
 
   return (
     <>
@@ -197,6 +335,8 @@ const FloatingWishChat = () => {
         {showModal && (
           <WishModal
             onClose={() => setShowModal(false)}
+            guestName={guestName}
+            side={side}
             onSuccess={(newWish) => {
               idCounter.current += 1;
               setActiveWishes((prev) => [
@@ -208,91 +348,180 @@ const FloatingWishChat = () => {
         )}
       </AnimatePresence>
 
-      <div className="fixed inset-x-0 md:right-auto md:left-s20 bottom-0 md:bottom-s20 z-[90] pointer-events-none p-s20 md:p-s15 pb-s10 md:pb-s15 w-full md:w-[400px] md:bg-white/10 md:backdrop-blur-md md:rounded-[32px] md:border md:border-white/20 md:shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
-        <div className="relative">
-          {/* Chat list */}
-          <AnimatePresence>
-            {isOpen && (
+      <div
+        className={`fixed inset-x-0 md:right-auto md:left-s20 bottom-0 md:bottom-s20 z-[90] pointer-events-none p-s20 md:p-s15 pb-s10 md:pb-s15 w-full md:transition-all md:duration-500 ${isOpen ? "md:w-[420px]" : "md:w-auto"}`}
+      >
+        <div className="relative pointer-events-auto">
+          {/* Main Chat Box */}
+          <AnimatePresence mode="wait">
+            {isOpen ? (
               <motion.div
-                key="chatlist"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 40 }}
-                transition={{ duration: 0.4 }}
-                className="flex flex-col justify-end items-start md:items-start gap-s8 px-s5 max-w-[85%] md:max-w-full pointer-events-none"
-                style={{ minHeight: "220px" }}
+                key="chat-box-open"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] p-s10 md:pt-s50 md:pb-s25 md:px-s25"
               >
-                <AnimatePresence mode="popLayout">
-                  {activeWishes.map((wish) => (
-                    <motion.div
-                      key={wish._key}
-                      layout
-                      initial={{ opacity: 0, x: 60 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, y: -30 }}
-                      transition={{
-                        type: "spring",
-                        damping: 20,
-                        stiffness: 200,
-                      }}
-                      className="bg-[#f3425f]/50 text-[13px] md:text-[14px] px-s10 min-h-7 py-1 rounded-[15px] text-white shadow-lg pointer-events-auto w-fit max-w-full"
+                {/* Desktop Decorative Header (Like Mobile Modal) */}
+                <div className="hidden md:block absolute -top-[45px] left-1/2 -translate-x-1/2 z-[11]">
+                  <img
+                    src="/message-heart.png"
+                    alt="Heart Icon"
+                    className="w-[160px] object-contain drop-shadow-2xl"
+                  />
+                </div>
+
+                {/* Desktop Close Button (Top Right) */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="hidden md:flex absolute top-5 right-6 text-[#5c1a1a] hover:opacity-70 transition-colors z-[12]"
+                >
+                  <X size={20} />
+                </button>
+
+                {/* Desktop Title */}
+                <h2 className="hidden md:block text-center text-[20px] font-bold text-[#5c1a1a] mb-s20">
+                  Lời chúc
+                </h2>
+
+                {/* Chat list area */}
+                <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full min-h-[160px] md:min-h-[180px]">
+                  <AnimatePresence mode="popLayout">
+                    {activeWishes.map((wish) => (
+                      <motion.div
+                        key={wish._key}
+                        layout
+                        initial={{ opacity: 0, x: 60 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, y: -30 }}
+                        transition={{
+                          type: "spring",
+                          damping: 20,
+                          stiffness: 200,
+                        }}
+                        className={`${
+                          wish.guest_path_name === "/r"
+                            ? "bg-blue-600/50 shadow-blue-500/10"
+                            : wish.guest_path_name === "/d"
+                            ? "bg-[#fd848e]/50 shadow-pink-500/10"
+                            : "bg-[#b39164]/50 shadow-amber-900/5" 
+                        } text-[13px] md:text-[14px] px-s12 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto transition-all border border-white/20`}
+                      >
+                        <span className="font-bold mr-s4 text-white/90">{wish.name}: </span>
+                        <span className="pl-1 leading-relaxed text-white">
+                          {wish.message}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Action Form Footer */}
+                <div className="mt-s15 md:mt-4">
+                  {/* Desktop Form */}
+                  <div className="hidden md:block bg-[#5c1a1a]/5 p-s15 rounded-[16px] border border-[#5c1a1a]/10 backdrop-blur-sm">
+                    <form
+                      onSubmit={handleDesktopSubmit}
+                      className="flex flex-col gap-s10"
                     >
-                      <span className="font-bold mr-s4">{wish.name}: </span>
-                      <span className="pl-1 leading-relaxed">
-                        {wish.message}
+                      <input
+                        placeholder="Tên của bạn..."
+                        value={desktopData.name}
+                        onChange={(e) =>
+                          setDesktopData({
+                            ...desktopData,
+                            name: e.target.value,
+                          })
+                        }
+                        className="w-full bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all"
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          placeholder="Lời nhắn gửi yêu thương..."
+                          value={desktopData.message}
+                          onChange={(e) =>
+                            setDesktopData({
+                              ...desktopData,
+                              message: e.target.value,
+                            })
+                          }
+                          className="flex-1 bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all"
+                        />
+                        <button
+                          type="submit"
+                          disabled={createMutation.isPending}
+                          className={`${
+                            isGroomPath ||
+                            desktopData.message.toLowerCase().startsWith("/r")
+                              ? "bg-blue-600 shadow-blue-500/20"
+                              : (isBridePath ||
+                                  desktopData.message.toLowerCase().startsWith("/d"))
+                              ? "bg-[#fd848e] shadow-pink-500/20"
+                              : "bg-[#b39164] shadow-amber-900/20"
+                          } text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
+                        >
+                          {createMutation.isPending ? (
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ repeat: Infinity, duration: 1 }}
+                            >
+                              <Loader2 size={18} />
+                            </motion.div>
+                          ) : (
+                            <Send size={18} />
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  {/* Mobile Layout Button Strip */}
+                  <div className="md:hidden flex items-center justify-end gap-s10">
+                    <button
+                      onClick={() => setShowModal(true)}
+                      className={`flex-1 py-2.5 rounded-full px-s18 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm ${
+                        isGroomPath 
+                          ? "bg-blue-600/40" 
+                          : isBridePath 
+                          ? "bg-[#fd848e]/40" 
+                          : "bg-[#b39164]/40"
+                      }`}
+                    >
+                      <span className="text-[14px] opacity-90 truncate">
+                        Gửi lời chúc...
                       </span>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                      <MessageSquareText size={18} />
+                    </button>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="w-[48px] h-[48px] bg-[#5c1a1a]/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white border border-white/30 shadow-md"
+                    >
+                      <X size={22} />
+                    </button>
+                  </div>
+                </div>
               </motion.div>
+            ) : (
+              /* Closed Trigger Icon (Bottom Left) */
+              <motion.button
+                key="chat-box-closed"
+                layoutId="chat-toggle"
+                initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
+                onClick={() => setIsOpen(true)}
+                className={`w-[56px] h-[56px] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all md:ml-2 ${
+                  isGroomPath 
+                    ? "bg-blue-600 shadow-blue-500/30" 
+                    : isBridePath 
+                    ? "bg-[#fd848e] shadow-pink-500/30" 
+                    : "bg-[#b39164] shadow-amber-900/20"
+                }`}
+              >
+                <MessageSquareText size={28} />
+              </motion.button>
             )}
           </AnimatePresence>
-
-          {/* Bottom action bar & Permanent Toggle */}
-          <div className="flex items-center justify-end gap-s10 pointer-events-auto h-[48px] mt-s10 md:mt-2 relative">
-            <AnimatePresence>
-              {isOpen && (
-                <motion.button
-                  key="input-bar"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  onClick={() => setShowModal(true)}
-                  className="flex-1 py-2 bg-[#f3425f]/60 backdrop-blur-md rounded-full px-s18 flex items-center justify-between text-white border border-white/20 hover:bg-[#f3425f]/80 transition-colors"
-                >
-                  <span className="text-[14px] opacity-90 truncate">Gửi lời chúc...</span>
-                  <MessageSquareText size={18} />
-                </motion.button>
-              )}
-            </AnimatePresence>
-
-            <button 
-              onClick={() => setIsOpen(!isOpen)}
-              className="w-[48px] h-[48px] bg-[#f3425f]/60 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 shadow-md shrink-0 transition-transform active:scale-90"
-            >
-              <AnimatePresence mode="wait">
-                {isOpen ? (
-                  <motion.div
-                    key="close-icon"
-                    initial={{ opacity: 0, rotate: -90 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: 90 }}
-                  >
-                    <X size={22} />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="chat-icon"
-                    initial={{ opacity: 0, rotate: 90 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: -90 }}
-                  >
-                    <MessageSquareText size={22} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </button>
-          </div>
         </div>
       </div>
     </>

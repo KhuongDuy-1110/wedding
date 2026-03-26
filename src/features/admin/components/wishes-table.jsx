@@ -123,6 +123,7 @@ const WishesTable = ({
                 />
               </th>
               <th className="px-6 py-3 text-left">Người gửi</th>
+              <th className="px-6 py-3 text-left">Phía</th>
               <th className="px-6 py-3 text-left">Lời chúc</th>
               <th className="px-6 py-3 text-left">Ngày gửi</th>
               <th className="px-6 py-3 text-right">Thao tác</th>
@@ -143,6 +144,17 @@ const WishesTable = ({
                   <div className="font-bold text-gray-800">{wish.name}</div>
                   <div className={`mt-1 text-[10px] w-fit font-bold uppercase px-1 rounded-sm ${wish.hidden ? 'bg-gray-50 text-gray-400' : 'bg-green-50 text-green-500'}`}>
                      {wish.hidden ? "Đang ẩn" : "Đang hiển thị"}
+                  </div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex flex-col gap-1">
+                    {wish.guest_path_name?.includes("/r") || wish.guest_path_name?.includes("groom") ? (
+                      <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded w-fit">CHÚ RỂ</span>
+                    ) : wish.guest_path_name?.includes("/d") || wish.guest_path_name?.includes("bride") ? (
+                      <span className="text-[10px] font-bold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded w-fit">CÔ DÂU</span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded w-fit uppercase">{wish.guest_path_name || "Chung"}</span>
+                    )}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-xs text-gray-500 max-w-xs">{wish.message}</td>

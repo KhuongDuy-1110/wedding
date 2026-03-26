@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, CheckCircle2, User, MessageCircle, Users } from "lucide-react";
+import { Send, CheckCircle2, User, MessageCircle, Users, Loader2 } from "lucide-react";
 import SectionHeading from "../../../components/atoms/SectionHeading";
 import { useCreateWish } from "../hooks/use-wishes";
 
@@ -16,7 +16,12 @@ const WishForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    createMutation.mutate(formData, {
+    const guestPath = 
+      formData.role === "FAMILY_GROOM" ? "/r" : 
+      formData.role === "FAMILY_BRIDE" ? "/d" : 
+      "/";
+
+    createMutation.mutate({ ...formData, guest_path_name: guestPath }, {
       onSuccess: () => {
         setFormData({ name: "", phone: "", role: "GUEST", message: "" });
       },
@@ -162,7 +167,7 @@ const WishForm = () => {
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 1 }}
                   >
-                    ⏳
+                    <Loader2 size={20} />
                   </motion.div>
                 ) : (
                   <>

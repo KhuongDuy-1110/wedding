@@ -14,8 +14,11 @@ export const useCreateWish = () => {
 
   return useMutation({
     mutationFn: (data) => {
-      const guestName = sessionStorage.getItem("guest_name") || "Không xác định";
-      return wishesApi.createWish({ ...data, guest_path_name: guestName });
+      // Do not store actual name in guest_path_name, only the type/side
+      return wishesApi.createWish({
+        ...data,
+        guest_path_name: data.guest_path_name || "other",
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishes"] });

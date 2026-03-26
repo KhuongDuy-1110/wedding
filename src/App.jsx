@@ -95,19 +95,17 @@ function App() {
 
     if (nameParam) {
       setGuestName(nameParam);
-      document.title = `Báo Hỷ Khải Nga - Kính mời ${nameParam}`;
+      document.title = `Thân mời ${nameParam} - Đám Cưới Khải & Nga`;
       sessionStorage.setItem("guest_name", nameParam);
     } else if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
       // Try fetching by short_id
-      console.log("Detecting short_id:", potentialId);
       const fetchGuest = async () => {
         try {
           const guest = await adminApi.getInvitationByShortId(potentialId);
-          console.log("Found guest:", guest);
           if (guest) {
             setGuestName(guest.name);
             setWeddingSide(guest.side);
-            document.title = `Báo Hỷ Khải Nga - Kính mời ${guest.name}`;
+            document.title = `Thân mời ${guest.name} - Đám Cưới Khải & Nga`;
             sessionStorage.setItem("guest_name", guest.name);
           }
         } catch (e) {
@@ -116,7 +114,7 @@ function App() {
       };
       fetchGuest();
     } else {
-      document.title = "Báo Hỷ Khải Nga";
+      document.title = "Đám Cưới Khải & Nga";
     }
 
     if (!hasTracked.current) {
@@ -163,9 +161,9 @@ function App() {
       targetDate: "2026-04-04T16:00:00",
     },
     both: {
-      date: "05.04.2026",
-      time: "CHỦ NHẬT - 10H00",
-      targetDate: "2026-04-05T10:00:00",
+      date: "04.04.2026",
+      time: "THỨ BẢY - 16H00",
+      targetDate: "2026-04-04T16:00:00",
     },
   };
 
@@ -369,7 +367,7 @@ function App() {
         )}
       </AnimatePresence>
     </div>
-      <FloatingWishChat />
+      <FloatingWishChat guestName={guestName} side={weddingSide} />
       <SideCountdown targetDate={currentConfig.targetDate} side={weddingSide} onOpenMap={() => handleOpenMap()} />
       <AnimatePresence>
         {showMapModal && (
