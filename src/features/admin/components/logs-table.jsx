@@ -104,7 +104,7 @@ const LogsTable = ({
                        {isSide === "none" ? "CH" : (isSide === "groom" ? "R" : "D")}
                      </span>
                      <span>{formatDate(log.updated_at || log.created_at).split(' ')[1]}</span>
-                     <span className="truncate max-w-[40px] opacity-50">{parseUA(log.user_agent)}</span>
+                     <span className="truncate max-w-[80px] opacity-70 border-l border-gray-200 pl-1.5 ml-1">{parseUA(log.user_agent)}</span>
                   </div>
                   {log.scroll_percent > 0 && (
                     <span className="text-[8px] text-orange-400 font-bold">{log.scroll_percent}%</span>
@@ -132,7 +132,7 @@ const LogsTable = ({
               <th className="px-4 py-3 text-left">Khách mời</th>
               <th className="px-5 py-3 text-left hidden md:table-cell">Tiến độ</th>
               <th className="px-5 py-3 text-left hidden sm:table-cell">Path</th>
-              <th className="px-5 py-3 text-left hidden xl:table-cell">Thiết bị</th>
+              <th className="px-5 py-3 text-left hidden lg:table-cell">Thiết bị</th>
               <th className="px-4 py-3 text-left">Cập nhật</th>
               <th className="px-3 py-3 text-left w-10"></th>
             </tr>
@@ -173,7 +173,7 @@ const LogsTable = ({
                       {isSide === "none" ? "CHUNG" : (isSide === "groom" ? "NHÀ TRAI" : "NHÀ GÁI")}
                     </span>
                   </td>
-                  <td className="px-5 py-4 text-xs text-gray-400 hidden xl:table-cell">{parseUA(log.user_agent)}</td>
+                  <td className="px-5 py-4 text-xs text-gray-400 hidden lg:table-cell">{parseUA(log.user_agent)}</td>
                   <td className="px-4 py-4 text-xs text-gray-400">{formatDate(log.updated_at || log.created_at)}</td>
                   <td className="px-3 py-4 text-right">
                     <button onClick={() => handleDeleteLog(log.id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>

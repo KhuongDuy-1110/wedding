@@ -8,7 +8,10 @@ import {
   Users,
   Send,
   RefreshCw,
+  UserCheck,
+  Upload
 } from "lucide-react";
+import { useSiteSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
 import { formatDate, parseUA, capitalizeName } from "../utils/admin-helpers";
 import { Badge } from "../components/badge";
 
@@ -32,6 +35,7 @@ const AdminPage = () => {
   });
   const [logs, setLogs] = useState([]);
   const [wishes, setWishes] = useState([]);
+  const [rsvps, setRsvps] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -68,12 +72,14 @@ const AdminPage = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [logsData, wishesData] = await Promise.all([
+      const [logsData, wishesData, rsvpsData] = await Promise.all([
         adminApi.getLogs(),
         adminApi.getAllWishes(),
+        adminApi.getRSVP(),
       ]);
       setLogs(logsData);
       setWishes(wishesData);
+      setRsvps(rsvpsData);
     } catch (_) {}
     setLoading(false);
   };
@@ -171,7 +177,12 @@ const AdminPage = () => {
     const pctOpened = totalLogs ? Math.round((opened / totalLogs) * 100) : 0;
     const pctScrolled = totalLogs ? Math.round((scrolled100 / totalLogs) * 100) : 0;
 
-    return { total: totalLogs, opened, qrViewed, pctOpened, pctScrolled, totalVisits };
+    // RSVP Stats
+    const totalConfirmed = rsvps.filter(r => r.status === 'attending').length;
+    const totalGuests = rsvps.filter(r => r.status === 'attending').reduce((acc, r) => acc + (r.count || 1), 0);
+    const totalRemote = rsvps.filter(r => r.status === 'not_attending').length;
+
+    return { total: totalLogs, opened, qrViewed, pctOpened, pctScrolled, totalVisits, totalConfirmed, totalGuests, totalRemote };
   };
 
   const stats = logStats();
@@ -235,7 +246,7 @@ const AdminPage = () => {
   const tabs = [
     { id: "logs", label: "Truy cập", icon: <BarChart2 size={15} /> },
     { id: "wishes", label: "Lời chúc", icon: <MessageSquare size={15} /> },
-    { id: "invitations", label: "Mời khách", icon: <Send size={15} /> },
+    { id: "invitations", label: "Khách mời", icon: <Send size={15} /> },
     { id: "stats", label: "Thống kê", icon: <Users size={15} /> },
     { id: "images", label: "Quản lý ảnh", icon: <ImageIcon size={15} /> },
   ];
@@ -306,8 +317,184 @@ const AdminPage = () => {
           />
         )}
         {tab === "invitations" && <InvitationManager />}
-        {tab === "images" && <GalleryManager />}
+        {tab === "images" && <GalleryTab isGroomSide={false} />}
       </div>
+    </div>
+  );
+};
+
+// Extracted Gallery Tab to keep AdminPage clean
+const GalleryTab = ({ isGroomSide = false }) => {
+  const { data: settings = {}, isLoading: settingsLoading } = useSiteSettings();
+  const updateSetting = useUpdateSetting();
+  const [selectedIndices, setSelectedIndices] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  const galleryList = useMemo(() => {
+    try {
+      const list = settings.gallery_list ? JSON.parse(settings.gallery_list) : [];
+      return Array.isArray(list) ? list.filter(v => v) : [];
+    } catch (e) {
+      return [];
+    }
+  }, [settings.gallery_list]);
+
+  const toggleSelect = useCallback((idx) => {
+    setSelectedIndices(prev => 
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIndices(prev => 
+      prev.length === galleryList.length ? [] : galleryList.map((_, i) => i)
+    );
+  }, [galleryList]);
+
+  const handleUpload = async (e, targetKey = null) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(targetKey ? "section" : "new_gallery");
+    const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "dklus9slm";
+    const PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "didauday";
+
+    try {
+      const newUrls = [];
+      for (let i = 0; i < files.length; i++) {
+        const formData = new FormData();
+        formData.append("file", files[i]);
+        formData.append("upload_preset", PRESET);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        
+        if (data.secure_url) {
+          if (targetKey) {
+            // Update specific section image
+            await updateSetting.mutateAsync({ 
+              key_name: targetKey, 
+              value_content: data.secure_url 
+            });
+          } else {
+            newUrls.push(data.secure_url);
+          }
+        }
+      }
+
+      if (newUrls.length > 0) {
+        // Update the JSON gallery_list
+        const newList = [...galleryList, ...newUrls];
+        await updateSetting.mutateAsync({ 
+          key_name: "gallery_list", 
+          value_content: JSON.stringify(newList) 
+        });
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    }
+    setUploading(false);
+  };
+
+  const handleDeleteGallery = async (index) => {
+    if (!confirm("Xóa ảnh này?")) return;
+    const newList = galleryList.filter((_, i) => i !== index);
+    await updateSetting.mutateAsync({ 
+      key_name: "gallery_list", 
+      value_content: JSON.stringify(newList) 
+    });
+    setSelectedIndices(prev => prev.filter(i => i !== index).map(i => i > index ? i - 1 : i));
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIndices.length === 0) return;
+    if (!confirm(`Xóa ${selectedIndices.length} ảnh đã chọn?`)) return;
+
+    const newList = galleryList.filter((_, i) => !selectedIndices.includes(i));
+    await updateSetting.mutateAsync({ 
+      key_name: "gallery_list", 
+      value_content: JSON.stringify(newList) 
+    });
+    setSelectedIndices([]);
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Section Images Manager */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between">
+          <h2 className="font-bold text-gray-800 text-xs sm:text-sm uppercase tracking-wider">Ảnh Giao Diện</h2>
+          <span className="text-[10px] text-gray-400 font-medium">Cấu hình ảnh từng mục</span>
+        </div>
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ImageSectionGroup title="Hero Section">
+             <SectionImageRow label="Ảnh Nền (Hero)" settingKey="hero_bg" value={settings.hero_bg} onUpload={handleUpload} />
+             <SectionImageRow label="Ảnh Cặp Đôi" settingKey="hero_couple" value={settings.hero_couple} onUpload={handleUpload} />
+             <SectionImageRow label="Thumbnail (Chia sẻ)" settingKey="opening_image" value={settings.opening_image} onUpload={handleUpload} />
+          </ImageSectionGroup>
+
+          <ImageSectionGroup title="Cô Dâu">
+             <SectionImageRow label="Ảnh Chính" settingKey="bride_main" value={settings.bride_main} onUpload={handleUpload} />
+             <SectionImageRow label="Ảnh Phụ 1" settingKey="bride_small_1" value={settings.bride_small_1} onUpload={handleUpload} />
+             <SectionImageRow label="Ảnh Phụ 2" settingKey="bride_small_2" value={settings.bride_small_2} onUpload={handleUpload} />
+          </ImageSectionGroup>
+
+          <ImageSectionGroup title="Chú Rể">
+             <SectionImageRow label="Ảnh Chính" settingKey="groom_main" value={settings.groom_main} onUpload={handleUpload} />
+             <SectionImageRow label="Ảnh Phụ 1" settingKey="groom_small_1" value={settings.groom_small_1} onUpload={handleUpload} />
+             <SectionImageRow label="Ảnh Phụ 2" settingKey="groom_small_2" value={settings.groom_small_2} onUpload={handleUpload} />
+          </ImageSectionGroup>
+        </div>
+      </div>
+
+      <GalleryManager
+        galleryList={galleryList}
+        selectedIndices={selectedIndices}
+        toggleSelect={toggleSelect}
+        handleDeleteGallery={handleDeleteGallery}
+        handleDeleteSelected={handleDeleteSelected}
+        toggleSelectAll={toggleSelectAll}
+        uploading={uploading}
+        handleUpload={(e) => handleUpload(e, null)}
+        hasFullControl={true}
+        isGroomSide={isGroomSide}
+      />
+    </div>
+  );
+};
+
+const ImageSectionGroup = ({ title, children }) => (
+  <div className="space-y-3">
+    <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest border-l-2 border-primary/30 pl-2">{title}</h3>
+    <div className="space-y-2">{children}</div>
+  </div>
+);
+
+const SectionImageRow = ({ label, settingKey, value, onUpload }) => {
+  const [localUploading, setLocalUploading] = useState(false);
+  
+  const handleInternalUpload = async (e) => {
+    setLocalUploading(true);
+    await onUpload(e, settingKey);
+    setLocalUploading(false);
+  };
+
+  return (
+    <div className="flex items-center gap-3 bg-gray-50/50 p-2 rounded-xl border border-gray-100 group">
+      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-200 shrink-0 border border-gray-100">
+        <img src={value} alt={label} className="w-full h-full object-cover" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] font-bold text-gray-700 truncate">{label}</p>
+        <p className="text-[9px] text-gray-400 truncate font-mono">{settingKey}</p>
+      </div>
+      <label className="cursor-pointer bg-white p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:text-primary hover:border-primary transition-all shadow-sm active:scale-95">
+        <input type="file" className="hidden" accept="image/*" onChange={handleInternalUpload} />
+        {localUploading ? <RefreshCw size={14} className="animate-spin" /> : <Upload size={14} />}
+      </label>
     </div>
   );
 };

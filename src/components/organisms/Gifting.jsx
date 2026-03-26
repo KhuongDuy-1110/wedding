@@ -147,7 +147,7 @@ const Gifting = ({ side }) => {
       : allAccounts.filter((acc) => acc.role === side);
 
   return (
-    <section className="pb-s20 bg-white overflow-hidden">
+    <section id="gifting-section" className="pb-s20 bg-white overflow-hidden">
       <div className="section-title">
         <h2>GỬI MỪNG CƯỚI</h2>
         <p>Với một vài chi tiết nhỏ</p>

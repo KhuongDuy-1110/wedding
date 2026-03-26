@@ -21,6 +21,7 @@ import FloatingHearts from "./components/atoms/FloatingHearts";
 import { trackEvent } from "./features/admin/utils/tracker";
 import { useSiteSettings } from "./hooks/use-site-settings";
 import SideCountdown from "./components/organisms/SideCountdown";
+import RSVPTrigger from "./features/rsvp/components/RSVPTrigger";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -29,6 +30,7 @@ function App() {
   const [showMapModal, setShowMapModal] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [guestName, setGuestName] = useState("");
+  const [shortId, setShortId] = useState("");
   const audioRef = useRef(null);
   const { data: settings, isLoading: isSettingsLoading } = useSiteSettings();
 
@@ -98,6 +100,7 @@ function App() {
       document.title = `Thân mời ${nameParam} - Đám Cưới Khải & Nga`;
       sessionStorage.setItem("guest_name", nameParam);
     } else if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
+      setShortId(potentialId);
       // Try fetching by short_id
       const fetchGuest = async () => {
         try {
@@ -368,6 +371,7 @@ function App() {
       </AnimatePresence>
     </div>
       <FloatingWishChat guestName={guestName} side={weddingSide} />
+      <RSVPTrigger guestName={guestName} side={weddingSide} shortId={shortId} isOpened={isOpened} />
       <SideCountdown targetDate={currentConfig.targetDate} side={weddingSide} onOpenMap={() => handleOpenMap()} />
       <AnimatePresence>
         {showMapModal && (

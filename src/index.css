@@ -149,6 +149,10 @@ h3 {
   color: var(--color-primary);
 }
 
+button {
+  @apply transition-all duration-300 cursor-pointer active:scale-95;
+}
+
 @utility script {
   font-family: var(--font-couple);
   color: var(--color-primary);

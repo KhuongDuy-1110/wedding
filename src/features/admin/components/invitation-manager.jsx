@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Copy, Trash2, Edit2, Plus, RefreshCw, Send, CheckSquare, Square, XCircle, ExternalLink } from "lucide-react";
+import { Copy, Trash2, Edit2, Plus, RefreshCw, Send, CheckSquare, Square, XCircle, ExternalLink, UserCheck, Gift } from "lucide-react";
 import { Badge } from "./badge";
 import { adminApi } from "../api/admin-api";
 import { useSiteSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
@@ -360,8 +360,21 @@ const InvitationManager = () => {
                 </button>
               </div>
               
-              <div className="flex items-center justify-between mt-1.5">
-                <span className="text-[10px] text-gray-400 font-mono bg-gray-50 px-1 rounded">{guest.short_id}</span>
+              <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-gray-50">
+                <div className="flex flex-col gap-1">
+                  <span className="text-[9px] text-gray-400 font-mono bg-gray-50 px-1 rounded w-fit">{guest.short_id}</span>
+                  {guest.rsvp_status ? (
+                    <div className="flex items-center gap-1">
+                      {guest.rsvp_status === 'attending' ? (
+                        <span className="text-[9px] font-bold text-green-500 flex items-center gap-0.5"><UserCheck size={10}/> Tham dự {guest.rsvp_count > 1 ? `(${guest.rsvp_count})` : ''}</span>
+                      ) : (
+                        <span className="text-[9px] font-bold text-pink-500 flex items-center gap-0.5"><Gift size={10}/> Mừng từ xa</span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-[9px] text-gray-300 italic font-medium">Chưa phản hồi</span>
+                  )}
+                </div>
                 <div className="flex items-center gap-1.5">
                   <button onClick={() => startEdit(guest)} className="p-1 px-1.5 text-gray-400 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
                     <Edit2 size={11} />
@@ -394,6 +407,7 @@ const InvitationManager = () => {
                 />
               </th>
               <th className="px-6 py-3 text-left">Tên khách mời</th>
+              <th className="px-6 py-3 text-left">Phản hồi</th>
               <th className="px-6 py-3 text-left hidden md:table-cell">Mã mời</th>
               <th className="px-6 py-3 text-left hidden lg:table-cell">Link chi tiết</th>
               <th className="px-6 py-3 text-right">Thao tác</th>
@@ -424,6 +438,23 @@ const InvitationManager = () => {
                        <span className="font-bold text-gray-800">{guest.name}</span>
                        {guest.is_sent === 1 && <span className="text-emerald-500 font-bold text-xs shrink-0">✓ Đã gửi</span>}
                     </div>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  {guest.rsvp_status ? (
+                    <div className="flex flex-col gap-0.5">
+                      {guest.rsvp_status === 'attending' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-600 text-[10px] font-bold uppercase w-fit">
+                          <UserCheck size={10} /> Tham dự ({guest.rsvp_count})
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-pink-50 text-pink-600 text-[10px] font-bold uppercase w-fit">
+                          <Gift size={10} /> Mừng từ xa
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-[10px] text-gray-300 italic">Chưa phản hồi</span>
                   )}
                 </td>
                 <td className="px-6 py-4 hidden md:table-cell"><span className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded">{guest.short_id}</span></td>

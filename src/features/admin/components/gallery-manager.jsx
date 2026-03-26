@@ -2,8 +2,8 @@ import React from "react";
 import { Trash2, Image as ImageIcon, CheckSquare, Upload, RefreshCw } from "lucide-react";
 
 const GalleryManager = ({
-  galleryList,
-  selectedIndices,
+  galleryList = [],
+  selectedIndices = [],
   toggleSelect,
   handleDeleteGallery,
   handleDeleteSelected,

@@ -60,4 +60,8 @@ export const adminApi = {
     const res = await api.post("/invitations/bulk-delete", { ids });
     return res.data;
   },
+  getRSVP: async () => {
+    const res = await api.get("/admin/rsvp");
+    return res.data;
+  },
 };

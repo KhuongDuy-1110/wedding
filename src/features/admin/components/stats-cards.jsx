@@ -27,10 +27,25 @@ const StatsCards = ({ stats }) => {
       value: stats.totalVisits,
       color: "from-purple-500 to-purple-400",
     },
+    {
+      label: "Đã xác nhận",
+      value: stats.totalConfirmed,
+      color: "from-red-500 to-red-400",
+    },
+    {
+      label: "Tổng số người",
+      value: stats.totalGuests,
+      color: "from-amber-500 to-amber-400",
+    },
+    {
+      label: "Mừng từ xa",
+      value: stats.totalRemote,
+      color: "from-pink-600 to-pink-500",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-4 mb-6">
       {statItems.map((s) => (
         <div
           key={s.label}

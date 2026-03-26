@@ -370,6 +370,19 @@ const initDB = async () => {
       )
     `);
 
+    await connection.execute(`
+      CREATE TABLE IF NOT EXISTS rsvp (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        invitation_id VARCHAR(10),
+        name VARCHAR(255),
+        count INT DEFAULT 1,
+        side VARCHAR(50),
+        status VARCHAR(50),
+        note TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     // Migration for short_id & is_sent
     try {
       await connection.execute("ALTER TABLE invitations ADD COLUMN short_id VARCHAR(10) UNIQUE AFTER id");
@@ -390,9 +403,7 @@ const initDB = async () => {
         ['groom_main', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
         ['groom_small_1', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
         ['groom_small_2', 'https://i.pinimg.com/736x/76/4c/b1/764cb10e4ffba2e9bdd66571a4e128c9.jpg'],
-        ['gallery_1', '/assets/gallery-1.png'],
-        ['gallery_2', '/assets/trai-tim.jpg'],
-        ['gallery_3', '/assets/couple.png'],
+        ['gallery_list', JSON.stringify(['/assets/gallery-1.png', '/assets/trai-tim.jpg', '/assets/couple.png'])],
         ['invitation_template_groom', 'Trân trọng kính mời [name] tới dự lễ cưới của chúng mình tại [link] !'],
         ['invitation_template_bride', 'Trân trọng kính mời [name] tới dự lễ ăn hỏi & tiệc mừng của chúng mình tại [link] !'],
       ];
@@ -509,6 +520,35 @@ app.post("/api/wishes", async (req, res) => {
   } catch (err) {
     console.error("Error inserting wish:", err.message);
     res.status(500).json({ error: "Error saving wish" });
+  }
+});
+
+app.post("/api/rsvp", async (req, res) => {
+  const { invitation_id, name, count, side, status, note } = req.body;
+  if (!name || !status) {
+    return res.status(400).json({ error: "Name and status are required" });
+  }
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute(
+      "INSERT INTO rsvp (invitation_id, name, count, side, status, note) VALUES (?, ?, ?, ?, ?, ?)",
+      [invitation_id || null, name, count || 1, side || 'both', status, note || '']
+    );
+    await connection.end();
+    res.status(201).json({ id: result.insertId, ...req.body });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get("/api/admin/rsvp", async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute("SELECT * FROM rsvp ORDER BY created_at DESC");
+    await connection.end();
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -685,10 +725,27 @@ app.get("/api/logs", async (req, res) => {
 app.get("/api/invitations", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute("SELECT * FROM invitations ORDER BY created_at DESC");
+    // Get all invitations with their latest RSVP status
+    const [rows] = await connection.execute(`
+      SELECT
+        i.id, i.short_id, i.name, i.side, i.is_sent, i.created_at,
+        r.status as rsvp_status,
+        r.count as rsvp_count,
+        r.note as rsvp_note,
+        r.created_at as rsvp_at
+      FROM invitations i
+      LEFT JOIN (
+        SELECT r1.* FROM rsvp r1
+        INNER JOIN (
+          SELECT MAX(id) as max_id FROM rsvp GROUP BY invitation_id, name
+        ) r2 ON r1.id = r2.max_id
+      ) r ON (i.short_id = r.invitation_id OR i.name = r.name)
+      ORDER BY i.created_at DESC
+    `);
     await connection.end();
     res.json(rows);
   } catch (err) {
+    console.error("SQL Error in /api/invitations:", err);
     res.status(500).json({ error: err.message });
   }
 });

@@ -379,9 +379,11 @@ const FloatingWishChat = ({ guestName, side }) => {
             {isOpen ? (
               <motion.div
                 key="chat-box-open"
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                layoutId="chat-box"
+                initial={{ opacity: 0, scale: 0.8, x: -20, y: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                exit={{ opacity: 0, scale: 0.5, x: -20, y: 20 }}
+                style={{ originX: 0, originY: 1 }}
                 className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] py-s10 md:pt-s50 md:pb-s25 md:px-s25"
               >
                 {/* Desktop Decorative Header (Like Mobile Modal) */}
@@ -527,7 +529,13 @@ const FloatingWishChat = ({ guestName, side }) => {
                     </button>
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="w-[48px] h-[48px] bg-[#5c1a1a]/40 backdrop-blur-sm rounded-full flex items-center justify-center text-white border border-white/30 shadow-md"
+                      className={`w-[48px] h-[48px] backdrop-blur-sm rounded-full flex items-center justify-center text-white border border-white/30 shadow-md active:scale-95 transition-all ${
+                        isGroomPath
+                          ? "bg-blue-600/40"
+                          : isBridePath
+                            ? "bg-[#fd848e]/40"
+                            : "bg-[#b39164]/40"
+                      }`}
                     >
                       <X size={22} />
                     </button>
@@ -538,14 +546,15 @@ const FloatingWishChat = ({ guestName, side }) => {
               /* Closed Trigger Icon (Bottom Left) */
               <motion.button
                 key="chat-box-closed"
-                layoutId="chat-toggle"
-                initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
-                animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
+                layoutId="chat-box"
+                initial={{ opacity: 0, scale: 0.5, x: 20, y: -20 }}
+                animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+                exit={{ opacity: 0, scale: 0.5, x: 20, y: -20 }}
+                style={{ originX: 0, originY: 1 }}
                 onClick={() => setIsOpen(true)}
                 className={`w-[56px] h-[56px] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all md:ml-2 ${
                   isGroomPath
-                    ? "bg-blue-600 shadow-blue-500/30"
+                    ? "bg-blue-600/40 shadow-blue-500/30"
                     : isBridePath
                       ? "bg-[#fd848e] shadow-pink-500/30"
                       : "bg-[#b39164] shadow-amber-900/20"
