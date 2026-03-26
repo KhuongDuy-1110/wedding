@@ -261,7 +261,18 @@ const InvitationManager = () => {
             Nhà gái
           </button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {filteredGuests.length > 0 && (
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedIds.length === filteredGuests.length && filteredGuests.length > 0}
+                onChange={(e) => handleSelectAll(e.target.checked, filteredGuests)}
+                className="rounded border-gray-300 w-3.5 h-3.5"
+              />
+              <span className="text-[10px] font-bold text-gray-500 uppercase">Tất cả</span>
+            </label>
+          )}
           {selectedIds.length > 0 && (
             <button
               onClick={bulkDelete}
@@ -271,7 +282,7 @@ const InvitationManager = () => {
             </button>
           )}
           <Badge color={side === "groom" ? "blue" : "pink"}>
-            {isLoadingGuests ? "..." : filteredGuests.length} khách
+            {isLoadingGuests ? "..." : filteredGuests.length}
           </Badge>
         </div>
       </div>

@@ -31,6 +31,17 @@ const LogsTable = ({
               Lịch sử
             </h2>
             <span className="bg-blue-50 text-blue-500 text-[10px] px-1.5 py-0.5 rounded font-bold">{filteredLogs.length}</span>
+            {filteredLogs.length > 0 && (
+              <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                <input
+                  type="checkbox"
+                  checked={selectedLogs.length === filteredLogs.length && filteredLogs.length > 0}
+                  onChange={toggleSelectAllLogs}
+                  className="rounded border-gray-300 w-3 h-3 h-3"
+                />
+                <span className="text-[10px] font-bold text-gray-400 uppercase">Tất cả</span>
+              </label>
+            )}
           </div>
           {selectedLogs.length > 0 && (
             <button

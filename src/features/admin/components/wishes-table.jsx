@@ -26,6 +26,17 @@ const WishesTable = ({
               Lời chúc
             </h2>
             <span className="bg-pink-50 text-pink-500 text-[10px] px-1.5 py-0.5 rounded font-bold">{filteredWishes.length}</span>
+            {filteredWishes.length > 0 && (
+              <label className="flex items-center gap-1.5 cursor-pointer ml-2">
+                <input
+                  type="checkbox"
+                  checked={selectedWishes.length === filteredWishes.length && filteredWishes.length > 0}
+                  onChange={toggleSelectAll}
+                  className="rounded border-gray-300 w-3 h-3 h-3"
+                />
+                <span className="text-[10px] font-bold text-gray-400 uppercase">Tất cả</span>
+              </label>
+            )}
           </div>
           {selectedWishes.length > 0 && (
             <button
