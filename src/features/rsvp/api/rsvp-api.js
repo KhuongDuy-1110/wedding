@@ -8,4 +8,8 @@ export const rsvpApi = {
     const res = await api.post("/rsvp", data);
     return res.data;
   },
+  checkStatus: async (shortId) => {
+    const res = await api.get(`/rsvp/status/${shortId}`);
+    return res.data;
+  },
 };

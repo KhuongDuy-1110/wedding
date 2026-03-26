@@ -105,19 +105,12 @@ const InvitationManager = () => {
     e.preventDefault();
     if (!newName.trim() || isAddingGuest) return;
 
-    let names = newName
+    const names = newName
       .split("\n")
       .filter((n) => n.trim())
       .map((n) => n.trim());
 
-    const existingNames = (guests || [])
-      .filter((g) => g.side === side)
-      .map((g) => g.name.toLowerCase());
-    
-    names = names.filter(n => !existingNames.includes(n.toLowerCase()));
-
     if (names.length === 0) {
-      alert("Tên khách mời đã có trong danh sách hoặc dữ liệu không hợp lệ.");
       setNewName("");
       return;
     }

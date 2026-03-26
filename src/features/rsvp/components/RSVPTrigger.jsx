@@ -1,27 +1,43 @@
 import React, { useState, useEffect } from "react";
 import RSVPModal from "./RSVPModal";
+import { rsvpApi } from "../api/rsvp-api";
 
 const RSVPTrigger = ({ guestName, side, shortId, isOpened }) => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Only show if it's a guest, invitation is opened, and has NOT been shown in this session
-    const hasBeenShown = sessionStorage.getItem("rsvp_popup_shown");
-    const isRSVPDone = sessionStorage.getItem("rsvp_done");
-    
-    // Check if we have guest identifying info
     const isGuest = !!(guestName || shortId);
+    if (!isGuest || !isOpened) return;
 
-    if (isGuest && isOpened && !hasBeenShown && !isRSVPDone) {
+    const sessionShown = sessionStorage.getItem("rsvp_popup_shown");
+    const sessionDone = sessionStorage.getItem("rsvp_done");
+    if (sessionShown || sessionDone) return;
+
+    let cancelled = false;
+
+    const checkAndShow = async () => {
+      if (shortId) {
+        try {
+          const result = await rsvpApi.checkStatus(shortId);
+          if (result.hasResponded) return;
+        } catch (e) {
+          // If API fails, fall through and show popup
+        }
+      }
+
+      if (cancelled) return;
+
       const delay = Math.floor(Math.random() * 5000) + 5000;
-      
-      const timer = setTimeout(() => {
-        setShowModal(true);
-        sessionStorage.setItem("rsvp_popup_shown", "true");
+      setTimeout(() => {
+        if (!cancelled) {
+          setShowModal(true);
+          sessionStorage.setItem("rsvp_popup_shown", "true");
+        }
       }, delay);
+    };
 
-      return () => clearTimeout(timer);
-    }
+    checkAndShow();
+    return () => { cancelled = true; };
   }, [guestName, shortId, isOpened]);
 
   return (

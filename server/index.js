@@ -541,6 +541,24 @@ app.post("/api/rsvp", async (req, res) => {
   }
 });
 
+app.get("/api/rsvp/status/:shortId", async (req, res) => {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [rows] = await connection.execute(
+      "SELECT status, name, count, created_at FROM rsvp WHERE invitation_id = ? ORDER BY created_at DESC LIMIT 1",
+      [req.params.shortId]
+    );
+    await connection.end();
+    if (rows.length > 0) {
+      res.json({ hasResponded: true, ...rows[0] });
+    } else {
+      res.json({ hasResponded: false });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/admin/rsvp", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
