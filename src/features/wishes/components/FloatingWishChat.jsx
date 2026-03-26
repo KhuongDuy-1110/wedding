@@ -14,19 +14,32 @@ import {
 import confetti from "canvas-confetti";
 import { toast } from "react-hot-toast";
 
+const MAX_NAME_LENGTH = 25;
+const MAX_MESSAGE_LENGTH = 200;
+
 const getChatPath = (side) => {
   const path = window.location.pathname.toLowerCase();
-  
+
   // Strict checks for groom
-  if (path === "/r" || path.startsWith("/r/") || path.includes("/groom") || side === "groom") {
+  if (
+    path === "/r" ||
+    path.startsWith("/r/") ||
+    path.includes("/groom") ||
+    side === "groom"
+  ) {
     return "/r";
   }
-  
+
   // Strict checks for bride
-  if (path === "/d" || path.startsWith("/d/") || path.includes("/bride") || side === "bride") {
+  if (
+    path === "/d" ||
+    path.startsWith("/d/") ||
+    path.includes("/bride") ||
+    side === "bride"
+  ) {
     return "/d";
   }
-  
+
   return "/";
 };
 
@@ -105,11 +118,12 @@ const WishModal = ({ onClose, onSuccess, guestName, side }) => {
             particleCount: 150,
             spread: 70,
             origin: { y: 0.6 },
-            colors: targetPath === "/r"
-              ? ["#3b82f6", "#2563eb", "#ffffff"]
-              : targetPath === "/d"
-              ? ["#fd848e", "#e85d79", "#ffffff"]
-              : ["#b39164", "#8d714b", "#ffffff"],
+            colors:
+              targetPath === "/r"
+                ? ["#3b82f6", "#2563eb", "#ffffff"]
+                : targetPath === "/d"
+                  ? ["#fd848e", "#e85d79", "#ffffff"]
+                  : ["#b39164", "#8d714b", "#ffffff"],
           });
           onSuccess?.(newWish);
         },
@@ -167,22 +181,29 @@ const WishModal = ({ onClose, onSuccess, guestName, side }) => {
           <input
             ref={inputRef}
             required
+            maxLength={MAX_NAME_LENGTH}
             placeholder="Tên của bạn"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors"
           />
-          <textarea
-            ref={messageRef}
-            required
-            placeholder="Lời chúc của bạn"
-            value={formData.message}
-            onChange={(e) =>
-              setFormData({ ...formData, message: e.target.value })
-            }
-            rows={5}
-            className="w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors resize-none"
-          />
+          <div className="relative">
+            <textarea
+              ref={messageRef}
+              required
+              maxLength={MAX_MESSAGE_LENGTH}
+              placeholder="Lời chúc của bạn"
+              value={formData.message}
+              onChange={(e) =>
+                setFormData({ ...formData, message: e.target.value })
+              }
+              rows={5}
+              className="w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors resize-none"
+            />
+            <span className="absolute bottom-2 right-3 text-[11px] text-[#999]">
+              {formData.message.length}/{MAX_MESSAGE_LENGTH}
+            </span>
+          </div>
           <button
             type="submit"
             disabled={createMutation.isPending}
@@ -190,8 +211,8 @@ const WishModal = ({ onClose, onSuccess, guestName, side }) => {
               isGroomPath
                 ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-blue-500/30"
                 : isBridePath
-                ? "bg-gradient-to-r from-[#fd848e] to-[#e85d79] shadow-pink-200/50"
-                : "bg-gradient-to-r from-[#b39164] to-[#8d714b] shadow-amber-900/20"
+                  ? "bg-gradient-to-r from-[#fd848e] to-[#e85d79] shadow-pink-200/50"
+                  : "bg-gradient-to-r from-[#b39164] to-[#8d714b] shadow-amber-900/20"
             }`}
           >
             {createMutation.isPending ? (
@@ -318,11 +339,12 @@ const FloatingWishChat = ({ guestName, side }) => {
             particleCount: 100,
             spread: 50,
             origin: { x: 0.1, y: 0.9 },
-            colors: targetPath === "/r"
-              ? ["#3b82f6", "#2563eb", "#ffffff"]
-              : targetPath === "/d"
-              ? ["#fd848e", "#e85d79", "#ffffff"]
-              : ["#b39164", "#8d714b", "#ffffff"],
+            colors:
+              targetPath === "/r"
+                ? ["#3b82f6", "#2563eb", "#ffffff"]
+                : targetPath === "/d"
+                  ? ["#fd848e", "#e85d79", "#ffffff"]
+                  : ["#b39164", "#8d714b", "#ffffff"],
           });
         },
       },
@@ -360,7 +382,7 @@ const FloatingWishChat = ({ guestName, side }) => {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] p-s10 md:pt-s50 md:pb-s25 md:px-s25"
+                className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] py-s10 md:pt-s50 md:pb-s25 md:px-s25"
               >
                 {/* Desktop Decorative Header (Like Mobile Modal) */}
                 <div className="hidden md:block absolute -top-[45px] left-1/2 -translate-x-1/2 z-[11]">
@@ -395,20 +417,26 @@ const FloatingWishChat = ({ guestName, side }) => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, y: -60, scale: 0.9 }}
                         transition={{
-                          layout: { type: "spring", damping: 25, stiffness: 120 },
+                          layout: {
+                            type: "spring",
+                            damping: 25,
+                            stiffness: 120,
+                          },
                           opacity: { duration: 0.4 },
                           x: { type: "spring", damping: 25, stiffness: 120 },
-                          y: { type: "spring", damping: 25, stiffness: 120 }
+                          y: { type: "spring", damping: 25, stiffness: 120 },
                         }}
                         className={`${
                           wish.guest_path_name === "/r"
                             ? "bg-blue-600/50 shadow-blue-500/10"
                             : wish.guest_path_name === "/d"
-                            ? "bg-[#fd848e]/50 shadow-pink-500/10"
-                            : "bg-[#b39164]/50 shadow-amber-900/5" 
+                              ? "bg-[#fd848e]/50 shadow-pink-500/10"
+                              : "bg-[#b39164]/50 shadow-amber-900/5"
                         } text-[13px] md:text-[14px] px-s12 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto border border-white/20`}
                       >
-                        <span className="font-bold mr-s4 text-white/90">{wish.name}: </span>
+                        <span className="font-bold mr-s4 text-white/90">
+                          {wish.name}:{" "}
+                        </span>
                         <span className="pl-1 leading-relaxed text-white">
                           {wish.message}
                         </span>
@@ -427,6 +455,7 @@ const FloatingWishChat = ({ guestName, side }) => {
                     >
                       <input
                         placeholder="Tên của bạn..."
+                        maxLength={MAX_NAME_LENGTH}
                         value={desktopData.name}
                         onChange={(e) =>
                           setDesktopData({
@@ -439,6 +468,7 @@ const FloatingWishChat = ({ guestName, side }) => {
                       <div className="flex gap-2">
                         <input
                           placeholder="Lời nhắn gửi yêu thương..."
+                          maxLength={MAX_MESSAGE_LENGTH}
                           value={desktopData.message}
                           onChange={(e) =>
                             setDesktopData({
@@ -455,10 +485,12 @@ const FloatingWishChat = ({ guestName, side }) => {
                             isGroomPath ||
                             desktopData.message.toLowerCase().startsWith("/r")
                               ? "bg-blue-600 shadow-blue-500/20"
-                              : (isBridePath ||
-                                  desktopData.message.toLowerCase().startsWith("/d"))
-                              ? "bg-[#fd848e] shadow-pink-500/20"
-                              : "bg-[#b39164] shadow-amber-900/20"
+                              : isBridePath ||
+                                  desktopData.message
+                                    .toLowerCase()
+                                    .startsWith("/d")
+                                ? "bg-[#fd848e] shadow-pink-500/20"
+                                : "bg-[#b39164] shadow-amber-900/20"
                           } text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
                         >
                           {createMutation.isPending ? (
@@ -481,11 +513,11 @@ const FloatingWishChat = ({ guestName, side }) => {
                     <button
                       onClick={() => setShowModal(true)}
                       className={`flex-1 py-2.5 rounded-full px-s18 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm ${
-                        isGroomPath 
-                          ? "bg-blue-600/40" 
-                          : isBridePath 
-                          ? "bg-[#fd848e]/40" 
-                          : "bg-[#b39164]/40"
+                        isGroomPath
+                          ? "bg-blue-600/40"
+                          : isBridePath
+                            ? "bg-[#fd848e]/40"
+                            : "bg-[#b39164]/40"
                       }`}
                     >
                       <span className="text-[14px] opacity-90 truncate">
@@ -512,11 +544,11 @@ const FloatingWishChat = ({ guestName, side }) => {
                 exit={{ opacity: 0, scale: 0.5, rotate: 45 }}
                 onClick={() => setIsOpen(true)}
                 className={`w-[56px] h-[56px] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all md:ml-2 ${
-                  isGroomPath 
-                    ? "bg-blue-600 shadow-blue-500/30" 
-                    : isBridePath 
-                    ? "bg-[#fd848e] shadow-pink-500/30" 
-                    : "bg-[#b39164] shadow-amber-900/20"
+                  isGroomPath
+                    ? "bg-blue-600 shadow-blue-500/30"
+                    : isBridePath
+                      ? "bg-[#fd848e] shadow-pink-500/30"
+                      : "bg-[#b39164] shadow-amber-900/20"
                 }`}
               >
                 <MessageSquareText size={28} />

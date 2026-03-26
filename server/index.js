@@ -15,6 +15,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const wishRateMap = new Map();
+const WISH_COOLDOWN_MS = 60000;
+const MAX_WISHES_PER_IP = 5;
+const MAX_NAME_LENGTH = 25;
+const MAX_MESSAGE_LENGTH = 150;
+
 // Note: Static files and other routes will be defined later in order of priority
 
 const getSSLConfig = () => {
@@ -458,6 +464,26 @@ app.post("/api/wishes", async (req, res) => {
     return res.status(400).json({ error: "Name and message are required" });
   }
 
+  if (name.length > MAX_NAME_LENGTH) {
+    return res.status(400).json({ error: `Tên không được vượt quá ${MAX_NAME_LENGTH} ký tự` });
+  }
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    return res.status(400).json({ error: `Lời chúc không được vượt quá ${MAX_MESSAGE_LENGTH} ký tự` });
+  }
+
+  const clientIp = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  const now = Date.now();
+  const rateData = wishRateMap.get(clientIp) || { count: 0, lastTime: 0 };
+
+  if (now - rateData.lastTime < WISH_COOLDOWN_MS) {
+    const remaining = Math.ceil((WISH_COOLDOWN_MS - (now - rateData.lastTime)) / 1000);
+    return res.status(429).json({ error: `Vui lòng chờ ${remaining} giây trước khi gửi lời chúc tiếp` });
+  }
+
+  if (rateData.count >= MAX_WISHES_PER_IP) {
+    return res.status(429).json({ error: "Bạn đã gửi đủ số lời chúc cho phép. Cảm ơn bạn!" });
+  }
+
   const isFlagged = checkBlacklist(name) || checkBlacklist(message);
   const hidden = isFlagged ? 1 : 0;
   const flagged = isFlagged ? 1 : 0;
@@ -470,6 +496,9 @@ app.post("/api/wishes", async (req, res) => {
       [name, phone, role, message, hidden, flagged, pathName],
     );
     await connection.end();
+
+    wishRateMap.set(clientIp, { count: rateData.count + 1, lastTime: now });
+
     res.status(201).json({
       id: result.insertId,
       ...req.body,

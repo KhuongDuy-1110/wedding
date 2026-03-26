@@ -25,8 +25,8 @@ export const useCreateWish = () => {
       toast.success("Gửi lời chúc thành công! ❤️");
     },
     onError: (error) => {
-      toast.error("Có lỗi xảy ra khi gửi lời chúc. Vui lòng thử lại!");
-      console.error(error);
+      const serverMsg = error?.response?.data?.error;
+      toast.error(serverMsg || "Có lỗi xảy ra khi gửi lời chúc. Vui lòng thử lại!");
     },
   });
 };
