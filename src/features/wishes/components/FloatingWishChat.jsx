@@ -390,14 +390,15 @@ const FloatingWishChat = ({ guestName, side }) => {
                     {activeWishes.map((wish) => (
                       <motion.div
                         key={wish._key}
-                        layout
-                        initial={{ opacity: 0, x: 60 }}
+                        layout="position"
+                        initial={{ opacity: 0, x: 200 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, y: -30 }}
+                        exit={{ opacity: 0, y: -60, scale: 0.9 }}
                         transition={{
-                          type: "spring",
-                          damping: 20,
-                          stiffness: 200,
+                          layout: { type: "spring", damping: 25, stiffness: 120 },
+                          opacity: { duration: 0.4 },
+                          x: { type: "spring", damping: 25, stiffness: 120 },
+                          y: { type: "spring", damping: 25, stiffness: 120 }
                         }}
                         className={`${
                           wish.guest_path_name === "/r"
@@ -405,7 +406,7 @@ const FloatingWishChat = ({ guestName, side }) => {
                             : wish.guest_path_name === "/d"
                             ? "bg-[#fd848e]/50 shadow-pink-500/10"
                             : "bg-[#b39164]/50 shadow-amber-900/5" 
-                        } text-[13px] md:text-[14px] px-s12 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto transition-all border border-white/20`}
+                        } text-[13px] md:text-[14px] px-s12 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto border border-white/20`}
                       >
                         <span className="font-bold mr-s4 text-white/90">{wish.name}: </span>
                         <span className="pl-1 leading-relaxed text-white">
