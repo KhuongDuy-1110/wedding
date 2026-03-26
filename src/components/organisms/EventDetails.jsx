@@ -49,7 +49,6 @@ const EventDetails = ({ side }) => {
 
           <a
             href="https://maps.app.goo.gl/e6V69PFv2CKDWMbbA"
-            target="_blank"
             rel="noopener noreferrer"
             className="btn-primary no-underline max-w-[200px] mx-auto p-3"
           >
@@ -90,7 +89,6 @@ const EventDetails = ({ side }) => {
 
           <a
             href="https://maps.app.goo.gl/6dSmA6fX7HCMgNuY7"
-            target="_blank"
             rel="noopener noreferrer"
             className="btn-primary no-underline max-w-[200px] mx-auto p-3"
           >

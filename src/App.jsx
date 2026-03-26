@@ -25,7 +25,9 @@ import RSVPTrigger from "./features/rsvp/components/RSVPTrigger";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isOpened, setIsOpened] = useState(false);
+  const [isOpened, setIsOpened] = useState(() => {
+    return localStorage.getItem("invitation_opened") === "true";
+  });
   const [weddingSide, setWeddingSide] = useState("both");
   const [showMapModal, setShowMapModal] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -39,6 +41,11 @@ function App() {
   // Image Preloading Logic
   useEffect(() => {
     if (!settings) return;
+
+    // Safety timeout for loading state to prevent blank screen if resources fail
+    const safetyTimeout = setTimeout(() => {
+      setIsReady(true);
+    }, 8000);
 
     const criticalImages = [
       settings.opening_image,
@@ -58,6 +65,7 @@ function App() {
 
     if (totalToLoad === 0) {
       setIsReady(true);
+      clearTimeout(safetyTimeout);
       return;
     }
 
@@ -68,15 +76,19 @@ function App() {
         loadedCount++;
         if (loadedCount === totalToLoad) {
           setIsReady(true);
+          clearTimeout(safetyTimeout);
         }
       };
       img.onerror = () => {
         loadedCount++; // Count as loaded even on error to avoid blocking forever
         if (loadedCount === totalToLoad) {
           setIsReady(true);
+          clearTimeout(safetyTimeout);
         }
       };
     });
+
+    return () => clearTimeout(safetyTimeout);
   }, [settings]);
 
   useEffect(() => {
@@ -197,13 +209,19 @@ function App() {
     if (s === "both" && !selectedSide) {
       setShowMapModal(true);
     } else {
-      window.open(MAPS[s] || MAPS.groom, "_blank");
+      const url = MAPS[s] || MAPS.groom;
+      // On mobile, opening in same tab avoids blank new-tab issue when launching apps
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      window.open(url, isMobile ? "_self" : "_blank");
       setShowMapModal(false);
     }
   };
 
+
+
   const handleOpen = () => {
     setIsOpened(true);
+    localStorage.setItem("invitation_opened", "true");
     setIsPlaying(true);
     trackEvent("open_invitation");
     confetti({
@@ -312,13 +330,9 @@ function App() {
         <style>{`@keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }`}</style>
       </motion.button>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpened && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-          >
+          <div key="main-content">
             {/* Hero Section */}
             <HeroSection
               coupleName="Phạm Khải & Lê Nga"
@@ -366,7 +380,7 @@ function App() {
             </main>
 
             <FloatingHearts />
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
