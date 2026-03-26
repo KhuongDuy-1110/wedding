@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Music, MessageSquareText, Heart } from "lucide-react";
+import { Music, MessageSquareText, Heart, MapPin, X } from "lucide-react";
 import { adminApi } from "./features/admin/api/admin-api";
 import confetti from "canvas-confetti";
 
@@ -26,6 +26,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isOpened, setIsOpened] = useState(false);
   const [weddingSide, setWeddingSide] = useState("both");
+  const [showMapModal, setShowMapModal] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [guestName, setGuestName] = useState("");
   const audioRef = useRef(null);
@@ -185,6 +186,21 @@ function App() {
   // Replace this with your Google Apps Script URL
   const GOOGLE_SCRIPT_URL = "";
 
+  const MAPS = {
+    groom: "https://maps.app.goo.gl/6dSmA6fX7HCMgNuY7",
+    bride: "https://maps.app.goo.gl/e6V69PFv2CKDWMbbA",
+  };
+
+  const handleOpenMap = (selectedSide) => {
+    const s = selectedSide || weddingSide;
+    if (s === "both" && !selectedSide) {
+      setShowMapModal(true);
+    } else {
+      window.open(MAPS[s] || MAPS.groom, "_blank");
+      setShowMapModal(false);
+    }
+  };
+
   const handleOpen = () => {
     setIsOpened(true);
     setIsPlaying(true);
@@ -260,6 +276,7 @@ function App() {
   }, [isOpened]);
 
   return (
+    <>
     <div
       className={`max-width-container relative ${
         isOpened
@@ -348,14 +365,64 @@ function App() {
             </main>
 
             <FloatingHearts />
-            <FloatingWishChat />
-            <SideCountdown targetDate={currentConfig.targetDate} />
           </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+      <FloatingWishChat />
+      <SideCountdown targetDate={currentConfig.targetDate} side={weddingSide} onOpenMap={() => handleOpenMap()} />
+      <AnimatePresence>
+        {showMapModal && (
+          <div className="fixed inset-0 z-[10000] flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowMapModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative bg-white rounded-3xl p-6 w-full max-w-[320px] shadow-2xl border border-white/20"
+            >
+              <button
+                onClick={() => setShowMapModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+              
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="text-primary" size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-gray-800 uppercase tracking-wider font-serif">Chọn Bản Đồ</h3>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Vui lòng chọn địa điểm bạn muốn đến</p>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => handleOpenMap("groom")}
+                  className="w-full py-3 bg-primary text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                >
+                  Nhà Trai (Groom)
+                </button>
+                <button
+                  onClick={() => handleOpenMap("bride")}
+                  className="w-full py-3 bg-accent text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-accent/90 transition-all shadow-lg shadow-accent/20"
+                >
+                  Nhà Gái (Bride)
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
       <audio ref={audioRef} src="/audio/i-do.mp3" loop />
       <Toaster position="top-center" />
-    </div>
+    </>
   );
 }
 
