@@ -357,10 +357,10 @@ const AdminPage = () => {
       <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div>
-            <h1 className="font-bold text-gray-800 text-base">
+            <h1 className="font-bold text-gray-800 text-sm sm:text-base">
               💍 Admin Dashboard
             </h1>
-            <p className="text-[11px] text-gray-400">Khai & Nga · 2026</p>
+            <p className="text-[10px] sm:text-[11px] text-gray-400">Khai & Nga · 2026</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -382,19 +382,19 @@ const AdminPage = () => {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-5">
-        <div className="flex gap-1 bg-white rounded-xl p-1 shadow-sm border border-gray-100 mb-5 w-fit">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-5">
+        <div className="flex gap-1 overflow-x-auto no-scrollbar bg-white rounded-xl p-1 shadow-sm border border-gray-100 mb-4 w-full sm:w-fit whitespace-nowrap">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all flex-shrink-0 ${
                 tab === t.id
                   ? "bg-gradient-to-r from-[#fd848e] to-[#f3425f] text-white shadow"
                   : "text-gray-500 hover:text-gray-800"
               }`}
             >
-              {t.icon}
+              <span className="hidden sm:inline">{t.icon}</span>
               {t.label}
             </button>
           ))}
@@ -501,11 +501,69 @@ const AdminPage = () => {
                 </div>
               </div>
             </div>
-            <div className="overflow-x-auto">
+            {/* Mobile View: Log Cards */}
+            <div className="sm:hidden grid grid-cols-1 gap-3 p-3 bg-gray-50/30">
+              {filteredLogs.length === 0 ? (
+                <div className="py-12 text-center text-gray-300 text-[11px] italic">Chưa có dữ liệu</div>
+              ) : (
+                filteredLogs.map((log) => {
+                  const eventMap = {
+                    open_invitation: { label: "Mở thiệp", color: "green" },
+                    view_qr: { label: "Xem QR", color: "pink" },
+                    page_visit: { label: "Truy cập", color: "blue" },
+                    send_wish: { label: "Gửi lời chúc", color: "pink" },
+                    scroll_depth: { label: "Cuộn", color: "orange" },
+                  };
+                  const ev = eventMap[log.event] || { label: log.event, color: "gray" };
+                  const isSide = log.path?.includes("/r") || log.path?.includes("/groom") ? "groom" : (log.path?.includes("/d") || log.path?.includes("/bride") ? "bride" : "none");
+                  
+                  return (
+                    <div key={log.id} className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedLogs.includes(log.id)}
+                            onChange={() => toggleSelectOneLog(log.id)}
+                            className="rounded border-gray-300 text-primary w-3 h-3"
+                          />
+                          <div className="font-bold text-gray-800 text-xs">
+                            {log.guest_name || "Ẩn danh"}
+                          </div>
+                        </div>
+                        <button onClick={() => handleDeleteLog(log.id)} className="text-gray-300"><Trash2 size={13} /></button>
+                      </div>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <span className={`text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase ${ev.color === 'green' ? 'bg-green-50 text-green-600' : ev.color === 'pink' ? 'bg-pink-50 text-pink-600' : 'bg-gray-50 text-gray-500'}`}>
+                          {ev.label}
+                        </span>
+                        {log.scroll_percent > 0 && (
+                          <span className="text-[9px] text-orange-400 font-mono">{log.scroll_percent}%</span>
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t border-gray-50/50">
+                        <div className="flex items-center gap-1">
+                           <span className={`text-[8px] font-bold px-1 rounded-sm ${isSide === 'groom' ? 'bg-blue-50 text-blue-400' : (isSide === 'bride' ? 'bg-pink-50 text-pink-400' : 'bg-gray-50 text-gray-300')}`}>
+                             {isSide === "none" ? "CHUNG" : (isSide === "groom" ? "RỂ" : "DÂU")}
+                           </span>
+                           <span className="text-[8px] text-gray-300 font-mono ml-1">{formatDate(log.updated_at || log.created_at)}</span>
+                        </div>
+                        <div className="text-[8px] text-gray-200 truncate max-w-[60px]">
+                           {parseUA(log.user_agent)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 text-[11px] text-gray-400 uppercase tracking-wider">
-                    <th className="px-5 py-3 text-left w-10">
+                    <th className="px-3 py-3 text-left w-10">
                       <input
                         type="checkbox"
                         checked={
@@ -516,13 +574,13 @@ const AdminPage = () => {
                         className="rounded border-gray-300 text-primary focus:ring-primary/20"
                       />
                     </th>
-                    <th className="px-5 py-3 text-left">Khách mời</th>
-                    <th className="px-5 py-3 text-left">Tiến độ</th>
-                    <th className="px-5 py-3 text-left">Lượt tập trung</th>
-                    <th className="px-5 py-3 text-left">Path</th>
-                    <th className="px-5 py-3 text-left">Thiết bị</th>
-                    <th className="px-5 py-3 text-left">Cập nhật</th>
-                    <th className="px-5 py-3 text-left w-10"></th>
+                    <th className="px-4 py-3 text-left">Khách mời</th>
+                    <th className="px-5 py-3 text-left hidden md:table-cell">Tiến độ</th>
+                    <th className="px-5 py-3 text-left hidden lg:table-cell">Lượt tập trung</th>
+                    <th className="px-5 py-3 text-left hidden sm:table-cell">Path</th>
+                    <th className="px-5 py-3 text-left hidden xl:table-cell">Thiết bị</th>
+                    <th className="px-4 py-3 text-left">Cập nhật</th>
+                    <th className="px-3 py-3 text-left w-10"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -566,7 +624,7 @@ const AdminPage = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-5 py-3">
+                        <td className="px-5 py-3 hidden md:table-cell">
                           <div className="flex flex-col gap-1.5">
                             <div className="flex items-center gap-2">
                               <div
@@ -600,7 +658,7 @@ const AdminPage = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-5 py-3">
+                        <td className="px-5 py-3 hidden lg:table-cell">
                           <div className="flex items-center gap-1.5 text-gray-600">
                             <span className="text-xs font-bold">
                               {log.visit_count || 1}
@@ -610,7 +668,7 @@ const AdminPage = () => {
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3 text-gray-400 text-xs font-mono">
+                        <td className="px-5 py-3 text-gray-400 text-xs font-mono hidden sm:table-cell">
                           {isSide === "groom" ? (
                             <Badge color="blue">Chú rể</Badge>
                           ) : isSide === "bride" ? (
@@ -620,7 +678,7 @@ const AdminPage = () => {
                           )}
                         </td>
                         <td
-                          className="max-w-[120px] truncate px-5 py-3 text-[10px] leading-tight text-gray-500"
+                          className="max-w-[120px] truncate px-5 py-3 text-[10px] leading-tight text-gray-500 hidden xl:table-cell"
                           title={log.user_agent}
                         >
                           <span className="text-blue-400 font-bold mr-1">
@@ -710,7 +768,61 @@ const AdminPage = () => {
                 )}
               </div>
             </div>
-            <div className="overflow-x-auto">
+            {/* Mobile View: Wish Cards */}
+            <div className="sm:hidden grid grid-cols-1 gap-2 p-2 bg-gray-50/20 text-xs">
+              {filteredWishes.length === 0 ? (
+                <div className="py-12 text-center text-gray-300 text-[10px] italic leading-tight">
+                   {wishFilter ? "Không tìm thấy kết quả nào" : "Chưa có lời chúc nào"}
+                </div>
+              ) : (
+                filteredWishes.map((wish) => (
+                  <div key={wish.id} className="bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
+                    <div className="flex justify-between items-center mb-1.5">
+                       <div className="flex items-center gap-2">
+                         <input
+                            type="checkbox"
+                            checked={selectedWishes.includes(wish.id)}
+                            onChange={() => toggleSelectOne(wish.id)}
+                            className="rounded border-gray-300 w-3 h-3"
+                          />
+                          <div className="font-bold text-gray-800 text-[11px]">
+                            {wish.name}
+                            {wish.flagged === 1 && <span className="text-red-500 ml-1">⚠️</span>}
+                          </div>
+                       </div>
+                       <span className={`text-[8px] px-1 py-0.5 rounded font-bold uppercase ${wish.hidden ? 'bg-gray-100 text-gray-400' : 'bg-green-50 text-green-500'}`}>
+                          {wish.hidden ? "ẨN" : "HIỆN"}
+                       </span>
+                    </div>
+                    
+                    <div className="text-[11px] text-gray-500 bg-gray-50/50 p-2 rounded-lg border border-gray-50 mb-2 leading-relaxed italic line-clamp-2">
+                       "{wish.message}"
+                    </div>
+
+                    <div className="flex justify-between items-center pt-1.5 mt-1.5 border-t border-gray-50/70">
+                       <span className="text-[8px] text-gray-300 font-mono">{formatDate(wish.created_at)}</span>
+                       <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleToggleHide(wish)}
+                            className="text-gray-300"
+                          >
+                            {wish.hidden ? <Eye size={13} /> : <EyeOff size={13} />}
+                          </button>
+                          <button
+                            onClick={() => handleDelete(wish.id)}
+                            className="text-red-200"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 text-[11px] text-gray-400 uppercase tracking-wider">
@@ -837,6 +949,7 @@ const InvitationManager = () => {
   const [guests, setGuests] = useState([]);
   const [isLoadingGuests, setIsLoadingGuests] = useState(true);
   const [newName, setNewName] = useState("");
+  const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [localTemplate, setLocalTemplate] = useState("");
@@ -930,13 +1043,27 @@ const InvitationManager = () => {
 
   const addGuest = async (e) => {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!newName.trim() || isAddingGuest) return;
 
-    const names = newName
+    let names = newName
       .split("\n")
       .filter((n) => n.trim())
-      .map((n) => n.trim()); // Already capitalized by onChange
+      .map((n) => n.trim());
 
+    // Lọc trùng với danh sách hiện có trên cùng một side
+    const existingNames = guests
+      .filter((g) => g.side === side)
+      .map((g) => g.name.toLowerCase());
+    
+    names = names.filter(n => !existingNames.includes(n.toLowerCase()));
+
+    if (names.length === 0) {
+      alert("Tên khách mời đã có trong danh sách hoặc dữ liệu không hợp lệ.");
+      setNewName("");
+      return;
+    }
+
+    setIsAddingGuest(true);
     try {
       if (names.length === 1) {
         await adminApi.createInvitation(names[0], side);
@@ -946,9 +1073,12 @@ const InvitationManager = () => {
         );
       }
       setNewName("");
-      fetchGuests();
+      await fetchGuests();
     } catch (e) {
       console.error(e);
+      alert("Lỗi khi thêm khách mời (có thể do trùng mã rút gọn, hãy thử lại)");
+    } finally {
+      setIsAddingGuest(false);
     }
   };
 
@@ -1092,87 +1222,141 @@ const InvitationManager = () => {
         </div>
 
         {/* Configuration Row: Template & Add Guest */}
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 border-b border-gray-50">
-          {/* Template Column */}
-          <div className="space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3 sm:p-6 border-b border-gray-50 bg-gray-50/10">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-1 h-4 rounded-full ${
-                    side === "bride" ? "bg-pink-500" : "bg-blue-500"
-                  }`}
-                />
-                <h4 className="text-xs font-bold text-gray-700">Mẫu lời mời</h4>
-              </div>
+              <h4 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-tight">Mẫu lời mời</h4>
               <button
                 onClick={handleSaveTemplate}
                 disabled={updateMutation.isPending}
-                className="text-[10px] font-bold text-blue-600 hover:underline disabled:opacity-50"
+                className="text-[10px] font-bold text-blue-600 disabled:opacity-50"
               >
-                {updateMutation.isPending ? "ĐANG LƯU..." : "LƯU MẪU"}
+                {updateMutation.isPending ? "..." : "LƯU MẪU"}
               </button>
             </div>
             <textarea
               ref={textareaRef}
               value={localTemplate}
               onChange={(e) => setLocalTemplate(e.target.value)}
-              rows={3}
-              className="w-full text-sm border border-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-gray-50/50"
-              placeholder="Nhập mẫu lời mời..."
+              rows={2}
+              className="w-full text-xs border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/20 bg-white"
             />
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => insertPlaceholder(" [name]")}
-                className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded hover:bg-gray-200"
-              >
-                [name]
-              </button>
-              <button
-                onClick={() => insertPlaceholder(" [link]")}
-                className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded hover:bg-gray-200"
-              >
-                [link]
-              </button>
+            <div className="flex gap-1">
+              <button onClick={() => insertPlaceholder(" [name]")} className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">[name]</button>
+              <button onClick={() => insertPlaceholder(" [link]")} className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">[link]</button>
             </div>
           </div>
-
-          {/* Add Guest Column */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-1 h-4 rounded-full ${
-                  side === "bride" ? "bg-pink-500" : "bg-blue-500"
-                }`}
-              />
-              <h4 className="text-xs font-bold text-gray-700">
-                Thêm khách mời
-              </h4>
-            </div>
-            <form onSubmit={addGuest} className="space-y-3">
+          <div className="space-y-1.5">
+            <h4 className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-tight">Thêm khách mời</h4>
+            <form onSubmit={addGuest} className="flex flex-col gap-2">
               <textarea
                 value={newName}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="Nhập danh sách tên khách, mỗi dòng 1 tên..."
-                className="w-full text-sm border border-gray-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 bg-gray-50/50"
-                rows={3}
+                placeholder="Mỗi dòng 1 tên..."
+                className="w-full text-xs border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary/20 bg-white"
+                rows={2}
               />
               <button
                 type="submit"
-                disabled={!newName.trim()}
-                className="w-full py-2.5 bg-gradient-to-r from-[#fd848e] to-[#f3425f] text-white rounded-xl text-xs font-bold shadow-md hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                disabled={!newName.trim() || isAddingGuest}
+                className="w-full py-2 bg-gradient-to-r from-[#fd848e] to-[#f3425f] text-white rounded-lg text-[11px] font-bold shadow-sm"
               >
-                <Plus size={16} /> THÊM VÀO DANH SÁCH
+                {isAddingGuest ? "..." : "THÊM KHÁCH"}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Guest Table */}
-        <div className="overflow-x-auto">
+        {/* Mobile View: Cards */}
+        <div className="sm:hidden grid grid-cols-1 gap-3 p-3 bg-gray-50/50">
+          {isLoadingGuests ? (
+            <div className="py-12 text-center text-gray-400">Đang tải...</div>
+          ) : filteredGuests.length === 0 ? (
+            <div className="py-12 text-center text-gray-300 italic">Chưa có khách mời.</div>
+          ) : (
+            filteredGuests.map((guest) => (
+              <div 
+                key={guest.id}
+                className={`p-3 bg-white rounded-xl border transition-all shadow-sm ${selectedIds.includes(guest.id) ? "border-primary ring-1 ring-primary/10 shadow-md shadow-primary/5" : "border-gray-100"}`}
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(guest.id)}
+                      onChange={() => toggleSelect(guest.id)}
+                      className="rounded border-gray-300"
+                    />
+                    <div>
+                      {editingId === guest.id ? (
+                        <div className="flex gap-1.5">
+                          <input
+                            autoFocus
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && saveEdit()}
+                            className="text-xs border border-gray-200 rounded px-2 py-0.5 w-[100px]"
+                          />
+                          <button onClick={saveEdit} className="text-blue-500 font-bold text-[10px]">Lưu</button>
+                        </div>
+                      ) : (
+                        <div className="font-bold text-gray-800 text-xs sm:text-sm">{guest.name}</div>
+                      )}
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[9px] bg-gray-50 text-gray-400 px-1 py-0.5 rounded font-mono">
+                          {guest.short_id}
+                        </span>
+                        {guest.is_sent === 1 && (
+                          <span className="text-[9px] text-emerald-500 font-bold">
+                            ✓ Đã Copy
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => deleteGuest(guest.id)}
+                    className="p-1 text-rose-300"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2 mt-2 border-t border-gray-50">
+                  <span className="text-[9px] text-gray-300 truncate max-w-[120px]">
+                    /r/{guest.short_id}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => startEdit(guest)}
+                      className="p-1.5 text-gray-400 bg-gray-50 rounded-md"
+                    >
+                      <Edit2 size={12} />
+                    </button>
+                    <button
+                      onClick={() => handleCopy(guest)}
+                      className={`flex items-center gap-1 text-[10px] font-bold px-3 py-1.5 rounded-lg border ${
+                        guest.is_sent
+                          ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                          : "bg-blue-500 text-white shadow-sm"
+                      }`}
+                    >
+                      <Copy size={12} />
+                      COPY
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 text-[11px] text-gray-400 uppercase tracking-wider">
-                <th className="px-4 py-3 text-center">
+                <th className="px-3 py-3 text-center w-10">
                   <input
                     type="checkbox"
                     checked={
@@ -1186,8 +1370,8 @@ const InvitationManager = () => {
                   />
                 </th>
                 <th className="px-6 py-3 text-left">Tên khách mời</th>
-                <th className="px-6 py-3 text-left">Mã mời</th>
-                <th className="px-6 py-3 text-left">Link chi tiết</th>
+                <th className="px-6 py-3 text-left hidden md:table-cell">Mã mời</th>
+                <th className="px-6 py-3 text-left hidden lg:table-cell">Link chi tiết</th>
                 <th className="px-6 py-3 text-right">Thao tác</th>
               </tr>
             </thead>
@@ -1209,7 +1393,7 @@ const InvitationManager = () => {
                       selectedIds.includes(guest.id) ? "bg-primary/5" : ""
                     }`}
                   >
-                    <td className="px-4 py-4 text-center">
+                    <td className="px-3 py-4 text-center">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(guest.id)}
@@ -1225,20 +1409,25 @@ const InvitationManager = () => {
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && saveEdit()}
-                            className="text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none"
+                            className="text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none w-full max-w-[120px]"
                           />
                           <button
                             onClick={saveEdit}
-                            className="text-blue-500 text-xs font-bold"
+                            className="text-blue-500 text-xs font-bold shrink-0"
                           >
                             Lưu
                           </button>
                         </div>
                       ) : (
                         <div className="flex flex-col">
-                          <span className="font-medium text-gray-700">
-                            {guest.name}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-700 text-sm">
+                              {guest.name}
+                            </span>
+                            <span className="text-[10px] bg-gray-100 text-gray-500 px-1 rounded font-mono md:hidden">
+                              {guest.short_id}
+                            </span>
+                          </div>
                           {guest.is_sent === 1 && (
                             <span className="text-[10px] text-emerald-500 font-medium">
                               ✓ Đã gửi/Copy
@@ -1247,12 +1436,12 @@ const InvitationManager = () => {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden md:table-cell">
                       <span className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-mono">
                         {guest.short_id || "---"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden lg:table-cell">
                       <div className="flex items-center gap-2 max-w-[200px]">
                         <span className="text-[11px] text-gray-400 truncate">
                           {getLink(guest)}
@@ -1288,9 +1477,10 @@ const InvitationManager = () => {
                         </button>
                         <button
                           onClick={() => deleteGuest(guest.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg"
+                          className="p-1.5 text-rose-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="Xóa khách mời"
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -1565,7 +1755,7 @@ const ImageManager = () => {
               </div>
             )}
 
-            <label className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl cursor-pointer hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+            <label className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-[11px] font-bold rounded-lg cursor-pointer hover:bg-primary/90 transition-all shadow-md shadow-primary/10">
               <input
                 type="file"
                 className="hidden"
@@ -1575,55 +1765,52 @@ const ImageManager = () => {
                 disabled={uploading === "new_gallery"}
               />
               {uploading === "new_gallery" ? (
-                <RefreshCw className="animate-spin" size={14} />
+                <RefreshCw className="animate-spin" size={12} />
               ) : (
-                <Upload size={14} />
+                <Upload size={12} />
               )}
-              THÊM NHIỀU ẢNH
+              <span className="sm:inline hidden">THÊM NHIỀU ẢNH</span>
+              <span className="sm:hidden">THÊM ẢNH</span>
             </label>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-4 font-bold">
           {galleryList.map((url, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl p-2 shadow-sm border transition-all group relative cursor-pointer ${
+              className={`bg-white rounded-lg p-0.5 shadow-sm border transition-all group relative cursor-pointer ${
                 selectedIndices.includes(index)
-                  ? "border-primary ring-2 ring-primary/10 shadow-md ring-inset"
+                  ? "border-primary ring-2 ring-primary/10 shadow-sm"
                   : "border-gray-100"
               }`}
               onClick={() => toggleSelect(index)}
             >
-              <div className="aspect-square rounded-xl overflow-hidden relative border border-gray-50">
+              <div className="aspect-square rounded-md overflow-hidden relative border border-gray-50">
                 <img
                   src={url}
                   alt={`Gallery ${index}`}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
                 />
 
-                <div className="absolute top-2 right-2 flex gap-1 items-center">
+                <div className="absolute top-1 right-1 flex flex-col gap-1 items-center">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteGallery(index);
                     }}
-                    className="p-1.5 bg-red-100 text-red-600 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-200 shadow-sm"
+                    className="p-1 bg-red-100/90 text-red-600 rounded opacity-0 group-hover:opacity-100 transition-all sm:opacity-0"
                   >
-                    <Trash2 size={12} />
+                    <Trash2 size={10} />
                   </button>
                   <div
-                    className={`p-1 rounded-lg transition-all ${
+                    className={`p-0.5 rounded transition-all ${
                       selectedIndices.includes(index)
-                        ? "bg-primary text-white scale-110"
+                        ? "bg-primary text-white"
                         : "bg-white/80 text-gray-400 opacity-0 group-hover:opacity-100"
                     }`}
                   >
-                    {selectedIndices.includes(index) ? (
-                      <CheckSquare size={14} />
-                    ) : (
-                      <Square size={14} />
-                    )}
+                    <CheckSquare size={12} />
                   </div>
                 </div>
 
@@ -1634,11 +1821,8 @@ const ImageManager = () => {
             </div>
           ))}
           {galleryList.length === 0 && (
-            <div className="col-span-full py-12 text-center border-2 border-dashed border-gray-100 rounded-3xl">
-              <ImageIcon size={40} className="mx-auto text-gray-100 mb-3" />
-              <p className="text-gray-400 text-sm font-medium">
-                Chưa có ảnh nào trong album
-              </p>
+            <div className="col-span-full py-8 text-center border border-dashed border-gray-100 rounded-2xl">
+              <p className="text-gray-300 text-[10px] font-medium uppercase tracking-widest">Album trống</p>
             </div>
           )}
         </div>

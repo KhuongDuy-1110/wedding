@@ -15,9 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the frontend build directory
-const distPath = path.join(__dirname, "../dist");
-app.use(express.static(distPath));
+// Note: Static files and other routes will be defined later in order of priority
 
 const getSSLConfig = () => {
   try {
@@ -755,10 +753,20 @@ app.get("/api/invitations/by-id/:shortId", async (req, res) => {
   }
 });
 
+// Serve assets directly - this prevents meta tag logic from running on images/js/css
+app.use("/assets", express.static(path.join(__dirname, "../dist/assets")));
+app.use("/audio", express.static(path.join(__dirname, "../dist/audio")));
+
 // SPA Fallback: All other requests serve index.html with dynamic meta tags
 app.use(async (req, res) => {
   if (req.method !== "GET") return res.status(404).json({ error: "Not found" });
   
+  // Exclude static assets that might have slipped through
+  if (req.path.includes(".") && !req.path.startsWith("/api")) {
+    const assetPath = path.join(__dirname, "../dist", req.path);
+    if (fs.existsSync(assetPath)) return res.sendFile(assetPath);
+  }
+
   const segments = req.path.split("/").filter(Boolean);
   const potentialId = segments.length > 1 ? segments[1] : (segments.length === 1 ? segments[0] : null);
   let guestInfo = null;
@@ -768,9 +776,9 @@ app.use(async (req, res) => {
     const connection = await mysql.createConnection(dbConfig);
     
     // Fetch opening image from settings
-    const [settingRows] = await connection.execute("SELECT setting_value FROM settings WHERE setting_key = 'opening_image'");
-    if (settingRows.length > 0 && settingRows[0].setting_value) {
-      openingImage = settingRows[0].setting_value;
+    const [settingRows] = await connection.execute("SELECT value_content FROM site_settings WHERE key_name = 'opening_image'");
+    if (settingRows.length > 0 && settingRows[0].value_content) {
+      openingImage = settingRows[0].value_content;
     }
 
     if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
@@ -798,14 +806,17 @@ app.use(async (req, res) => {
     console.error("Error fetching guest for meta:", e);
   }
 
+  const distPath = path.join(__dirname, "../dist");
   const indexPath = path.join(distPath, "index.html");
   if (fs.existsSync(indexPath)) {
     let html = fs.readFileSync(indexPath, "utf8");
     
-    const title = guestInfo ? `Lời mời trân trọng tới ${guestInfo.name}` : "Báo Hỷ: Khải & Nga";
-    const description = "Trân trọng kính mời bạn tới tham dự buổi tiệc vui cùng gia đình chúng mình!";
+    const guestNameSuffix = guestInfo ? ` - Kính mời ${guestInfo.name}` : "";
+    const title = `Thư Mời Cưới${guestNameSuffix} - Phạm Khải & Lê Nga`;
+    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình!";
     const image = openingImage;
-    const currentUrl = `https://thiepdientu-alpha.vercel.app${req.originalUrl}`;
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const currentUrl = `${protocol}://${req.headers.host}${req.originalUrl}`;
 
     const metaTags = `
       <title>${title}</title>
