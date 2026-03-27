@@ -32,16 +32,16 @@ export const adminApi = {
     const res = await api.get("/invitations");
     return res.data;
   },
-  createInvitation: async (name, side) => {
-    const res = await api.post("/invitations", { name, side });
+  createInvitation: async (name, side, template_type) => {
+    const res = await api.post("/invitations", { name, side, template_type });
     return res.data;
   },
   bulkCreateInvitations: async (guests) => {
     const res = await api.post("/invitations/bulk", { guests });
     return res.data;
   },
-  updateInvitation: async (id, name) => {
-    const res = await api.patch(`/invitations/${id}`, { name });
+  updateInvitation: async (id, name, template_type) => {
+    const res = await api.patch(`/invitations/${id}`, { name, template_type });
     return res.data;
   },
   deleteInvitation: async (id) => {

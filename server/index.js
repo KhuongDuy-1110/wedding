@@ -400,6 +400,9 @@ const initDB = async () => {
     try {
       await connection.execute("ALTER TABLE invitations ADD COLUMN is_sent BOOLEAN DEFAULT 0 AFTER side");
     } catch (_) {}
+    try {
+      await connection.execute("ALTER TABLE invitations ADD COLUMN template_type VARCHAR(50) DEFAULT 'bạn' AFTER name");
+    } catch (_) {}
 
     // Initial settings for images if table is empty
     const [settings] = await connection.execute("SELECT COUNT(*) as count FROM site_settings");
@@ -794,7 +797,7 @@ app.get("/api/invitations", async (req, res) => {
     // Get all invitations with their latest RSVP status
     const [rows] = await connection.execute(`
       SELECT
-        i.id, i.short_id, i.name, i.side, i.is_sent, i.created_at,
+        i.id, i.short_id, i.name, i.template_type, i.side, i.is_sent, i.created_at,
         r.status as rsvp_status,
         r.count as rsvp_count,
         r.note as rsvp_note,
@@ -817,14 +820,14 @@ app.get("/api/invitations", async (req, res) => {
 });
 
 app.post("/api/invitations", async (req, res) => {
-  const { name, side } = req.body;
+  const { name, side, template_type } = req.body;
   if (!name || !side) return res.status(400).json({ error: "Name and side are required" });
   const shortId = generateShortId();
   try {
     const connection = await mysql.createConnection(dbConfig);
-    const [result] = await connection.execute("INSERT INTO invitations (short_id, name, side) VALUES (?, ?, ?)", [shortId, name, side]);
+    const [result] = await connection.execute("INSERT INTO invitations (short_id, name, side, template_type) VALUES (?, ?, ?, ?)", [shortId, name, side, template_type || 'bạn']);
     await connection.end();
-    res.status(201).json({ id: result.insertId, short_id: shortId, name, side });
+    res.status(201).json({ id: result.insertId, short_id: shortId, name, side, template_type: template_type || 'bạn' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -835,9 +838,9 @@ app.post("/api/invitations/bulk", async (req, res) => {
   if (!guests || !Array.isArray(guests)) return res.status(400).json({ error: "Guests array required" });
   try {
     const connection = await mysql.createConnection(dbConfig);
-    const values = guests.map(g => [generateShortId(), g.name, g.side]);
+    const values = guests.map(g => [generateShortId(), g.name, g.side, g.template_type || 'bạn']);
     // Use .query instead of .execute for bulk inserts with arrays of arrays
-    await connection.query("INSERT INTO invitations (short_id, name, side) VALUES ?", [values]);
+    await connection.query("INSERT INTO invitations (short_id, name, side, template_type) VALUES ?", [values]);
     await connection.end();
     res.json({ success: true });
   } catch (err) {
@@ -846,10 +849,16 @@ app.post("/api/invitations/bulk", async (req, res) => {
 });
 
 app.patch("/api/invitations/:id", async (req, res) => {
-  const { name } = req.body;
+  const { name, template_type } = req.body;
   try {
     const connection = await mysql.createConnection(dbConfig);
-    await connection.execute("UPDATE invitations SET name = ? WHERE id = ?", [name, req.params.id]);
+    if (name && template_type) {
+      await connection.execute("UPDATE invitations SET name = ?, template_type = ? WHERE id = ?", [name, template_type, req.params.id]);
+    } else if (name) {
+      await connection.execute("UPDATE invitations SET name = ? WHERE id = ?", [name, req.params.id]);
+    } else if (template_type) {
+      await connection.execute("UPDATE invitations SET template_type = ? WHERE id = ?", [template_type, req.params.id]);
+    }
     await connection.end();
     res.json({ success: true });
   } catch (err) {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, Eye, EyeOff, MessageSquare } from "lucide-react";
+import { Trash2, MessageSquare } from "lucide-react";
 import { formatDate } from "../utils/admin-helpers";
 
 const WishesTable = ({
@@ -9,13 +9,10 @@ const WishesTable = ({
   toggleSelectAll,
   handleDelete,
   handleBulkDelete,
-  handleToggleHide,
   wishFilter,
   setWishFilter,
   wishSort,
-  setWishSort,
-  wishStatusFilter,
-  setWishStatusFilter
+  setWishSort
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -32,7 +29,7 @@ const WishesTable = ({
                   type="checkbox"
                   checked={selectedWishes.length === filteredWishes.length && filteredWishes.length > 0}
                   onChange={toggleSelectAll}
-                  className="rounded border-gray-300 w-3 h-3 h-3"
+                  className="rounded border-gray-300 w-3 h-3"
                 />
                 <span className="text-[10px] font-bold text-gray-400 uppercase">Tất cả</span>
               </label>
@@ -57,15 +54,6 @@ const WishesTable = ({
             placeholder="Tìm tên khách..."
             className="text-[10px] sm:text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none font-bold text-gray-500 bg-gray-50/50 min-w-[120px]"
           />
-          <select
-            value={wishStatusFilter}
-            onChange={(e) => setWishStatusFilter(e.target.value)}
-            className="text-[10px] sm:text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none font-bold text-gray-500 bg-gray-50/50"
-          >
-            <option value="all">Tất cả trạng thái</option>
-            <option value="visible">Đang hiển thị</option>
-            <option value="hidden">Đang ẩn</option>
-          </select>
           <select
              value={wishSort}
              onChange={(e) => setWishSort(e.target.value)}
@@ -96,23 +84,15 @@ const WishesTable = ({
                     />
                     <div className="flex items-baseline gap-1.5 overflow-hidden">
                       <span className="font-bold text-gray-800 text-[10px] shrink-0">{wish.name}</span>
-                      <span className="text-gray-400 text-[10px] truncate max-w-[150px] italic">"{wish.message}"</span>
+                      <span className="text-gray-400 text-[10px] italic">"{wish.message}"</span>
                     </div>
                  </div>
-                 <button onClick={() => handleDelete(wish.id)} className="text-gray-200 shrink-0"><Trash2 size={12} /></button>
+                 <button onClick={() => handleDelete(wish.id)} className="text-rose-200 hover:text-rose-500 shrink-0"><Trash2 size={12} /></button>
               </div>
               
               <div className="flex justify-between items-center mt-1">
                  <div className="flex items-center gap-2">
-                   <span className="text-[8px] text-gray-300 font-mono">{formatDate(wish.created_at).split(' ')[1]}</span>
-                   <span className={`text-[8px] font-bold ${wish.hidden ? 'text-gray-300' : 'text-green-500'}`}>
-                      {wish.hidden ? "ẨN" : "HIỆN"}
-                   </span>
-                 </div>
-                 <div className="flex items-center">
-                    <button onClick={() => handleToggleHide(wish)} className="text-gray-300">
-                      {wish.hidden ? <Eye size={12} /> : <EyeOff size={12} />}
-                    </button>
+                   <span className="text-[8px] text-gray-300 font-mono">{formatDate(wish.created_at)}</span>
                  </div>
               </div>
             </div>
@@ -153,9 +133,6 @@ const WishesTable = ({
                 </td>
                 <td className="px-6 py-4">
                   <div className="font-bold text-gray-800">{wish.name}</div>
-                  <div className={`mt-1 text-[10px] w-fit font-bold uppercase px-1 rounded-sm ${wish.hidden ? 'bg-gray-50 text-gray-400' : 'bg-green-50 text-green-500'}`}>
-                     {wish.hidden ? "Đang ẩn" : "Đang hiển thị"}
-                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1">
@@ -172,10 +149,7 @@ const WishesTable = ({
                 <td className="px-6 py-4 text-xs text-gray-400">{formatDate(wish.created_at)}</td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => handleToggleHide(wish)} className="p-2 bg-gray-50 text-gray-400 rounded-lg hover:bg-gray-100 transition-colors">
-                      {wish.hidden ? <Eye size={16} /> : <EyeOff size={16} />}
-                    </button>
-                    <button onClick={() => handleDelete(wish.id)} className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors">
+                    <button onClick={() => handleDelete(wish.id)} className="p-2 text-rose-300 bg-rose-50 rounded-lg hover:text-rose-500 transition-colors">
                       <Trash2 size={16} />
                     </button>
                   </div>

@@ -94,9 +94,9 @@ const SideCountdown = ({
 
   return (
     <motion.div
-      initial={{ x: 100, opacity: 0 }}
+      initial={{ x: -100, opacity: 0 }}
       animate={{
-        x: isHidden ? 100 : 0,
+        x: isHidden ? -100 : 0,
         opacity: isHidden ? 0 : 1,
       }}
       transition={{
@@ -105,7 +105,7 @@ const SideCountdown = ({
         damping: 20,
         opacity: { duration: 0.2 },
       }}
-      className={`fixed !right-0 !left-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${
+      className={`fixed !left-0 !right-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${
         isHidden ? "pointer-events-none" : "pointer-events-auto"
       }`}
     >
@@ -114,7 +114,7 @@ const SideCountdown = ({
           <motion.div
             key={item.label}
             onClick={handleScrollToCalendar}
-            className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-l-xl shadow-lg border-y border-l border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
+            className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
           >
             <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
               {item.value}
@@ -130,7 +130,7 @@ const SideCountdown = ({
             e.stopPropagation();
             onOpenMap();
           }}
-          className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-l-xl shadow-lg border-y border-l border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer"
+          className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer"
         >
           <MapPin size={18} className="text-white" />
           <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">

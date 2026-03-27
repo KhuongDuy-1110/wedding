@@ -55,7 +55,7 @@ function App() {
       settings.groom_small_1,
       settings.groom_small_2,
       "/assets/background.webp",
-      "/assets/net-dut.webp"
+      "/assets/net-dut.webp",
     ].filter(Boolean);
 
     let loadedCount = 0;
@@ -91,11 +91,22 @@ function App() {
 
   useEffect(() => {
     const segments = window.location.pathname.split("/").filter(Boolean);
-    const potentialId = segments.length > 1 ? segments[1] : (segments.length === 1 ? segments[0] : null);
+    const potentialId =
+      segments.length > 1
+        ? segments[1]
+        : segments.length === 1
+          ? segments[0]
+          : null;
 
-    if (window.location.pathname.includes("/d") || window.location.pathname.includes("/bride")) {
+    if (
+      window.location.pathname.includes("/d") ||
+      window.location.pathname.includes("/bride")
+    ) {
       setWeddingSide("bride");
-    } else if (window.location.pathname.includes("/r") || window.location.pathname.includes("/groom")) {
+    } else if (
+      window.location.pathname.includes("/r") ||
+      window.location.pathname.includes("/groom")
+    ) {
       setWeddingSide("groom");
     } else {
       setWeddingSide("both");
@@ -108,7 +119,11 @@ function App() {
     if (nameParam) {
       setGuestName(nameParam);
       sessionStorage.setItem("guest_name", nameParam);
-    } else if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
+    } else if (
+      potentialId &&
+      potentialId.length >= 6 &&
+      potentialId.length <= 10
+    ) {
       setShortId(potentialId);
       // Try fetching by short_id
       const fetchGuest = async () => {
@@ -223,8 +238,6 @@ function App() {
     }
   };
 
-
-
   const handleOpen = () => {
     setIsOpened(true);
     setIsPlaying(true);
@@ -257,7 +270,7 @@ function App() {
     let isAutoScrolling = true;
 
     const stopAutoScroll = () => {
-      if (!isAutoScrolling) return; 
+      if (!isAutoScrolling) return;
       isAutoScrolling = false;
       if (requestRef) cancelAnimationFrame(requestRef);
       // Remove listeners once stopped
@@ -269,10 +282,12 @@ function App() {
 
     const scrollFunc = () => {
       if (!isAutoScrolling) return;
-      
-      window.scrollBy(0, 0.4); // Very smooth scroll speed
-      
-      const isAtBottom = (window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 60;
+
+      window.scrollBy(0, 1); // Faster smooth scroll speed
+
+      const isAtBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 60;
       if (isAtBottom) {
         stopAutoScroll();
         return;
@@ -284,14 +299,14 @@ function App() {
     // Delay 3 seconds before starting auto-scroll after opening
     const timeoutId = setTimeout(() => {
       if (!isAutoScrolling) return;
-      
+
       window.addEventListener("wheel", stopAutoScroll, { passive: true });
       window.addEventListener("touchstart", stopAutoScroll, { passive: true });
       window.addEventListener("mousedown", stopAutoScroll, { passive: true });
       window.addEventListener("keydown", stopAutoScroll, { passive: true });
-      
+
       requestRef = requestAnimationFrame(scrollFunc);
-    }, 3000); 
+    }, 3000);
 
     return () => {
       clearTimeout(timeoutId);
@@ -301,97 +316,110 @@ function App() {
 
   return (
     <>
-    <div
-      className={`max-width-container relative ${
-        isOpened
-          ? "overflow-x-hidden overflow-y-auto h-auto"
-          : "overflow-hidden h-screen"
-      }`}
-    >
-      {/* Opening Effect (Envelope/Curtain) */}
-      <OpeningEffect
-        isOpened={isOpened}
-        onOpen={handleOpen}
-        coupleName="Phạm Khải & Lê Nga"
-        date={currentConfig.date}
-        isReady={isReady && !isSettingsLoading}
-        heroImage={settings?.opening_image || settings?.hero_couple}
-        guestName={guestName}
-      />
-
-      {/* Floating Audio Control */}
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsPlaying(!isPlaying)}
-        className={`glass fixed top-s20 right-s20 z-[2001] w-[40px] h-[40px] rounded-full flex items-center justify-center cursor-pointer border-none ${isOpened ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+      <div
+        className={`max-width-container relative ${
+          isOpened
+            ? "overflow-x-hidden overflow-y-auto h-auto"
+            : "overflow-hidden h-screen"
+        }`}
       >
-        <img
-          src="/assets/disk.png"
-          alt="Music Disk"
-          className="w-full h-full object-contain animate-[spin_3s_linear_infinite]"
-          style={{ animationPlayState: isPlaying ? "running" : "paused" }}
+        {/* Opening Effect (Envelope/Curtain) */}
+        <OpeningEffect
+          isOpened={isOpened}
+          onOpen={handleOpen}
+          coupleName="Phạm Khải & Lê Nga"
+          date={currentConfig.date}
+          isReady={isReady && !isSettingsLoading}
+          heroImage={settings?.opening_image || settings?.hero_couple}
+          guestName={guestName}
         />
-        <style>{`@keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }`}</style>
-      </motion.button>
 
-      <AnimatePresence mode="wait">
-        {isOpened && (
-          <div key="main-content">
-            {/* Hero Section */}
-            <HeroSection
-              coupleName="Phạm Khải & Lê Nga"
-              date={currentConfig.date}
-              timeLabel={currentConfig.time}
-              guestName={guestName}
-            />
+        {/* Floating Audio Control */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsPlaying(!isPlaying)}
+          className={`glass fixed top-s20 right-s20 z-[2001] w-[40px] h-[40px] rounded-full flex items-center justify-center cursor-pointer border-none ${isOpened ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        >
+          <img
+            src="/assets/disk.png"
+            alt="Music Disk"
+            className="w-full h-full object-contain animate-[spin_3s_linear_infinite]"
+            style={{ animationPlayState: isPlaying ? "running" : "paused" }}
+          />
+          <style>{`@keyframes spin { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }`}</style>
+        </motion.button>
 
-            {/* Profile Section */}
-            <ProfileSection />
+        <AnimatePresence mode="wait">
+          {isOpened && (
+            <div key="main-content">
+              {/* Hero Section */}
+              <HeroSection
+                coupleName="Phạm Khải & Lê Nga"
+                date={currentConfig.date}
+                timeLabel={currentConfig.time}
+                guestName={guestName}
+              />
 
-            {/* Quote Section */}
-            <QuoteSection />
+              {/* Profile Section */}
+              <ProfileSection />
 
-            {/* Countdown Section */}
-            <div className="px-s20">
-              <WeddingCountdown targetDate={currentConfig.targetDate} />
-            </div>
-            {/* Calendar Section */}
-            <CalendarSection />
+              {/* Quote Section */}
+              <QuoteSection />
 
-            {/* Main Content Area */}
-            <main>
-              <EventDetails side={weddingSide} />
+              {/* Countdown Section */}
+              <div className="px-s20">
+                <WeddingCountdown targetDate={currentConfig.targetDate} />
+              </div>
+              {/* Calendar Section */}
+              <CalendarSection />
 
-              {/* Gallery Section */}
-              <Gallery />
-              {/* <div
+              {/* Main Content Area */}
+              <main>
+                <EventDetails side={weddingSide} />
+
+                {/* Gallery Section */}
+                <Gallery />
+                {/* <div
                 className="bg-[#111] text-[#ddd] py-s15 px-0 text-center text-xs tracking-[4px] uppercase"
               >
                 {"<< Và thế giới đã mất đi 1 người cô đơn >>"}
               </div> */}
 
-              {/* Gifting Section */}
-              <Gifting side={weddingSide} />
+                {/* Gifting Section */}
+                <Gifting side={weddingSide} />
 
-              {/* Thank You Section */}
-              <ThankYouSection />
+                {/* Thank You Section */}
+                <ThankYouSection />
 
-              <footer className="py-s20 px-s24 text-center flex flex-col justify-center items-center">
-                <h3 className="text-base  tracking-[2px] font-serif uppercase font-brice m-0 text-primary">
-                  THANK YOU FOR WATCHING .<br />I HOPE YOU LIKE IT
-                </h3>
-              </footer>
-            </main>
+                <footer className="py-s20 px-s24 text-center flex flex-col justify-center items-center">
+                  <h3 className="text-base  tracking-[2px] font-serif uppercase font-brice m-0 text-primary">
+                    THANK YOU FOR WATCHING .<br />I HOPE YOU LIKE IT
+                  </h3>
+                </footer>
+              </main>
 
-            <FloatingHearts />
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
-      <FloatingWishChat guestName={guestName} side={weddingSide} shortId={shortId} />
-      <RSVPTrigger guestName={guestName} side={weddingSide} shortId={shortId} isOpened={isOpened} />
-      <SideCountdown targetDate={currentConfig.targetDate} side={weddingSide} onOpenMap={() => handleOpenMap()} />
+              <FloatingHearts />
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+      <FloatingWishChat
+        guestName={guestName}
+        side={weddingSide}
+        shortId={shortId}
+      />
+      <RSVPTrigger
+        guestName={guestName}
+        side={weddingSide}
+        shortId={shortId}
+        isOpened={isOpened}
+      />
+      <SideCountdown
+        targetDate={currentConfig.targetDate}
+        side={weddingSide}
+        onOpenMap={() => handleOpenMap()}
+      />
       <AnimatePresence>
         {showMapModal && (
           <div className="fixed inset-0 z-[10000] flex items-center justify-center px-4">
@@ -414,13 +442,17 @@ function App() {
               >
                 <X size={20} />
               </button>
-              
+
               <div className="text-center mb-6">
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <MapPin className="text-primary" size={24} />
                 </div>
-                <h3 className="text-lg font-bold text-gray-800 uppercase tracking-wider font-serif">Chọn Bản Đồ</h3>
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-tighter">Vui lòng chọn địa điểm bạn muốn đến</p>
+                <h3 className="text-lg font-bold text-gray-800 uppercase tracking-wider font-serif">
+                  Chọn Bản Đồ
+                </h3>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-tighter">
+                  Vui lòng chọn địa điểm bạn muốn đến
+                </p>
               </div>
 
               <div className="flex flex-col gap-3">

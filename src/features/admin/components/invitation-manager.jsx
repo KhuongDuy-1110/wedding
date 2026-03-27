@@ -4,6 +4,16 @@ import { Badge } from "./badge";
 import { adminApi } from "../api/admin-api";
 import { useSiteSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
 
+const TEMPLATE_TYPES = ["bạn", "anh", "chị", "bạn thân", "em", "chú", "cô", "bác"];
+
+const getSelfTitle = (guestTitle, side) => {
+  const t = (guestTitle || "bạn").toLowerCase();
+  if (t === "anh" || t === "chị") return "em";
+  if (t === "chú" || t === "cô" || t === "bác") return "cháu";
+  if (t === "em") return side === "groom" ? "anh" : "chị";
+  return "mình"; // default for "bạn", "bạn thân"
+};
+
 const InvitationManager = () => {
   const { data: settings, isLoading: isSettingsLoading } = useSiteSettings();
   const updateMutation = useUpdateSetting();
@@ -12,9 +22,11 @@ const InvitationManager = () => {
   const [guests, setGuests] = useState([]);
   const [isLoadingGuests, setIsLoadingGuests] = useState(true);
   const [newName, setNewName] = useState("");
+  const [newTemplateType, setNewTemplateType] = useState("bạn");
   const [isAddingGuest, setIsAddingGuest] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
+  const [editType, setEditType] = useState("");
   const [localTemplate, setLocalTemplate] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
   const textareaRef = useRef(null);
@@ -28,7 +40,7 @@ const InvitationManager = () => {
     if (settings) {
       setLocalTemplate(
         settings[activeTemplateKey] ||
-          "Trân trọng kính mời [name] tới dự lễ cưới của chúng mình tại [link] !",
+          "Trân trọng kính mời [guest] [name] tới dự lễ cưới của [self] tại [link] !",
       );
     }
   }, [settings, side, activeTemplateKey]);
@@ -118,10 +130,10 @@ const InvitationManager = () => {
     setIsAddingGuest(true);
     try {
       if (names.length === 1) {
-        await adminApi.createInvitation(names[0], side);
+        await adminApi.createInvitation(names[0], side, newTemplateType);
       } else {
         await adminApi.bulkCreateInvitations(
-          names.map((n) => ({ name: n, side })),
+          names.map((n) => ({ name: n, side, template_type: newTemplateType })),
         );
       }
       setNewName("");
@@ -177,15 +189,16 @@ const InvitationManager = () => {
   const startEdit = (guest) => {
     setEditingId(guest.id);
     setEditValue(guest.name);
+    setEditType(guest.template_type || "bạn");
   };
 
   const saveEdit = async () => {
     const capsName = capitalizeName(editValue);
     try {
-      await adminApi.updateInvitation(editingId, capsName);
+      await adminApi.updateInvitation(editingId, capsName, editType);
       setGuests(
         guests.map((g) =>
-          g.id === editingId ? { ...g, name: capsName } : g,
+          g.id === editingId ? { ...g, name: capsName, template_type: editType } : g,
         ),
       );
       setEditingId(null);
@@ -208,9 +221,15 @@ const InvitationManager = () => {
 
   const generateInvitation = (guest) => {
     const link = getLink(guest);
+    const guestTitle = guest.template_type || "bạn";
+    const selfTitle = getSelfTitle(guestTitle, guest.side);
+    
     return localTemplate
       .replaceAll("[name]", guest.name)
-      .replaceAll("[link]", link);
+      .replaceAll("[link]", link)
+      .replaceAll("[type]", guestTitle) // logic cũ
+      .replaceAll("[guest]", guestTitle)
+      .replaceAll("[self]", selfTitle);
   };
 
   const handleCopy = async (guest) => {
@@ -299,6 +318,8 @@ const InvitationManager = () => {
             placeholder="Nhập mẫu tin nhắn..."
           />
           <div className="flex gap-1">
+            <button onClick={() => insertPlaceholder("[guest]")} className="text-[9px] bg-blue-100 text-blue-600 font-bold px-1.5 py-0.5 rounded" title="Ví dụ: Anh/Chị/Bạn">[guest]</button>
+            <button onClick={() => insertPlaceholder("[self]")} className="text-[9px] bg-emerald-100 text-emerald-600 font-bold px-1.5 py-0.5 rounded" title="Ví dụ: Mình/Em/Cháu">[self]</button>
             <button onClick={() => insertPlaceholder("[name]")} className="text-[9px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">[name]</button>
             <button onClick={() => insertPlaceholder("[link]")} className="text-[9px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded">[link]</button>
           </div>
@@ -306,13 +327,27 @@ const InvitationManager = () => {
         <div className="space-y-1.5">
           <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Thêm khách mời mới</h4>
           <form onSubmit={addGuest} className="flex flex-col gap-2">
-            <textarea
-              value={newName}
-              onChange={(e) => handleNameChange(e.target.value)}
-              placeholder="Tên (mỗi dòng 1 tên)..."
-              rows={2}
-              className="w-full px-2 py-2 sm:py-2.5 text-[11px] sm:text-xs border border-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500/10 outline-none transition-all font-bold text-gray-700 bg-white"
-            />
+            <div className="flex gap-2">
+              <textarea
+                value={newName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="Tên (mỗi dòng 1 tên)..."
+                rows={2}
+                className="flex-1 px-2 py-2 sm:py-2.5 text-[11px] sm:text-xs border border-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500/10 outline-none transition-all font-bold text-gray-700 bg-white"
+              />
+              <div className="flex flex-col gap-1 w-[100px]">
+                <span className="text-[9px] text-gray-400 font-bold uppercase">Xưng hô (Khách)</span>
+                <select 
+                  value={newTemplateType}
+                  onChange={(e) => setNewTemplateType(e.target.value)}
+                  className="w-full text-[10px] border border-gray-100 rounded-lg px-1 py-1 outline-none font-bold text-gray-600 bg-white"
+                >
+                  {TEMPLATE_TYPES.map(t => (
+                    <option key={t} value={t}>{t} ({getSelfTitle(t, side)})</option>
+                  ))}
+                </select>
+              </div>
+            </div>
             <button
               type="submit"
               disabled={!newName.trim() || isAddingGuest}
@@ -330,71 +365,88 @@ const InvitationManager = () => {
         ) : filteredGuests.length === 0 ? (
           <div className="py-12 text-center text-gray-300 italic text-[11px]">Chưa có khách mời.</div>
         ) : (
-          filteredGuests.map((guest) => (
-            <div 
-              key={guest.id}
-              className={`p-2 bg-white rounded-lg border transition-all shadow-sm ${selectedIds.includes(guest.id) ? "border-primary ring-1 ring-primary/10 shadow-md" : "border-gray-100"}`}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 overflow-hidden">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(guest.id)}
-                    onChange={() => toggleSelect(guest.id)}
-                    className="rounded border-gray-300 w-3.5 h-3.5 shrink-0"
-                  />
-                  {editingId === guest.id ? (
-                    <div className="flex gap-1 items-center">
-                      <input
-                        autoFocus
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && saveEdit()}
-                        className="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 w-[80px]"
-                      />
-                      <button onClick={saveEdit} className="text-blue-500 font-bold text-[10px]">Lưu</button>
-                    </div>
-                  ) : (
-                    <div className="font-bold text-gray-800 text-[11px] truncate">{guest.name}</div>
-                  )}
-                  {guest.is_sent === 1 && <span className="text-emerald-500 text-[10px] shrink-0 font-bold">✓</span>}
-                </div>
-                <button onClick={() => deleteGuest(guest.id)} className="text-rose-200 hover:text-rose-500 transition-colors">
-                  <Trash2 size={13} />
-                </button>
-              </div>
-              
-              <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-gray-50">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[9px] text-gray-400 font-mono bg-gray-50 px-1 rounded w-fit">{guest.short_id}</span>
-                  {guest.rsvp_status ? (
-                    <div className="flex items-center gap-1">
-                      {guest.rsvp_status === 'attending' ? (
-                        <span className="text-[9px] font-bold text-green-500 flex items-center gap-0.5"><UserCheck size={10}/> Tham dự {guest.rsvp_count > 1 ? `(${guest.rsvp_count})` : ''}</span>
-                      ) : (
-                        <span className="text-[9px] font-bold text-pink-500 flex items-center gap-0.5"><Gift size={10}/> Mừng từ xa</span>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="text-[9px] text-gray-300 italic font-medium">Chưa phản hồi</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button onClick={() => startEdit(guest)} className="p-1 px-1.5 text-gray-400 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
-                    <Edit2 size={11} />
-                  </button>
-                  <button
-                    onClick={() => handleCopy(guest)}
-                    className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded border transition-all ${
-                      guest.is_sent ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-blue-500 text-white border-blue-600 shadow-sm"
-                    }`}
-                  >
-                    <Copy size={11} /> {guest.is_sent ? "ĐÃ GỬI" : "COPY"}
+          filteredGuests.map((guest) => {
+            const guestTitle = guest.template_type || "bạn";
+            const selfTitle = getSelfTitle(guestTitle, guest.side);
+            return (
+              <div 
+                key={guest.id}
+                className={`p-2 bg-white rounded-lg border transition-all shadow-sm ${selectedIds.includes(guest.id) ? "border-primary ring-1 ring-primary/10 shadow-md" : "border-gray-100"}`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(guest.id)}
+                      onChange={() => toggleSelect(guest.id)}
+                      className="rounded border-gray-300 w-3.5 h-3.5 shrink-0"
+                    />
+                    {editingId === guest.id ? (
+                      <div className="flex flex-col gap-1 overflow-visible z-50">
+                        <input
+                          autoFocus
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="text-[11px] border border-gray-200 rounded px-1.5 py-0.5 w-[120px]"
+                        />
+                        <select 
+                          value={editType}
+                          onChange={(e) => setEditType(e.target.value)}
+                          className="text-[10px] border border-gray-200 rounded px-1 py-0.5"
+                        >
+                          {TEMPLATE_TYPES.map(t => (
+                            <option key={t} value={t}>{t} ({getSelfTitle(t, guest.side)})</option>
+                          ))}
+                        </select>
+                        <button onClick={saveEdit} className="bg-blue-500 text-white rounded px-2 py-0.5 text-[10px] font-bold">Lưu</button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 truncate">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase shrink-0" title={`Tôi: ${selfTitle}`}>
+                          [{guestTitle}]
+                        </span>
+                        <div className="font-bold text-gray-800 text-[11px] truncate">{guest.name}</div>
+                      </div>
+                    )}
+                    {guest.is_sent === 1 && <span className="text-emerald-500 text-[10px] shrink-0 font-bold">✓</span>}
+                  </div>
+                  <button onClick={() => deleteGuest(guest.id)} className="text-rose-200 hover:text-rose-500 transition-colors">
+                    <Trash2 size={13} />
                   </button>
                 </div>
+                
+                <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-gray-50">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[9px] text-gray-400 font-mono bg-gray-50 px-1 rounded w-fit">{guest.short_id}</span>
+                    {guest.rsvp_status ? (
+                      <div className="flex items-center gap-1">
+                        {guest.rsvp_status === 'attending' ? (
+                          <span className="text-[9px] font-bold text-green-500 flex items-center gap-0.5"><UserCheck size={10}/> Tham dự {guest.rsvp_count > 1 ? `(${guest.rsvp_count})` : ''}</span>
+                        ) : (
+                          <span className="text-[9px] font-bold text-pink-500 flex items-center gap-0.5"><Gift size={10}/> Mừng từ xa</span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-[9px] text-gray-300 italic font-medium">Chưa phản hồi</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => startEdit(guest)} className="p-1 px-1.5 text-gray-400 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
+                      <Edit2 size={11} />
+                    </button>
+                    <button
+                      onClick={() => handleCopy(guest)}
+                      className={`flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded border transition-all ${
+                        guest.is_sent ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-blue-500 text-white border-blue-600 shadow-sm"
+                      }`}
+                    >
+                      <Copy size={11} /> {guest.is_sent ? "ĐÃ GỬI" : "COPY"}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
@@ -410,6 +462,7 @@ const InvitationManager = () => {
                   className="rounded border-gray-300"
                 />
               </th>
+              <th className="px-6 py-3 text-left">Gọi khách / Xưng tôi</th>
               <th className="px-6 py-3 text-left">Tên khách mời</th>
               <th className="px-6 py-3 text-left">Phản hồi</th>
               <th className="px-6 py-3 text-left hidden md:table-cell">Mã mời</th>
@@ -419,7 +472,7 @@ const InvitationManager = () => {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {isLoadingGuests ? (
-              <tr><td colSpan={5} className="px-6 py-12 text-center text-gray-400">Đang tải...</td></tr>
+              <tr><td colSpan={6} className="px-6 py-12 text-center text-gray-400">Đang tải...</td></tr>
             ) : filteredGuests.map((guest) => (
               <tr key={guest.id} className={`hover:bg-gray-50/50 transition-colors ${selectedIds.includes(guest.id) ? "bg-primary/5" : ""}`}>
                 <td className="px-3 py-4 text-center">
@@ -429,6 +482,29 @@ const InvitationManager = () => {
                     onChange={() => toggleSelect(guest.id)}
                     className="rounded border-gray-300"
                   />
+                </td>
+                <td className="px-6 py-4">
+                  {editingId === guest.id ? (
+                    <select 
+                      value={editType}
+                      onChange={(e) => setEditType(e.target.value)}
+                      className="text-xs border border-gray-200 rounded px-2 py-1"
+                    >
+                      {TEMPLATE_TYPES.map(t => (
+                        <option key={t} value={t}>{t} ({getSelfTitle(t, guest.side)})</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-1 rounded bg-blue-50 text-blue-500 font-bold text-[10px] uppercase border border-blue-100">
+                        {guest.template_type || "bạn"}
+                      </span>
+                      <span className="text-gray-300">→</span>
+                      <span className="px-2 py-1 rounded bg-emerald-50 text-emerald-500 font-bold text-[10px] uppercase border border-emerald-100">
+                        {getSelfTitle(guest.template_type, guest.side)}
+                      </span>
+                    </div>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   {editingId === guest.id ? (

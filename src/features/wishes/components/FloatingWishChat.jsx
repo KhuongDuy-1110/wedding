@@ -1,72 +1,36 @@
-import React, { useState, useEffect, useRef, useCallback, memo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  useWishes,
-  useCreateWish,
-  useUpdateWish,
-  useRecallWish,
-} from "../hooks/use-wishes";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  memo,
+  useMemo,
+} from "react";
 import {
   MessageSquareText,
   X,
   Send,
   Loader2,
-  RotateCcw,
   Edit2,
+  RotateCcw,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  useWishes,
+  useCreateWish,
+  useRecallWish,
+  useUpdateWish,
+} from "../hooks/use-wishes";
+import { getVisitorId } from "../../admin/utils/tracker";
 import confetti from "canvas-confetti";
 import { toast } from "react-hot-toast";
-import { getVisitorId } from "../../admin/utils/tracker";
 
 const MAX_NAME_LENGTH = 25;
-const MAX_MESSAGE_LENGTH = 200;
-
-const getChatPath = (side) => {
-  const path = window.location.pathname.toLowerCase();
-  if (
-    path === "/r" ||
-    path.startsWith("/r/") ||
-    path.includes("/groom") ||
-    side === "groom"
-  )
-    return "/r";
-  if (
-    path === "/d" ||
-    path.startsWith("/d/") ||
-    path.includes("/bride") ||
-    side === "bride"
-  )
-    return "/d";
-  return "/";
-};
-
-const parseMessage = (side, rawMessage) => {
-  let targetPath = getChatPath(side);
-  let finalMessage = rawMessage.trim();
-  let role = "GUEST";
-  if (finalMessage.toLowerCase().startsWith("/r ")) {
-    targetPath = "/r";
-    role = "FAMILY_GROOM";
-    finalMessage = finalMessage.substring(3).trim();
-  } else if (finalMessage.toLowerCase().startsWith("/d ")) {
-    targetPath = "/d";
-    role = "FAMILY_BRIDE";
-    finalMessage = finalMessage.substring(3).trim();
-  } else if (finalMessage.toLowerCase() === "/r") {
-    targetPath = "/r";
-    role = "FAMILY_GROOM";
-    finalMessage = "";
-  } else if (finalMessage.toLowerCase() === "/d") {
-    targetPath = "/d";
-    role = "FAMILY_BRIDE";
-    finalMessage = "";
-  }
-  return { targetPath, finalMessage, role };
-};
+const MAX_MESSAGE_LENGTH = 150;
 
 const ENTER_TRANSITION = {
   opacity: { duration: 0.3 },
-  x: { type: "tween", duration: 0.3 },
+  x: { type: "tween", duration: 0.3, ease: "easeOut" },
 };
 const EXIT_TRANSITION = {
   opacity: { duration: 0.2 },
@@ -97,8 +61,8 @@ const WishBubble = memo(
         onClick={isMine ? onSelect : undefined}
         className={`relative ${bgClass} text-[13px] md:text-[14px] px-3 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto border border-white/20 ${isMine ? "cursor-pointer active:scale-95" : ""}`}
       >
-        <span className="font-bold mr-0.5 text-white">{wish.name}:</span>
-        <span className="pl-1 leading-relaxed text-white">{wish.message}</span>
+        <span className="font-bold mr-0.5 text-white whitespace-nowrap">{wish.name}:</span>
+        <span className="pl-1 leading-relaxed text-white break-words inline-block w-full">{wish.message}</span>
 
         <AnimatePresence>
           {isSelected && (
@@ -203,7 +167,7 @@ const WishModal = ({
     } else {
       createMutation.mutate(
         {
-          ...formData,
+          name: formData.name,
           message: finalMessage || formData.message,
           role,
           phone: "",
@@ -215,17 +179,6 @@ const WishModal = ({
           onSuccess: (newWish) => {
             localStorage.setItem("last_wish_send_time", Date.now().toString());
             onClose();
-            confetti({
-              particleCount: 150,
-              spread: 70,
-              origin: { y: 0.6 },
-              colors:
-                targetPath === "/r"
-                  ? ["#3b82f6", "#2563eb", "#fff"]
-                  : targetPath === "/d"
-                    ? ["#fd848e", "#e85d79", "#fff"]
-                    : ["#b39164", "#8d714b", "#fff"],
-            });
             onSuccess?.(newWish);
           },
         },
@@ -233,116 +186,115 @@ const WishModal = ({
     }
   };
 
-  const isGroomPath =
-    getChatPath(side) === "/r" ||
-    formData.message.toLowerCase().startsWith("/r ") ||
-    formData.message.toLowerCase() === "/r";
-  const isBridePath =
-    getChatPath(side) === "/d" ||
-    formData.message.toLowerCase().startsWith("/d ") ||
-    formData.message.toLowerCase() === "/d";
-  const isPending = createMutation.isPending || updateMutation.isPending;
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[3000] flex items-end justify-center"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-s20 bg-black/40 backdrop-blur-sm">
       <motion.div
-        initial={{ opacity: 0, y: 100 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 100 }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="relative bg-white rounded-t-[32px] w-full max-w-[500px] px-s30 pt-s50 pb-s40 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] overflow-visible"
-        onClick={(e) => e.stopPropagation()}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="bg-white rounded-[24px] w-full max-w-[400px] overflow-hidden shadow-2xl"
       >
-        <button
-          onClick={onClose}
-          className="absolute top-s24 right-s24 text-[#5c1a1a] hover:opacity-70 transition-colors"
-        >
-          <X size={24} />
-        </button>
-        <div className="absolute -top-[50px] left-1/2 -translate-x-1/2">
-          <img
-            src="/message-heart.png"
-            alt="Heart Icon"
-            className="w-[180px] object-contain drop-shadow-xl"
-          />
+        <div className="p-s20 border-b border-gray-100 flex justify-between items-center">
+          <h3 className="text-[18px] font-bold text-[#5c1a1a]">
+            {editWish ? "Sửa lời chúc" : "Gửi lời chúc"}
+          </h3>
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+            <X size={20} />
+          </button>
         </div>
-        <h2 className="text-center text-[24px] font-bold text-[#333] mb-s24">
-          {editWish ? "Sửa lời chúc" : "Lời chúc"}
-        </h2>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-s15">
-          <input
-            required
-            disabled={!!editWish}
-            maxLength={MAX_NAME_LENGTH}
-            placeholder="Tên của bạn"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className={`w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
-          />
-          <div className="relative">
+        <form onSubmit={handleSubmit} className="p-s20 space-y-s15">
+          <div className="space-y-s5">
+            <label className="text-[12px] font-bold text-gray-400 uppercase tracking-wider pl-1">
+              Họ tên của bạn
+            </label>
+            <input
+              required
+              maxLength={MAX_NAME_LENGTH}
+              disabled={!!editWish}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className={`w-full bg-[#fdf5f6] border border-[#5c1a1a]/10 rounded-xl px-s15 py-s10 text-[14px] text-[#333] outline-none focus:border-[#5c1a1a]/30 transition-all ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
+              placeholder="Nhập tên..."
+            />
+          </div>
+          <div className="space-y-s5">
+            <label className="text-[12px] font-bold text-gray-400 uppercase tracking-wider pl-1">
+              Lời nhắn gửi
+            </label>
             <textarea
               required
               maxLength={MAX_MESSAGE_LENGTH}
-              placeholder="Lời chúc của bạn"
               value={formData.message}
               onChange={(e) =>
                 setFormData({ ...formData, message: e.target.value })
               }
-              rows={5}
-              className="w-full border border-[#5c1a1a]/30 bg-[#fdf5f6] rounded-[12px] px-s20 py-s15 text-[14px] text-[#333] placeholder-[#bbb] focus:outline-none focus:border-[#5c1a1a]/60 transition-colors resize-none"
+              rows={3}
+              className="w-full bg-[#fdf5f6] border border-[#5c1a1a]/10 rounded-xl px-s15 py-s10 text-[14px] text-[#333] outline-none focus:border-[#5c1a1a]/30 transition-all resize-none"
+              placeholder="Viết lời chúc..."
             />
-            <span className="absolute bottom-2 right-3 text-[11px] text-[#999]">
-              {formData.message.length}/{MAX_MESSAGE_LENGTH}
-            </span>
           </div>
           <button
             type="submit"
-            disabled={isPending}
-            className={`w-full py-s15 rounded-full text-white font-bold text-[16px] tracking-wide shadow-lg mt-s10 transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-s10 ${isGroomPath ? "bg-gradient-to-r from-blue-500 to-blue-700 shadow-blue-500/30" : isBridePath ? "bg-gradient-to-r from-[#fd848e] to-[#e85d79] shadow-pink-200/50" : "bg-gradient-to-r from-[#b39164] to-[#8d714b] shadow-amber-900/20"}`}
+            disabled={createMutation.isPending || updateMutation.isPending}
+            className={`w-full py-s12 rounded-xl text-white font-bold text-[14px] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 ${
+              side === "groom" ? "bg-blue-600 shadow-blue-500/20" : "bg-[#fd848e] shadow-pink-500/20"
+            }`}
           >
-            {isPending ? (
-              <Loader2 size={18} className="animate-spin" />
+            {(createMutation.isPending || updateMutation.isPending) ? (
+              <Loader2 className="animate-spin" size={20} />
             ) : (
-              <>
-                <Send size={18} /> {editWish ? "Cập Nhật" : "Gửi Lời Chúc"}
-              </>
+              <Send size={18} />
             )}
+            {editWish ? "CẬP NHẬT" : "GỬI LỜI CHÚC"}
           </button>
         </form>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
 
-const FloatingWishChat = ({ guestName, side, shortId }) => {
+const getChatPath = (side) => {
+  const path = window.location.pathname;
+  if (path.includes("/r")) return "/r";
+  if (path.includes("/d")) return "/d";
+  return side === "groom" ? "/r" : "/d";
+};
+
+const parseMessage = (side, message) => {
+  let finalMessage = message;
+  let targetPath = getChatPath(side);
+  let role = "friend";
+
+  if (message.startsWith("/r ")) {
+    finalMessage = message.substring(3);
+    targetPath = "/r";
+    role = "groom_family";
+  } else if (message.startsWith("/d ")) {
+    finalMessage = message.substring(3);
+    targetPath = "/d";
+    role = "bride_family";
+  }
+
+  return { targetPath, finalMessage, role };
+};
+
+const FloatingWishChat = ({ guestName, side, invitationId }) => {
   const { data: wishes } = useWishes();
-  const [activeWishes, setActiveWishes] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [isOpen, setIsOpen] = useState(true);
-  const indexRef = useRef(0);
-  const timerRef = useRef(null);
-  const idCounter = useRef(0);
   const createMutation = useCreateWish();
   const updateMutation = useUpdateWish();
   const recallMutation = useRecallWish();
+
+  const [isOpen, setIsOpen] = useState(true);
+  const [activeWishes, setActiveWishes] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [selectedWishId, setSelectedWishId] = useState(null);
   const [editWish, setEditWish] = useState(null);
-  const visitorId = useRef(getVisitorId()).current;
-  const invitationId = shortId;
+  const [desktopData, setDesktopData] = useState({ name: "", message: "" });
   const desktopMessageRef = useRef(null);
 
-  const [desktopData, setDesktopData] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return { name: guestName || params.get("name") || "", message: "" };
-  });
+  const indexRef = useRef(0);
+  const timerRef = useRef(null);
+  const idCounter = useRef(0);
+  const visitorId = useMemo(() => getVisitorId(), []);
 
   useEffect(() => {
     if (guestName) setDesktopData((prev) => ({ ...prev, name: guestName }));
@@ -354,6 +306,13 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
 
   const addNextWish = useCallback(() => {
     if (!wishes || wishes.length === 0) return;
+    
+    // Nếu dưới 5 lời chúc, chỉ hiện thị hết 1 lượt rồi thôi, hoặc là không loop
+    if (wishes.length < 5 && indexRef.current >= wishes.length) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      return; 
+    }
+
     const wish = wishes[indexRef.current % wishes.length];
     indexRef.current += 1;
     idCounter.current += 1;
@@ -365,15 +324,21 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
 
   useEffect(() => {
     if (!wishes || wishes.length === 0) return;
+    
+    // Reset state khi data thay đổi (quan trọng)
     if (activeWishes.length === 0) {
-      indexRef.current = Math.floor(Math.random() * wishes.length);
+      indexRef.current = 0;
       addNextWish();
     }
-  }, [wishes, addNextWish]);
+  }, [wishes, activeWishes.length, addNextWish]);
 
   useEffect(() => {
     if (!wishes || wishes.length === 0 || selectedWishId) return;
-    timerRef.current = setInterval(addNextWish, 4000);
+    
+    // Nếu < 5 và đã hiện hết thì không chạy timer
+    if (wishes.length < 5 && indexRef.current >= wishes.length) return;
+
+    timerRef.current = setInterval(addNextWish, 3500);
     return () => clearInterval(timerRef.current);
   }, [wishes, selectedWishId, addNextWish]);
 
@@ -499,13 +464,10 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
             guestName={guestName}
             side={side}
             invitationId={invitationId}
-            editWish={editWish}
             onSuccess={(updatedWish) => {
               if (editWish) {
                 setActiveWishes((prev) =>
-                  prev.map((w) =>
-                    w.id === updatedWish.id ? { ...w, ...updatedWish } : w,
-                  ),
+                  prev.map((w) => (w.id === updatedWish.id ? updatedWish : w)),
                 );
               } else {
                 idCounter.current += 1;
@@ -523,7 +485,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
         className={`fixed inset-x-0 md:right-s20 md:left-auto bottom-0 md:bottom-s20 z-[90] pointer-events-none p-s20 md:p-s15 pb-s10 md:pb-s15 w-full md:transition-all md:duration-500 ${isOpen ? "md:w-[420px]" : "md:w-auto"}`}
         onClick={() => setSelectedWishId(null)}
       >
-        <div className="relative pointer-events-auto">
+        <div className="relative pointer-events-none">
           {isOpen && (
             <div className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] py-s10 md:pt-s50 md:pb-s25 md:px-s25">
               <div className="hidden md:block absolute -top-[45px] left-1/2 -translate-x-1/2 z-[11]">
@@ -535,7 +497,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="hidden md:flex absolute top-5 right-6 text-[#5c1a1a] hover:opacity-70 transition-colors z-[12]"
+                className="hidden md:flex absolute top-5 right-6 text-[#5c1a1a] hover:opacity-70 transition-colors z-[12] pointer-events-auto"
               >
                 <X size={20} />
               </button>
@@ -543,7 +505,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                 Lời chúc
               </h2>
 
-              <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full h-[200px] md:h-[240px] overflow-hidden">
+              <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full h-[260px] md:h-[320px] overflow-hidden">
                 <AnimatePresence mode="popLayout">
                   {activeWishes.map((wish) => {
                     const isMine =
@@ -571,7 +533,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
               {/* Action Form Footer */}
               <div className="mt-s15 md:mt-4">
                 {/* Desktop Form */}
-                <div className={`hidden md:block p-s15 rounded-[16px] border backdrop-blur-sm transition-all ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}>
+                <div className={`hidden md:block p-s15 rounded-[16px] border backdrop-blur-sm transition-all pointer-events-auto ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}>
                   {editWish && (
                     <div className="flex items-center justify-between mb-2 px-1">
                       <span className="text-[12px] font-bold text-blue-600">Đang sửa lời chúc...</span>
@@ -618,7 +580,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                       <button
                         type="submit"
                         disabled={createMutation.isPending || updateMutation.isPending}
-                        className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/20" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
+                        className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
                       >
                         {(createMutation.isPending || updateMutation.isPending) ? (
                           <Loader2 size={18} className="animate-spin" />
@@ -633,7 +595,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                 </div>
 
                 {/* Mobile Layout */}
-                <div className="md:hidden flex items-center justify-end gap-s10">
+                <div className="md:hidden flex items-center justify-end gap-s10 pointer-events-auto">
                   <AnimatePresence>
                     {isOpen && (
                       <motion.button
@@ -653,7 +615,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                   </AnimatePresence>
                   <button
                     onClick={toggleOpen}
-                    className={`shrink-0 w-[44px] h-[44px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform`}
+                    className={`shrink-0 w-[44px] h-[44px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform pointer-events-auto`}
                   >
                     {isOpen ? <X size={22} /> : <MessageSquareText size={22} />}
                   </button>
@@ -667,7 +629,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
             <div className="hidden md:flex justify-end">
               <button
                 onClick={toggleOpen}
-                className={`w-[56px] h-[56px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform`}
+                className={`w-[56px] h-[56px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform pointer-events-auto`}
               >
                 <MessageSquareText size={28} />
               </button>
