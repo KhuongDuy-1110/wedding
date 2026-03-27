@@ -371,7 +371,7 @@ const InvitationManager = () => {
         </div>
       </div>
 
-      <div className="sm:hidden grid grid-cols-1 gap-2 p-2 bg-gray-50/20">
+      <div key={`mobile-${side}`} className="sm:hidden grid grid-cols-1 gap-2 p-2 bg-gray-50/20">
         {isLoadingGuests ? (
           <div className="py-12 text-center text-gray-400">Đang tải...</div>
         ) : filteredGuests.length === 0 ? (
@@ -462,7 +462,7 @@ const InvitationManager = () => {
         )}
       </div>
 
-      <div className="hidden sm:block overflow-x-auto">
+      <div key={`desktop-${side}`} className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-50 text-[11px] text-gray-400 uppercase tracking-wider">
