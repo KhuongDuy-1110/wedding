@@ -127,13 +127,25 @@ const InvitationManager = () => {
       return;
     }
 
+    const transformName = (n) => {
+      if (newTemplateType === "bạn" || newTemplateType === "bạn thân") return n;
+      const title = newTemplateType.charAt(0).toUpperCase() + newTemplateType.slice(1);
+      if (n.toLowerCase().startsWith(newTemplateType.toLowerCase() + " ")) return n;
+      return `${title} ${n}`;
+    };
+
     setIsAddingGuest(true);
     try {
       if (names.length === 1) {
-        await adminApi.createInvitation(names[0], side, newTemplateType);
+        const finalName = transformName(names[0]);
+        await adminApi.createInvitation(finalName, side, newTemplateType);
       } else {
         await adminApi.bulkCreateInvitations(
-          names.map((n) => ({ name: n, side, template_type: newTemplateType })),
+          names.map((n) => ({
+            name: transformName(n),
+            side,
+            template_type: newTemplateType,
+          })),
         );
       }
       setNewName("");
