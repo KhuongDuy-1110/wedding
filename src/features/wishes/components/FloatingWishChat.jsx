@@ -624,14 +624,14 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
             </div>
           )}
 
-          {/* Desktop Toggle */}
+          {/* Desktop/Mobile Toggle when closed */}
           {!isOpen && (
-            <div className="hidden md:flex justify-end">
+            <div className="flex justify-end">
               <button
                 onClick={toggleOpen}
-                className={`w-[56px] h-[56px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform pointer-events-auto`}
+                className={`w-[48px] h-[48px] md:w-[56px] md:h-[56px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform pointer-events-auto`}
               >
-                <MessageSquareText size={28} />
+                <MessageSquareText className="w-6 h-6 md:w-7 md:h-7" />
               </button>
             </div>
           )}
