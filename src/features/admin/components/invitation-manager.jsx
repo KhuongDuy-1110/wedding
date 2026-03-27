@@ -550,7 +550,17 @@ const InvitationManager = () => {
                   )}
                 </td>
                 <td className="px-6 py-4 hidden md:table-cell"><span className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded">{guest.short_id}</span></td>
-                <td className="px-6 py-4 hidden lg:table-cell text-xs text-blue-400 italic">/{side === "groom" ? "r" : "d"}/{guest.short_id}</td>
+                <td className="px-6 py-4 hidden lg:table-cell">
+                  <a 
+                    href={getLink(guest)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-600 underline font-mono italic break-all"
+                  >
+                    {getLink(guest)}
+                    <ExternalLink size={10} className="shrink-0" />
+                  </a>
+                </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <button onClick={() => startEdit(guest)} className="p-2 text-gray-400 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"><Edit2 size={16} /></button>
