@@ -808,7 +808,7 @@ app.get("/api/invitations", async (req, res) => {
         INNER JOIN (
           SELECT MAX(id) as max_id FROM rsvp GROUP BY invitation_id, name
         ) r2 ON r1.id = r2.max_id
-      ) r ON (i.short_id = r.invitation_id OR i.name = r.name)
+      ) r ON (i.short_id = r.invitation_id OR (r.invitation_id IS NULL AND i.name = r.name))
       ORDER BY i.created_at DESC
     `);
     await connection.end();
