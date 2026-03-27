@@ -95,10 +95,10 @@ const OpeningEffect = ({
                     Save The Date
                   </p>
                   <p className="font-brice font-normal text-[#6b050d] leading-none mt-s5 text-[24px]">
-                    05.04.2026
+                    04.04.2026
                   </p>
                   <p className="text-[15px] text-[#888] font-medium tracking-[0.5px] mt-2 uppercase">
-                    (Âm lịch 18 - 02 Bính Ngọ)
+                    (Âm lịch 17 - 02 Bính Ngọ)
                   </p>
                 </div>
 

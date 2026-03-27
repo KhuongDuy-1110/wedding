@@ -172,9 +172,9 @@ function App() {
 
   const weddingConfigs = {
     groom: {
-      date: "05.04.2026",
-      time: "CHỦ NHẬT - 10H00",
-      targetDate: "2026-04-05T10:00:00",
+      date: "04.04.2026",
+      time: "THỨ BẢY - 10H00",
+      targetDate: "2026-04-04T10:00:00",
     },
     bride: {
       date: "04.04.2026",

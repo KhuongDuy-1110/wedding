@@ -543,7 +543,7 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                 Lời chúc
               </h2>
 
-              <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full min-h-[160px] md:min-h-[180px]">
+              <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full h-[200px] md:h-[240px] overflow-hidden">
                 <AnimatePresence mode="popLayout">
                   {activeWishes.map((wish) => {
                     const isMine =

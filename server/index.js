@@ -966,7 +966,7 @@ app.use(async (req, res) => {
     const title = guestInfo 
       ? `Thân mời ${guestInfo.name} - Đám cưới Phạm Khải & Lê Nga`
       : `Thư Mời Cưới - Phạm Khải & Lê Nga`;
-    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình vào ngày 05.04.2026!";
+    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình vào ngày 04.04.2026!";
     const image = openingImage;
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const currentUrl = `${protocol}://${req.headers.host}${req.originalUrl}`;
