@@ -331,11 +331,13 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
   const timerRef = useRef(null);
   const idCounter = useRef(0);
   const createMutation = useCreateWish();
+  const updateMutation = useUpdateWish();
   const recallMutation = useRecallWish();
   const [selectedWishId, setSelectedWishId] = useState(null);
   const [editWish, setEditWish] = useState(null);
   const visitorId = useRef(getVisitorId()).current;
   const invitationId = shortId;
+  const desktopMessageRef = useRef(null);
 
   const [desktopData, setDesktopData] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -379,6 +381,32 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
     (e) => {
       e.preventDefault();
       if (!desktopData.name || !desktopData.message) return;
+
+      if (editWish) {
+        updateMutation.mutate(
+          {
+            id: editWish.id,
+            message: desktopData.message.trim(),
+            visitor_id: visitorId,
+            invitation_id: invitationId,
+          },
+          {
+            onSuccess: () => {
+              setActiveWishes((prev) =>
+                prev.map((w) =>
+                  w.id === editWish.id
+                    ? { ...w, message: desktopData.message.trim() }
+                    : w,
+                ),
+              );
+              setDesktopData((prev) => ({ ...prev, message: "" }));
+              setEditWish(null);
+            },
+          },
+        );
+        return;
+      }
+
       const { targetPath, finalMessage, role } = parseMessage(
         side,
         desktopData.message,
@@ -416,18 +444,29 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
         },
       );
     },
-    [desktopData, side, createMutation, visitorId, invitationId],
+    [desktopData, side, createMutation, updateMutation, editWish, visitorId, invitationId],
   );
 
   const handleSelect = useCallback((wishId) => {
     setSelectedWishId((prev) => (prev === wishId ? null : wishId));
   }, []);
 
-  const handleEdit = useCallback((wish) => {
-    setEditWish(wish);
-    setShowModal(true);
-    setSelectedWishId(null);
-  }, []);
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+
+  const handleEdit = useCallback(
+    (wish) => {
+      setSelectedWishId(null);
+      if (isMobile) {
+        setEditWish(wish);
+        setShowModal(true);
+      } else {
+        setEditWish(wish);
+        setDesktopData((prev) => ({ ...prev, message: wish.message }));
+        setTimeout(() => desktopMessageRef.current?.focus(), 50);
+      }
+    },
+    [isMobile],
+  );
 
   const handleRecall = useCallback(
     (wish) => {
@@ -532,7 +571,22 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
               {/* Action Form Footer */}
               <div className="mt-s15 md:mt-4">
                 {/* Desktop Form */}
-                <div className="hidden md:block bg-[#5c1a1a]/5 p-s15 rounded-[16px] border border-[#5c1a1a]/10 backdrop-blur-sm">
+                <div className={`hidden md:block p-s15 rounded-[16px] border backdrop-blur-sm transition-all ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}>
+                  {editWish && (
+                    <div className="flex items-center justify-between mb-2 px-1">
+                      <span className="text-[12px] font-bold text-blue-600">Đang sửa lời chúc...</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditWish(null);
+                          setDesktopData((prev) => ({ ...prev, message: "" }));
+                        }}
+                        className="text-[12px] text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1"
+                      >
+                        <X size={12} /> Hủy
+                      </button>
+                    </div>
+                  )}
                   <form
                     onSubmit={handleDesktopSubmit}
                     className="flex flex-col gap-s10"
@@ -541,13 +595,15 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                       placeholder="Tên của bạn..."
                       maxLength={MAX_NAME_LENGTH}
                       value={desktopData.name}
+                      disabled={!!editWish}
                       onChange={(e) =>
                         setDesktopData({ ...desktopData, name: e.target.value })
                       }
-                      className="w-full bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all"
+                      className={`w-full bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
                     />
                     <div className="flex gap-2">
                       <input
+                        ref={desktopMessageRef}
                         placeholder="Lời nhắn gửi yêu thương..."
                         maxLength={MAX_MESSAGE_LENGTH}
                         value={desktopData.message}
@@ -557,15 +613,17 @@ const FloatingWishChat = ({ guestName, side, shortId }) => {
                             message: e.target.value,
                           })
                         }
-                        className="flex-1 bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all"
+                        className={`flex-1 bg-[#fdf5f6] border rounded-xl px-s15 py-s8 text-[13px] text-[#333] outline-none transition-all ${editWish ? "border-blue-400/50 focus:border-blue-500" : "border-[#5c1a1a]/20 focus:border-[#5c1a1a]/50"}`}
                       />
                       <button
                         type="submit"
-                        disabled={createMutation.isPending}
-                        className={`${isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/20" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
+                        disabled={createMutation.isPending || updateMutation.isPending}
+                        className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/20" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
                       >
-                        {createMutation.isPending ? (
+                        {(createMutation.isPending || updateMutation.isPending) ? (
                           <Loader2 size={18} className="animate-spin" />
+                        ) : editWish ? (
+                          <Edit2 size={18} />
                         ) : (
                           <Send size={18} />
                         )}
