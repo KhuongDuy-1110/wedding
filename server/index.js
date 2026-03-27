@@ -318,6 +318,11 @@ const initDB = async () => {
         "ALTER TABLE wishes ADD COLUMN visitor_id VARCHAR(100)",
       );
     } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE wishes ADD COLUMN invitation_id VARCHAR(10)",
+      );
+    } catch (_) {}
 
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS visitor_logs (
@@ -465,7 +470,7 @@ app.get("/api/wishes", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.execute(
-      "SELECT id, name, role, message, guest_path_name, visitor_id, created_at FROM wishes WHERE hidden = 0 ORDER BY created_at DESC",
+      "SELECT id, name, role, message, guest_path_name, visitor_id, invitation_id, created_at FROM wishes WHERE hidden = 0 ORDER BY created_at DESC",
     );
     await connection.end();
     res.json(rows);
@@ -475,7 +480,7 @@ app.get("/api/wishes", async (req, res) => {
 });
 
 app.post("/api/wishes", async (req, res) => {
-  const { name, phone, role, message, guest_path_name, visitor_id } = req.body;
+  const { name, phone, role, message, guest_path_name, visitor_id, invitation_id } = req.body;
   if (!name || !message) {
     return res.status(400).json({ error: "Name and message are required" });
   }
@@ -508,8 +513,8 @@ app.post("/api/wishes", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
-      "INSERT INTO wishes (name, phone, role, message, hidden, flagged, guest_path_name, visitor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-      [name, phone, role, message, hidden, flagged, pathName, visitor_id || null],
+      "INSERT INTO wishes (name, phone, role, message, hidden, flagged, guest_path_name, visitor_id, invitation_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [name, phone, role, message, hidden, flagged, pathName, visitor_id || null, invitation_id || null],
     );
     await connection.end();
 
@@ -576,14 +581,13 @@ app.get("/api/admin/rsvp", async (req, res) => {
 });
 
 app.delete("/api/wishes/:id/recall", async (req, res) => {
-  const { visitor_id } = req.body;
-  if (!visitor_id) return res.status(403).json({ error: "Missing visitor identifier" });
+  const { visitor_id, invitation_id } = req.body;
   
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
-      "DELETE FROM wishes WHERE id = ? AND visitor_id = ?",
-      [req.params.id, visitor_id]
+      "DELETE FROM wishes WHERE id = ? AND (visitor_id = ? OR (invitation_id = ? AND invitation_id IS NOT NULL))",
+      [req.params.id, visitor_id, invitation_id]
     );
     await connection.end();
     if (result.affectedRows === 0) {
@@ -596,14 +600,13 @@ app.delete("/api/wishes/:id/recall", async (req, res) => {
 });
 
 app.put("/api/wishes/:id", async (req, res) => {
-  const { message, visitor_id } = req.body;
-  if (!message || !visitor_id) return res.status(400).json({ error: "Nội dung và mã định danh là bắt buộc" });
+  const { message, visitor_id, invitation_id } = req.body;
   
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
-      "UPDATE wishes SET message = ? WHERE id = ? AND visitor_id = ?",
-      [message, req.params.id, visitor_id]
+      "UPDATE wishes SET message = ? WHERE id = ? AND (visitor_id = ? OR (invitation_id = ? AND invitation_id IS NOT NULL))",
+      [message, req.params.id, visitor_id, invitation_id]
     );
     await connection.end();
     if (result.affectedRows === 0) {

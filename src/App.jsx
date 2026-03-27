@@ -389,7 +389,7 @@ function App() {
         )}
       </AnimatePresence>
     </div>
-      <FloatingWishChat guestName={guestName} side={weddingSide} />
+      <FloatingWishChat guestName={guestName} side={weddingSide} shortId={shortId} />
       <RSVPTrigger guestName={guestName} side={weddingSide} shortId={shortId} isOpened={isOpened} />
       <SideCountdown targetDate={currentConfig.targetDate} side={weddingSide} onOpenMap={() => handleOpenMap()} />
       <AnimatePresence>
