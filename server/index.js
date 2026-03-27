@@ -313,6 +313,11 @@ const initDB = async () => {
         "ALTER TABLE wishes ADD COLUMN guest_path_name VARCHAR(255)",
       );
     } catch (_) {}
+    try {
+      await connection.execute(
+        "ALTER TABLE wishes ADD COLUMN visitor_id VARCHAR(100)",
+      );
+    } catch (_) {}
 
     await connection.execute(`
       CREATE TABLE IF NOT EXISTS visitor_logs (
@@ -460,7 +465,7 @@ app.get("/api/wishes", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [rows] = await connection.execute(
-      "SELECT * FROM wishes WHERE hidden = 0 ORDER BY created_at DESC",
+      "SELECT id, name, role, message, guest_path_name, visitor_id, created_at FROM wishes WHERE hidden = 0 ORDER BY created_at DESC",
     );
     await connection.end();
     res.json(rows);
@@ -470,7 +475,7 @@ app.get("/api/wishes", async (req, res) => {
 });
 
 app.post("/api/wishes", async (req, res) => {
-  const { name, phone, role, message, guest_path_name } = req.body;
+  const { name, phone, role, message, guest_path_name, visitor_id } = req.body;
   if (!name || !message) {
     return res.status(400).json({ error: "Name and message are required" });
   }
@@ -503,8 +508,8 @@ app.post("/api/wishes", async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
-      "INSERT INTO wishes (name, phone, role, message, hidden, flagged, guest_path_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [name, phone, role, message, hidden, flagged, pathName],
+      "INSERT INTO wishes (name, phone, role, message, hidden, flagged, guest_path_name, visitor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [name, phone, role, message, hidden, flagged, pathName, visitor_id || null],
     );
     await connection.end();
 
@@ -565,6 +570,46 @@ app.get("/api/admin/rsvp", async (req, res) => {
     const [rows] = await connection.execute("SELECT * FROM rsvp ORDER BY created_at DESC");
     await connection.end();
     res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete("/api/wishes/:id/recall", async (req, res) => {
+  const { visitor_id } = req.body;
+  if (!visitor_id) return res.status(403).json({ error: "Missing visitor identifier" });
+  
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute(
+      "DELETE FROM wishes WHERE id = ? AND visitor_id = ?",
+      [req.params.id, visitor_id]
+    );
+    await connection.end();
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Lời chúc không tồn tại hoặc không thể thu hồi" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put("/api/wishes/:id", async (req, res) => {
+  const { message, visitor_id } = req.body;
+  if (!message || !visitor_id) return res.status(400).json({ error: "Nội dung và mã định danh là bắt buộc" });
+  
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    const [result] = await connection.execute(
+      "UPDATE wishes SET message = ? WHERE id = ? AND visitor_id = ?",
+      [message, req.params.id, visitor_id]
+    );
+    await connection.end();
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Không tìm thấy lời chúc để chỉnh sửa" });
+    }
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

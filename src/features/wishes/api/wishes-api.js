@@ -15,4 +15,12 @@ export const wishesApi = {
     const response = await api.post("/wishes", data);
     return response.data;
   },
+  updateWish: async ({ id, message, visitor_id }) => {
+    const response = await api.put(`/wishes/${id}`, { message, visitor_id });
+    return response.data;
+  },
+  recallWish: async ({ id, visitor_id }) => {
+    const response = await api.delete(`/wishes/${id}/recall`, { data: { visitor_id } });
+    return response.data;
+  },
 };

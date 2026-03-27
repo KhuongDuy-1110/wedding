@@ -30,3 +30,31 @@ export const useCreateWish = () => {
     },
   });
 };
+
+export const useUpdateWish = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: wishesApi.updateWish,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wishes"] });
+      toast.success("Cập nhật lời chúc thành công!");
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.error || "Lỗi khi cập nhật");
+    }
+  });
+};
+
+export const useRecallWish = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: wishesApi.recallWish,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wishes"] });
+      toast.success("Đã thu hồi lời chúc!");
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.error || "Lỗi khi thu hồi");
+    }
+  });
+};

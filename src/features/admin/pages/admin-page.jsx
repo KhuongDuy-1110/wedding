@@ -51,6 +51,7 @@ const AdminPage = () => {
   const [wishStatusFilter, setWishStatusFilter] = useState("all");
   const [logPathFilter, setLogPathFilter] = useState("all");
   const [logEventFilter, setLogEventFilter] = useState("all");
+  const [logGuestFilter, setLogGuestFilter] = useState("all");
   const [selectedLogs, setSelectedLogs] = useState([]);
 
   const handleLogin = (e) => {
@@ -197,7 +198,11 @@ const AdminPage = () => {
     else if (logEventFilter === "qr") matchEvent = log.is_qr_viewed;
     else if (logEventFilter !== "all") matchEvent = log.event === logEventFilter;
 
-    return matchPath && matchEvent;
+    let matchGuest = true;
+    if (logGuestFilter === "identified") matchGuest = !!log.guest_name;
+    else if (logGuestFilter === "anonymous") matchGuest = !log.guest_name;
+
+    return matchPath && matchEvent && matchGuest;
   });
 
   const filteredWishes = wishes
@@ -297,6 +302,8 @@ const AdminPage = () => {
             setLogEventFilter={setLogEventFilter}
             logPathFilter={logPathFilter}
             setLogPathFilter={setLogPathFilter}
+            logGuestFilter={logGuestFilter}
+            setLogGuestFilter={setLogGuestFilter}
           />
         )}
         {tab === "wishes" && (

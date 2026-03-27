@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 
-const SideCountdown = ({ 
-  targetDate = "2026-04-05T00:00:00", 
-  side = "both", 
-  onOpenMap 
+const SideCountdown = ({
+  targetDate = "2026-04-05T00:00:00",
+  side = "both",
+  onOpenMap,
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -105,7 +105,7 @@ const SideCountdown = ({
         damping: 20,
         opacity: { duration: 0.2 },
       }}
-      className={`fixed !right-0 !left-auto top-[20%] md:top-1/2 md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${
+      className={`fixed !right-0 !left-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${
         isHidden ? "pointer-events-none" : "pointer-events-auto"
       }`}
     >

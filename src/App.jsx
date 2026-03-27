@@ -25,9 +25,7 @@ import RSVPTrigger from "./features/rsvp/components/RSVPTrigger";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isOpened, setIsOpened] = useState(() => {
-    return localStorage.getItem("invitation_opened") === "true";
-  });
+  const [isOpened, setIsOpened] = useState(false);
   const [weddingSide, setWeddingSide] = useState("both");
   const [showMapModal, setShowMapModal] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -120,6 +118,7 @@ function App() {
             setGuestName(guest.name);
             setWeddingSide(guest.side);
             sessionStorage.setItem("guest_name", guest.name);
+            trackEvent("page_visit");
           }
         } catch (e) {
           console.error("Short ID not found:", e);
@@ -228,7 +227,6 @@ function App() {
 
   const handleOpen = () => {
     setIsOpened(true);
-    localStorage.setItem("invitation_opened", "true");
     setIsPlaying(true);
     trackEvent("open_invitation");
     confetti({

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useWishes, useCreateWish } from "../hooks/use-wishes";
+import { useWishes, useCreateWish, useUpdateWish, useRecallWish } from "../hooks/use-wishes";
 import {
   MessageSquareText,
   Heart,
@@ -10,6 +10,9 @@ import {
   Send,
   Menu,
   Loader2,
+  RotateCcw,
+  Edit2,
+  Trash2,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "react-hot-toast";
@@ -109,6 +112,7 @@ const WishModal = ({ onClose, onSuccess, guestName, side }) => {
         role: role,
         phone: "",
         guest_path_name: targetPath,
+        visitor_id: localStorage.getItem("visitor_id"),
       },
       {
         onSuccess: (newWish) => {
@@ -243,6 +247,11 @@ const FloatingWishChat = ({ guestName, side }) => {
   const timerRef = useRef(null);
   const idCounter = useRef(0);
   const createMutation = useCreateWish();
+  const updateMutation = useUpdateWish();
+  const recallMutation = useRecallWish();
+  const [editingWishId, setEditingWishId] = useState(null);
+  const [editingText, setEditingText] = useState("");
+  const visitorId = localStorage.getItem("visitor_id");
 
   const [desktopData, setDesktopData] = useState(() => {
     const params = new URLSearchParams(window.location.search);
@@ -288,10 +297,10 @@ const FloatingWishChat = ({ guestName, side }) => {
   }, [wishes]);
 
   useEffect(() => {
-    if (!wishes || wishes.length <= 5) return;
+    if (!wishes || wishes.length <= 5 || editingWishId) return;
     timerRef.current = setInterval(addNextWish, 4000);
     return () => clearInterval(timerRef.current);
-  }, [wishes]);
+  }, [wishes, editingWishId]);
 
   const handleDesktopSubmit = (e) => {
     e.preventDefault();
@@ -326,6 +335,7 @@ const FloatingWishChat = ({ guestName, side }) => {
         role: role,
         phone: "",
         guest_path_name: targetPath,
+        visitor_id: localStorage.getItem("visitor_id"),
       },
       {
         onSuccess: (newWish) => {
@@ -338,7 +348,7 @@ const FloatingWishChat = ({ guestName, side }) => {
           confetti({
             particleCount: 100,
             spread: 50,
-            origin: { x: 0.1, y: 0.9 },
+            origin: { x: 0.9, y: 0.9 },
             colors:
               targetPath === "/r"
                 ? ["#3b82f6", "#2563eb", "#ffffff"]
@@ -432,9 +442,63 @@ const FloatingWishChat = ({ guestName, side }) => {
                       <span className="font-bold mr-s4 text-white/90">
                         {wish.name}:{" "}
                       </span>
-                      <span className="pl-1 leading-relaxed text-white">
-                        {wish.message}
-                      </span>
+                      {editingWishId === wish.id ? (
+                        <div className="inline-flex items-center gap-2">
+                          <input
+                            autoFocus
+                            className="bg-white/20 border border-white/30 rounded px-2 py-0.5 text-white outline-none min-w-[120px]"
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                updateMutation.mutate({ id: wish.id, message: editingText, visitor_id: visitorId }, {
+                                  onSuccess: () => setEditingWishId(null)
+                                });
+                              }
+                              if (e.key === "Escape") setEditingWishId(null);
+                            }}
+                          />
+                          <button 
+                            onClick={() => updateMutation.mutate({ id: wish.id, message: editingText, visitor_id: visitorId }, {
+                               onSuccess: () => setEditingWishId(null)
+                            })}
+                            className="hover:scale-110 active:scale-95"
+                          >
+                             <Send size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <span className="pl-1 leading-relaxed text-white">
+                            {wish.message}
+                          </span>
+                          {wish.visitor_id === visitorId && (
+                            <div className="inline-flex items-center gap-2 ml-2 opacity-50 hover:opacity-100 transition-opacity">
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingWishId(wish.id);
+                                  setEditingText(wish.message);
+                                }}
+                                className="hover:text-blue-200"
+                              >
+                                <Edit2 size={12} />
+                              </button>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if(confirm("Thu hồi lời chúc này?")) {
+                                    recallMutation.mutate({ id: wish.id, visitor_id: visitorId });
+                                  }
+                                }}
+                                className="hover:text-red-200"
+                              >
+                                <RotateCcw size={12} />
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </motion.div>
                   ))}
                 </AnimatePresence>

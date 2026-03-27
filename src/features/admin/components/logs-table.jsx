@@ -12,7 +12,9 @@ const LogsTable = ({
   logEventFilter,
   setLogEventFilter,
   logPathFilter,
-  setLogPathFilter
+  setLogPathFilter,
+  logGuestFilter,
+  setLogGuestFilter
 }) => {
   const eventMap = {
     open_invitation: { label: "Mở", color: "green" },
@@ -77,6 +79,16 @@ const LogsTable = ({
             <option value="groom">Nhà trai (/r)</option>
             <option value="bride">Nhà gái (/d)</option>
           </select>
+
+          <select
+            value={logGuestFilter}
+            onChange={(e) => setLogGuestFilter(e.target.value)}
+            className="text-[10px] sm:text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none font-bold text-gray-500 bg-gray-50/50 min-w-[100px]"
+          >
+            <option value="all">Tất cả đối tượng</option>
+            <option value="identified">Khách mời</option>
+            <option value="anonymous">Không xác định</option>
+          </select>
         </div>
       </div>
 
@@ -100,7 +112,7 @@ const LogsTable = ({
                       className="rounded border-gray-300 w-3 h-3 shrink-0"
                     />
                     <div className="font-bold text-gray-800 text-[10px] truncate max-w-[120px]">
-                      {log.guest_name || "Ẩn danh"}
+                      {log.guest_name || "Không xác định"}
                     </div>
                     <span className={`text-[8px] px-1 py-0.5 rounded font-bold uppercase shrink-0 ${ev.color === 'green' ? 'bg-green-50 text-green-500' : ev.color === 'pink' ? 'bg-pink-50 text-pink-500' : 'bg-gray-50 text-gray-400'}`}>
                       {ev.label}
@@ -164,7 +176,7 @@ const LogsTable = ({
                     />
                   </td>
                   <td className="px-4 py-4">
-                    <div className="font-bold text-gray-800">{log.guest_name || "Ẩn danh"}</div>
+                    <div className="font-bold text-gray-800">{log.guest_name || "Không xác định"}</div>
                     <div className={`mt-1 text-[10px] w-fit font-bold uppercase px-1 rounded-sm ${ev.color === 'green' ? 'bg-green-50 text-green-600' : ev.color === 'pink' ? 'bg-pink-50 text-pink-600' : 'bg-gray-50 text-gray-400'}`}>
                        {ev.label}
                     </div>
