@@ -128,7 +128,6 @@ const InvitationManager = () => {
     }
 
     const transformName = (n) => {
-      if (newTemplateType === "bạn" || newTemplateType === "bạn thân") return n;
       const title = newTemplateType.charAt(0).toUpperCase() + newTemplateType.slice(1);
       if (n.toLowerCase().startsWith(newTemplateType.toLowerCase() + " ")) return n;
       return `${title} ${n}`;
