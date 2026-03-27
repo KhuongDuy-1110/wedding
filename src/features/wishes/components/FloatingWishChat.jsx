@@ -486,159 +486,145 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
         onClick={() => setSelectedWishId(null)}
       >
         <div className="relative pointer-events-none">
-          {isOpen && (
-            <div className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] py-s10 md:pt-s50 md:pb-s25 md:px-s25">
-              <div className="hidden md:block absolute -top-[45px] left-1/2 -translate-x-1/2 z-[11]">
-                <img
-                  src="/message-heart.png"
-                  alt="Heart Icon"
-                  className="w-[160px] object-contain drop-shadow-2xl"
-                />
-              </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="hidden md:flex absolute top-5 right-6 text-[#5c1a1a] hover:opacity-70 transition-colors z-[12] pointer-events-auto"
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                className="relative bg-transparent md:bg-white md:backdrop-blur-none rounded-[32px] md:rounded-[18px] md:border-none md:border-[#eee] md:shadow-none md:shadow-[0_30px_60px_rgba(0,0,0,0.15)] py-s10 md:pt-s50 md:pb-s25 md:px-s25"
               >
-                <X size={20} />
-              </button>
-              <h2 className="hidden md:block text-center text-[20px] font-bold text-[#5c1a1a] mb-s20">
-                Lời chúc
-              </h2>
-
-              <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full h-[260px] md:h-[320px] overflow-hidden">
-                <AnimatePresence mode="popLayout">
-                  {activeWishes.map((wish) => {
-                    const isMine =
-                      wish.visitor_id === visitorId ||
-                      (wish.invitation_id === invitationId && !!invitationId);
-                    return (
-                      <WishBubble
-                        key={wish._key}
-                        wish={wish}
-                        isMine={isMine}
-                        isSelected={selectedWishId === wish.id}
-                        onSelect={(e) => {
-                          e.stopPropagation();
-                          handleSelect(wish.id);
-                        }}
-                        onEdit={() => handleEdit(wish)}
-                        onRecall={() => handleRecall(wish)}
-                        recallPending={recallMutation.isPending}
-                      />
-                    );
-                  })}
-                </AnimatePresence>
-              </div>
-
-              {/* Action Form Footer */}
-              <div className="mt-s15 md:mt-4">
-                {/* Desktop Form */}
-                <div className={`hidden md:block p-s15 rounded-[16px] border backdrop-blur-sm transition-all pointer-events-auto ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}>
-                  {editWish && (
-                    <div className="flex items-center justify-between mb-2 px-1">
-                      <span className="text-[12px] font-bold text-blue-600">Đang sửa lời chúc...</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditWish(null);
-                          setDesktopData((prev) => ({ ...prev, message: "" }));
-                        }}
-                        className="text-[12px] text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1"
-                      >
-                        <X size={12} /> Hủy
-                      </button>
-                    </div>
-                  )}
-                  <form
-                    onSubmit={handleDesktopSubmit}
-                    className="flex flex-col gap-s10"
-                  >
-                    <input
-                      placeholder="Tên của bạn..."
-                      maxLength={MAX_NAME_LENGTH}
-                      value={desktopData.name}
-                      disabled={!!editWish}
-                      onChange={(e) =>
-                        setDesktopData({ ...desktopData, name: e.target.value })
-                      }
-                      className={`w-full bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
-                    />
-                    <div className="flex gap-2">
-                      <input
-                        ref={desktopMessageRef}
-                        placeholder="Lời nhắn gửi yêu thương..."
-                        maxLength={MAX_MESSAGE_LENGTH}
-                        value={desktopData.message}
-                        onChange={(e) =>
-                          setDesktopData({
-                            ...desktopData,
-                            message: e.target.value,
-                          })
-                        }
-                        className={`flex-1 bg-[#fdf5f6] border rounded-xl px-s15 py-s8 text-[13px] text-[#333] outline-none transition-all ${editWish ? "border-blue-400/50 focus:border-blue-500" : "border-[#5c1a1a]/20 focus:border-[#5c1a1a]/50"}`}
-                      />
-                      <button
-                        type="submit"
-                        disabled={createMutation.isPending || updateMutation.isPending}
-                        className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
-                      >
-                        {(createMutation.isPending || updateMutation.isPending) ? (
-                          <Loader2 size={18} className="animate-spin" />
-                        ) : editWish ? (
-                          <Edit2 size={18} />
-                        ) : (
-                          <Send size={18} />
-                        )}
-                      </button>
-                    </div>
-                  </form>
+                <div className="hidden md:block absolute -top-[45px] left-1/2 -translate-x-1/2 z-[11]">
+                  <img
+                    src="/message-heart.png"
+                    alt="Heart Icon"
+                    className="w-[160px] object-contain drop-shadow-2xl"
+                  />
                 </div>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="hidden md:flex absolute top-5 right-6 text-[#5c1a1a] hover:opacity-70 transition-colors z-[12] pointer-events-auto"
+                >
+                  <X size={20} />
+                </button>
+                <h2 className="hidden md:block text-center text-[20px] font-bold text-[#5c1a1a] mb-s20">
+                  Lời chúc
+                </h2>
 
-                {/* Mobile Layout */}
-                <div className="md:hidden flex items-center justify-end gap-s10 pointer-events-auto">
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.button
-                        initial={{ opacity: 0, x: 20, scale: 0.8 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: 20, scale: 0.8 }}
-                        transition={{ duration: 0.2 }}
-                        onClick={() => setShowModal(true)}
-                        className={`flex-1 h-[44px] rounded-full px-s20 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm shadow-xl active:scale-95 transition-all ${isGroomPath ? "bg-blue-600/40" : isBridePath ? "bg-[#fd848e]/40" : "bg-[#b39164]/40"}`}
-                      >
-                        <span className="text-[14px] font-medium opacity-90 truncate">
-                          Gửi lời chúc...
-                        </span>
-                        <MessageSquareText size={20} />
-                      </motion.button>
-                    )}
+                <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full h-[260px] md:h-[320px] overflow-hidden">
+                  <AnimatePresence mode="popLayout">
+                    {activeWishes.map((wish) => {
+                      const isMine =
+                        wish.visitor_id === visitorId ||
+                        (wish.invitation_id === invitationId && !!invitationId);
+                      return (
+                        <WishBubble
+                          key={wish._key}
+                          wish={wish}
+                          isMine={isMine}
+                          isSelected={selectedWishId === wish.id}
+                          onSelect={(e) => {
+                            e.stopPropagation();
+                            handleSelect(wish.id);
+                          }}
+                          onEdit={() => handleEdit(wish)}
+                          onRecall={() => handleRecall(wish)}
+                          recallPending={recallMutation.isPending}
+                        />
+                      );
+                    })}
                   </AnimatePresence>
-                  <button
-                    onClick={toggleOpen}
-                    className={`shrink-0 w-[44px] h-[44px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform pointer-events-auto`}
-                  >
-                    {isOpen ? <X size={22} /> : <MessageSquareText size={22} />}
-                  </button>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* Desktop/Mobile Toggle when closed */}
-          {!isOpen && (
-            <div className="flex justify-end">
-              <button
-                onClick={toggleOpen}
-                className={`w-[48px] h-[48px] md:w-[56px] md:h-[56px] ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-transform pointer-events-auto`}
-              >
-                <MessageSquareText className="w-6 h-6 md:w-7 md:h-7" />
-              </button>
-            </div>
-          )}
+                {/* Desktop Form Only when open */}
+                <div className="hidden md:block mt-4">
+                  <div className={`p-s15 rounded-[16px] border backdrop-blur-sm transition-all pointer-events-auto ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}>
+                    {editWish && (
+                      <div className="flex items-center justify-between mb-2 px-1">
+                        <span className="text-[12px] font-bold text-blue-600">Đang sửa lời chúc...</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditWish(null);
+                            setDesktopData((prev) => ({ ...prev, message: "" }));
+                          }}
+                          className="text-[12px] text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1"
+                        >
+                          <X size={12} /> Hủy
+                        </button>
+                      </div>
+                    )}
+                    <form onSubmit={handleDesktopSubmit} className="flex flex-col gap-s10">
+                      <input
+                        placeholder="Tên của bạn..."
+                        maxLength={MAX_NAME_LENGTH}
+                        value={desktopData.name}
+                        disabled={!!editWish}
+                        onChange={(e) => setDesktopData({ ...desktopData, name: e.target.value })}
+                        className={`w-full bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          ref={desktopMessageRef}
+                          placeholder="Lời nhắn gửi yêu thương..."
+                          maxLength={MAX_MESSAGE_LENGTH}
+                          value={desktopData.message}
+                          onChange={(e) => setDesktopData({ ...desktopData, message: e.target.value })}
+                          className={`flex-1 bg-[#fdf5f6] border rounded-xl px-s15 py-s8 text-[13px] text-[#333] outline-none transition-all ${editWish ? "border-blue-400/50 focus:border-blue-500" : "border-[#5c1a1a]/20 focus:border-[#5c1a1a]/50"}`}
+                        />
+                        <button
+                          type="submit"
+                          disabled={createMutation.isPending || updateMutation.isPending}
+                          className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
+                        >
+                          {(createMutation.isPending || updateMutation.isPending) ? (
+                            <Loader2 size={18} className="animate-spin" />
+                          ) : editWish ? (
+                            <Edit2 size={18} />
+                          ) : (
+                            <Send size={18} />
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Unified Toggle & Mobile Trigger */}
+          <div className="mt-s10 md:mt-4 flex items-center justify-end gap-s10 pointer-events-auto">
+            <AnimatePresence>
+              {isOpen && (
+                <motion.button
+                  initial={{ opacity: 0, x: 20, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: 20, scale: 0.8 }}
+                  onClick={() => setShowModal(true)}
+                  className={`md:hidden flex-1 h-[44px] rounded-full px-s20 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm shadow-xl active:scale-95 transition-all ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/20" : isBridePath ? "bg-[#fd848e]/70 shadow-pink-500/30" : "bg-[#b39164]/40 shadow-amber-900/10"}`}
+                >
+                <span className="text-[14px] font-medium opacity-90 truncate">Gửi lời chúc...</span>
+                <MessageSquareText size={20} />
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          <button
+            onClick={toggleOpen}
+            className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:w-[48px] md:h-[48px]" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group`}
+          >
+            {isOpen ? (
+              <X size={22} className="group-hover:rotate-90 transition-transform duration-300" />
+            ) : (
+              <MessageSquareText className="w-6 h-6 md:w-7 md:h-7" />
+            )}
+          </button>
         </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 };
 
 export default FloatingWishChat;

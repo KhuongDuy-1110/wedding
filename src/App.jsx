@@ -283,7 +283,7 @@ function App() {
     const scrollFunc = () => {
       if (!isAutoScrolling) return;
 
-      window.scrollBy(0, 1); // Faster smooth scroll speed
+      window.scrollBy(0, 0.7); // Faster smooth scroll speed
 
       const isAtBottom =
         window.innerHeight + window.scrollY >=
