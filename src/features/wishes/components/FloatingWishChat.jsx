@@ -61,8 +61,8 @@ const WishBubble = memo(
         onClick={isMine ? onSelect : undefined}
         className={`relative ${bgClass} text-[13px] md:text-[14px] px-3 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto border border-white/20 ${isMine ? "cursor-pointer active:scale-95" : ""}`}
       >
-        <span className="font-bold mr-0.5 text-white whitespace-nowrap">{wish.name}:</span>
-        <span className="pl-1 leading-relaxed text-white break-words inline-block w-full">{wish.message}</span>
+        <span className="font-bold mr-1 text-white">{wish.name}:</span>
+        <span className="leading-relaxed text-white break-words">{wish.message}</span>
 
         <AnimatePresence>
           {isSelected && (
