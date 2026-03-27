@@ -109,7 +109,6 @@ function App() {
 
     if (nameParam) {
       setGuestName(nameParam);
-      document.title = `Thân mời ${nameParam} - Đám Cưới Khải & Nga`;
       sessionStorage.setItem("guest_name", nameParam);
     } else if (potentialId && potentialId.length >= 6 && potentialId.length <= 10) {
       setShortId(potentialId);
@@ -120,7 +119,6 @@ function App() {
           if (guest) {
             setGuestName(guest.name);
             setWeddingSide(guest.side);
-            document.title = `Thân mời ${guest.name} - Đám Cưới Khải & Nga`;
             sessionStorage.setItem("guest_name", guest.name);
           }
         } catch (e) {
@@ -129,7 +127,8 @@ function App() {
       };
       fetchGuest();
     } else {
-      document.title = "Đám Cưới Khải & Nga";
+      const stored = sessionStorage.getItem("guest_name");
+      if (stored) setGuestName(stored);
     }
 
     if (!hasTracked.current) {
@@ -163,6 +162,14 @@ function App() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (guestName) {
+      document.title = `Thân mời ${guestName} - Đám Cưới Khải & Nga`;
+    } else {
+      document.title = "Đám Cưới Khải & Nga";
+    }
+  }, [guestName]);
 
   const weddingConfigs = {
     groom: {

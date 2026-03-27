@@ -915,9 +915,10 @@ app.use(async (req, res) => {
   if (fs.existsSync(indexPath)) {
     let html = fs.readFileSync(indexPath, "utf8");
     
-    const guestNameSuffix = guestInfo ? ` - Kính mời ${guestInfo.name}` : "";
-    const title = `Thư Mời Cưới${guestNameSuffix} - Phạm Khải & Lê Nga`;
-    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình!";
+    const title = guestInfo 
+      ? `Thân mời ${guestInfo.name} - Đám cưới Phạm Khải & Lê Nga`
+      : `Thư Mời Cưới - Phạm Khải & Lê Nga`;
+    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình vào ngày 05.04.2026!";
     const image = openingImage;
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const currentUrl = `${protocol}://${req.headers.host}${req.originalUrl}`;
@@ -930,13 +931,20 @@ app.use(async (req, res) => {
       <meta property="og:image" content="${image}">
       <meta property="og:url" content="${currentUrl}">
       <meta property="og:type" content="website">
+      <meta property="og:site_name" content="Đám Cưới Khải & Nga">
       <meta name="twitter:card" content="summary_large_image">
       <meta name="twitter:title" content="${title}">
       <meta name="twitter:description" content="${description}">
       <meta name="twitter:image" content="${image}">
     `;
 
-    // Replace default meta or placeholder if it exists, otherwise insert into head
+    // Ensure we don't have duplicate titles or descriptions
+    html = html.replace(/<title>.*?<\/title>/gi, "");
+    html = html.replace(/<meta name="description".*?>/gi, "");
+    html = html.replace(/<meta property="og:title".*?>/gi, "");
+    html = html.replace(/<meta property="og:description".*?>/gi, "");
+    html = html.replace(/<meta property="og:image".*?>/gi, "");
+
     if (html.includes("<!-- OG_TAGS -->")) {
       html = html.replace("<!-- OG_TAGS -->", metaTags);
     } else {
