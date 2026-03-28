@@ -25,7 +25,7 @@ const EventDetails = ({ side }) => {
           className={`design-card py-s40 px-s20 relative text-center overflow-visible scroll-mt-s50 flex-1 ${isBride ? "border-2 border-primary shadow-lg" : ""}`}
         >
           <div className="absolute -top-[15px] left-1/2 -translate-x-1/2 bg-primary text-white py-[6px] px-s12 text-[12px] font-bold tracking-[2px] uppercase">
-            LỄ ĂN HỎI & TIỆC MỪNG
+            TIỆC MỪNG
           </div>
 
           <h4 className="font-brice text-[20px] mt-s20 mx-0 mb-s10 text-primary tracking-[1px]">
