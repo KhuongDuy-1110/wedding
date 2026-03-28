@@ -59,10 +59,12 @@ const WishBubble = memo(
           ...(isSelected ? {} : EXIT_TRANSITION),
         }}
         onClick={isMine ? onSelect : undefined}
-        className={`relative ${bgClass} text-[13px] md:text-[14px] px-3 min-h-[30px] py-1.5 rounded-[18px] text-white shadow-lg backdrop-blur-[4px] w-fit max-w-[95%] pointer-events-auto border border-white/20 ${isMine ? "cursor-pointer active:scale-95" : ""}`}
+        className={`relative ${bgClass} text-[13px] md:text-[14px] px-4 py-2 rounded-[20px] text-white shadow-xl backdrop-blur-[6px] w-fit max-w-full pointer-events-auto border border-white/30 ${isMine ? "cursor-pointer active:scale-95" : ""}`}
       >
-        <span className="font-bold mr-1 text-white">{wish.name}:</span>
-        <span className="leading-relaxed text-white break-words">{wish.message}</span>
+        <div className="text-white break-words leading-[1.6]">
+          <span className="font-bold mr-1.5">{wish.name}:</span>
+          <span className="opacity-95">{wish.message}</span>
+        </div>
 
         <AnimatePresence>
           {isSelected && (
@@ -482,7 +484,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
       </AnimatePresence>
 
       <div
-        className={`fixed inset-x-0 md:right-s20 md:left-auto bottom-0 md:bottom-s20 z-[90] pointer-events-none p-s20 md:p-s15 pb-s10 md:pb-s15 w-full md:transition-all md:duration-500 ${isOpen ? "md:w-[420px]" : "md:w-auto"}`}
+        className={`fixed inset-x-0 md:right-s20 md:left-auto bottom-0 md:bottom-2 z-[90] pointer-events-none p-s20 md:p-s15 pb-2 md:pb-2 w-full md:transition-all md:duration-500 ${isOpen ? "md:w-[420px]" : "md:w-auto"}`}
         onClick={() => setSelectedWishId(null)}
       >
         <div className="relative pointer-events-none">
@@ -511,7 +513,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                   Lời chúc
                 </h2>
 
-                <div className="flex flex-col justify-end items-start gap-s8 max-w-[85%] md:max-w-full h-[260px] md:h-[320px] overflow-hidden">
+                <div className="flex flex-col justify-end items-start gap-s10 max-w-[86%] md:max-w-full h-[320px] md:h-[260px] overflow-hidden [mask-image:linear-gradient(to_top,black_85%,transparent_100%)]">
                   <AnimatePresence mode="popLayout">
                     {activeWishes.map((wish) => {
                       const isMine =
@@ -594,7 +596,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
           </AnimatePresence>
 
           {/* Unified Toggle & Mobile Trigger */}
-          <div className="mt-s10 md:mt-4 flex items-center justify-end gap-s10 pointer-events-auto">
+          <div className="mt-s15 md:mt-4 flex items-center justify-end gap-s10 pointer-events-auto">
             <AnimatePresence>
               {isOpen && (
                 <motion.button
@@ -612,7 +614,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
 
           <button
             onClick={toggleOpen}
-            className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:w-[48px] md:h-[48px]" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group`}
+            className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:hidden" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group pointer-events-auto`}
           >
             {isOpen ? (
               <X size={22} className="group-hover:rotate-90 transition-transform duration-300" />
