@@ -24,6 +24,7 @@ import {
 import { getVisitorId } from "../../admin/utils/tracker";
 import confetti from "canvas-confetti";
 import { toast } from "react-hot-toast";
+import { useSiteSettings } from "../../../hooks/use-site-settings";
 
 const MAX_NAME_LENGTH = 25;
 const MAX_MESSAGE_LENGTH = 150;
@@ -45,7 +46,7 @@ const WishBubble = memo(
         ? "bg-blue-600/50 shadow-blue-500/10"
         : wish.guest_path_name === "/d"
           ? "bg-[#fd848e]/50 shadow-pink-500/10"
-          : "bg-[#b39164]/50 shadow-amber-900/5";
+          : "bg-[#E7B547]/60 shadow-amber-500/10";
 
     return (
       <motion.div
@@ -258,7 +259,9 @@ const getChatPath = (side) => {
   const path = window.location.pathname;
   if (path.includes("/r")) return "/r";
   if (path.includes("/d")) return "/d";
-  return side === "groom" ? "/r" : "/d";
+  if (side === "groom") return "/r";
+  if (side === "bride") return "/d";
+  return "/both";
 };
 
 const parseMessage = (side, message) => {
@@ -281,11 +284,15 @@ const parseMessage = (side, message) => {
 
 const FloatingWishChat = ({ guestName, side, invitationId }) => {
   const { data: wishes } = useWishes();
+  const { data: settings } = useSiteSettings();
   const createMutation = useCreateWish();
   const updateMutation = useUpdateWish();
   const recallMutation = useRecallWish();
 
   const [isOpen, setIsOpen] = useState(true);
+
+  // If wishes are disabled from admin, don't show anything
+  if (settings?.is_wishes_enabled === "false") return null;
   const [activeWishes, setActiveWishes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedWishId, setSelectedWishId] = useState(null);
@@ -405,7 +412,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                   ? ["#3b82f6", "#2563eb", "#fff"]
                   : targetPath === "/d"
                     ? ["#fd848e", "#e85d79", "#fff"]
-                    : ["#b39164", "#8d714b", "#fff"],
+                    : ["#E7B547", "#d1a03e", "#fff"],
             });
           },
         },
@@ -577,7 +584,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                         <button
                           type="submit"
                           disabled={createMutation.isPending || updateMutation.isPending}
-                          className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
+                          className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
                         >
                           {(createMutation.isPending || updateMutation.isPending) ? (
                             <Loader2 size={18} className="animate-spin" />
@@ -604,7 +611,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 20, scale: 0.8 }}
                   onClick={() => setShowModal(true)}
-                  className={`md:hidden flex-1 h-[44px] rounded-full px-s20 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm shadow-xl active:scale-95 transition-all ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/20" : isBridePath ? "bg-[#fd848e]/70 shadow-pink-500/30" : "bg-[#b39164]/40 shadow-amber-900/10"}`}
+                  className={`md:hidden flex-1 h-[44px] rounded-full px-s20 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm shadow-xl active:scale-95 transition-all ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/20" : isBridePath ? "bg-[#fd848e]/70 shadow-pink-500/30" : "bg-[#E7B547]/60 shadow-amber-500/10"}`}
                 >
                 <span className="text-[14px] font-medium opacity-90 truncate">Gửi lời chúc...</span>
                 <MessageSquareText size={20} />
@@ -614,7 +621,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
 
           <button
             onClick={toggleOpen}
-            className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:hidden" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#b39164] shadow-amber-900/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group pointer-events-auto`}
+            className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:hidden" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group pointer-events-auto`}
           >
             {isOpen ? (
               <X size={22} className="group-hover:rotate-90 transition-transform duration-300" />

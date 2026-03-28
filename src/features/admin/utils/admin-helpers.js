@@ -3,12 +3,14 @@ import { UAParser } from "ua-parser-js";
 export const formatDate = (dt) => {
   if (!dt) return "Chưa rõ";
   try {
-    let date = new Date(dt);
-    date = new Date(date.getTime() + 7 * 60 * 60 * 1000);
-
+    const date = new Date(dt);
     return date.toLocaleString("vi-VN", {
-      dateStyle: "short",
-      timeStyle: "short",
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
       timeZone: "Asia/Ho_Chi_Minh",
     });
   } catch (e) {

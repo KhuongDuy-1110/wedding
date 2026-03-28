@@ -141,8 +141,12 @@ function App() {
       };
       fetchGuest();
     } else {
-      const stored = sessionStorage.getItem("guest_name");
-      if (stored) setGuestName(stored);
+      // Only restore from session if not at the root path to avoid showing stale guest names
+      const isRoot = window.location.pathname === "/" && !window.location.search;
+      if (!isRoot) {
+        const stored = sessionStorage.getItem("guest_name");
+        if (stored) setGuestName(stored);
+      }
     }
 
     if (!hasTracked.current) {

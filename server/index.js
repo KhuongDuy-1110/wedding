@@ -419,6 +419,7 @@ const initDB = async () => {
         ['gallery_list', JSON.stringify(['/assets/gallery-1.png', '/assets/trai-tim.jpg', '/assets/couple.png'])],
         ['invitation_template_groom', 'Trân trọng kính mời [name] tới dự lễ cưới của chúng mình tại [link] !'],
         ['invitation_template_bride', 'Trân trọng kính mời [name] tới dự lễ ăn hỏi & tiệc mừng của chúng mình tại [link] !'],
+        ['is_wishes_enabled', 'true'],
       ];
       
       for (const [key, val] of defaultSettings) {
@@ -590,7 +591,7 @@ app.delete("/api/wishes/:id/recall", async (req, res) => {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
       "DELETE FROM wishes WHERE id = ? AND (visitor_id = ? OR (invitation_id = ? AND invitation_id IS NOT NULL))",
-      [req.params.id, visitor_id, invitation_id]
+      [req.params.id, visitor_id || null, invitation_id || null]
     );
     await connection.end();
     if (result.affectedRows === 0) {
@@ -609,7 +610,7 @@ app.put("/api/wishes/:id", async (req, res) => {
     const connection = await mysql.createConnection(dbConfig);
     const [result] = await connection.execute(
       "UPDATE wishes SET message = ? WHERE id = ? AND (visitor_id = ? OR (invitation_id = ? AND invitation_id IS NOT NULL))",
-      [message, req.params.id, visitor_id, invitation_id]
+      [message, req.params.id, visitor_id || null, invitation_id || null]
     );
     await connection.end();
     if (result.affectedRows === 0) {

@@ -37,6 +37,8 @@ const AdminPage = () => {
   const [wishes, setWishes] = useState([]);
   const [rsvps, setRsvps] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { data: settings = {} } = useSiteSettings();
+  const updateMutation = useUpdateSetting();
 
   useEffect(() => {
     if (authed) {
@@ -307,21 +309,41 @@ const AdminPage = () => {
           />
         )}
         {tab === "wishes" && (
-          <WishesTable 
-            filteredWishes={filteredWishes}
-            selectedWishes={selectedWishes}
-            toggleSelectOne={toggleSelectOne}
-            toggleSelectAll={toggleSelectAll}
-            handleDelete={handleDelete}
-            handleBulkDelete={handleBulkDelete}
-            handleToggleHide={handleToggleHide}
-            wishFilter={wishFilter}
-            setWishFilter={setWishFilter}
-            wishSort={wishSort}
-            setWishSort={setWishSort}
-            wishStatusFilter={wishStatusFilter}
-            setWishStatusFilter={setWishStatusFilter}
-          />
+          <div className="flex flex-col gap-4">
+             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                   <div className={`p-2 rounded-xl scale-75 sm:scale-100 ${(!settings || settings.is_wishes_enabled !== 'false') ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'}`}>
+                      <MessageSquare size={20} />
+                   </div>
+                   <div>
+                      <h3 className="font-bold text-gray-800 text-xs sm:text-sm">Bật/Tắt Lời Chúc</h3>
+                      <p className="text-[10px] text-gray-400">Ẩn hoặc hiện khung gửi lời chúc phía khách mời</p>
+                   </div>
+                </div>
+                <button 
+                   onClick={() => updateMutation.mutate({ key_name: 'is_wishes_enabled', value_content: settings.is_wishes_enabled === 'false' ? 'true' : 'false' })}
+                   className={`px-4 sm:px-6 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all shadow-md active:scale-95 ${(!settings || settings.is_wishes_enabled !== 'false') ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'}`}
+                >
+                   {(!settings || settings.is_wishes_enabled !== 'false') ? 'ĐANG BẬT' : 'ĐANG TẮT'}
+                </button>
+             </div>
+             
+             <WishesTable 
+               filteredWishes={filteredWishes}
+               selectedWishes={selectedWishes}
+               toggleSelectOne={toggleSelectOne}
+               toggleSelectAll={toggleSelectAll}
+               handleDelete={handleDelete}
+               handleBulkDelete={handleBulkDelete}
+               handleToggleHide={handleToggleHide}
+               wishFilter={wishFilter}
+               setWishFilter={setWishFilter}
+               wishSort={wishSort}
+               setWishSort={setWishSort}
+               wishStatusFilter={wishStatusFilter}
+               setWishStatusFilter={setWishStatusFilter}
+             />
+          </div>
         )}
         {tab === "invitations" && <InvitationManager />}
         {tab === "images" && <GalleryTab isGroomSide={false} />}
