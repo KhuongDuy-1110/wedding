@@ -3,6 +3,7 @@ import { Copy, Trash2, Edit2, Plus, RefreshCw, Send, CheckSquare, Square, XCircl
 import { Badge } from "./badge";
 import { adminApi } from "../api/admin-api";
 import { useSiteSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
+import { toast } from "react-hot-toast";
 
 const TEMPLATE_TYPES = ["bạn", "anh", "chị", "bạn thân", "em", "chú", "cô", "bác"];
 
@@ -89,10 +90,10 @@ const InvitationManager = () => {
         key_name: activeTemplateKey,
         value_content: localTemplate,
       });
-      alert("Đã lưu mẫu lời mời!");
+      toast.success("Đã lưu mẫu lời mời!");
     } catch (e) {
       console.error(e);
-      alert("Lỗi khi lưu mẫu!");
+      toast.error("Lỗi khi lưu mẫu!");
     }
   };
 
@@ -151,7 +152,7 @@ const InvitationManager = () => {
       await fetchGuests();
     } catch (e) {
       console.error(e);
-      alert("Lỗi khi thêm khách mời (có thể do trùng mã rút gọn, hãy thử lại)");
+      toast.error("Lỗi khi thêm khách mời (có thể do trùng mã rút gọn, hãy thử lại)");
     } finally {
       setIsAddingGuest(false);
     }
@@ -246,6 +247,7 @@ const InvitationManager = () => {
   const handleCopy = async (guest) => {
     const inviteHtml = generateInvitation(guest);
     navigator.clipboard.writeText(inviteHtml);
+    toast.success("Đã copy lời mời!");
 
     try {
       await adminApi.markInvitationSent(guest.id, true);

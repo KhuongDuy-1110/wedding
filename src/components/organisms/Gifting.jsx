@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, QrCode, RefreshCcw, Download } from "lucide-react";
 import { trackEvent } from "../../features/admin/utils/tracker";
+import { toast } from "react-hot-toast";
 
 const handleDownload = (url, name) => {
   const link = document.createElement("a");
@@ -86,7 +87,7 @@ const GiftingCard = ({ acc, idx }) => {
                 className="btn-primary py-[8px] text-[10px] flex-1"
                 onClick={() => {
                   navigator.clipboard.writeText(acc.account);
-                  alert("Đã sao chép số tài khoản!");
+                  toast.success("Đã sao chép số tài khoản!");
                 }}
               >
                 SAO CHÉP
@@ -239,7 +240,7 @@ const Gifting = ({ side }) => {
                         className="bg-primary text-white py-s6 px-s12 text-[10px] rounded-full font-bold shadow-sm hover:bg-primary/90 transition-all"
                         onClick={() => {
                           navigator.clipboard.writeText(acc.account);
-                          alert("Đã sao chép số tài khoản!");
+                          toast.success("Đã sao chép số tài khoản!");
                         }}
                       >
                         SAO CHÉP
