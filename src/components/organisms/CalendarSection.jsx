@@ -42,6 +42,9 @@ const CalendarSection = () => {
   const engagementDate = 4;
   const handleDateClick = (day) => {
     if (day === engagementDate || day === weddingDate) {
+      // Stop intro auto-scroll if running
+      window.dispatchEvent(new CustomEvent("stop-auto-scroll"));
+
       sessionStorage.setItem("is_auto_scrolling", "true");
       document
         .getElementById(`event-${day}`)

@@ -6,6 +6,7 @@ const SideCountdown = ({
   targetDate = "2026-04-05T00:00:00",
   side = "both",
   onOpenMap,
+  isOpened,
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -19,46 +20,15 @@ const SideCountdown = ({
   const scrollTimeoutRef = useRef(null);
   const skipHideRef = useRef(false);
 
-  useEffect(() => {
-    // Observer for calendar section visibility
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsOverCalendar(entry.isIntersecting);
-      },
-      { threshold: 0.2 },
-    );
-
-    const calendarEl = document.getElementById("calendar-section");
-    if (calendarEl) observer.observe(calendarEl);
-
-    const handleScroll = () => {
-      // Check both local ref and global session storage for auto-scroll indicator
-      if (
-        skipHideRef.current || 
-        sessionStorage.getItem("is_auto_scrolling") === "true" ||
-        sessionStorage.getItem("auto_flip_gifting") === "true"
-      ) return;
-      
-      setIsScrolling(true);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsScrolling(false);
-      }, 1500);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
-      if (calendarEl) observer.unobserve(calendarEl);
-    };
-  }, []);
-
   const [autoScrolling, setAutoScrolling] = useState(false);
 
   useEffect(() => {
+    // We only need the intersection observer if we want to hide on calendar,
+    // but the user wants it to 'always show' now.
+    // Simplifying to only check the auto-scroll flag.
+
     const checkFlag = () => {
-      const isAuto = 
+      const isAuto =
         sessionStorage.getItem("is_auto_scrolling") === "true" ||
         sessionStorage.getItem("auto_flip_gifting") === "true";
       if (isAuto !== autoScrolling) setAutoScrolling(isAuto);
@@ -68,7 +38,7 @@ const SideCountdown = ({
     return () => clearInterval(interval);
   }, [autoScrolling]);
 
-  const isHidden = (isScrolling || isOverCalendar) && !autoScrolling;
+  const isHidden = !isOpened || autoScrolling;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -94,26 +64,37 @@ const SideCountdown = ({
   }, [targetDate]);
 
   const handleAutoScroll = (targetId, isCalendar = false) => {
-    const element = document.getElementById(targetId);
-    if (element) {
-      if (!isCalendar) {
-        skipHideRef.current = true;
-        sessionStorage.setItem("is_auto_scrolling", "true");
-        setIsScrolling(false);
-      }
-      
-      const offset = isCalendar ? 80 : (window.innerHeight - element.offsetHeight) / 2;
-      const top = element.getBoundingClientRect().top + window.pageYOffset - (offset > 0 ? offset : 0);
+    // Force stop intro auto-scroll
+    window.dispatchEvent(new CustomEvent("stop-auto-scroll"));
 
-      window.scrollTo({ top, behavior: "smooth" });
-      
-      if (!isCalendar) {
-        setTimeout(() => {
-          skipHideRef.current = false;
-          sessionStorage.removeItem("is_auto_scrolling");
-        }, 1500);
+    // Delay to let the stop event settle and clear any pending frames
+    setTimeout(() => {
+      const element = document.getElementById(targetId);
+      if (element) {
+        if (!isCalendar) {
+          skipHideRef.current = true;
+          sessionStorage.setItem("is_auto_scrolling", "true");
+          setIsScrolling(false);
+        }
+
+        const offset = isCalendar
+          ? 80
+          : (window.innerHeight - element.offsetHeight) / 2;
+        const top =
+          element.getBoundingClientRect().top +
+          window.pageYOffset -
+          (offset > 0 ? offset : 0);
+
+        window.scrollTo({ top, behavior: "smooth" });
+
+        if (!isCalendar) {
+          setTimeout(() => {
+            skipHideRef.current = false;
+            sessionStorage.removeItem("is_auto_scrolling");
+          }, 1500);
+        }
       }
-    }
+    }, 50);
   };
 
   const items = [
@@ -136,7 +117,7 @@ const SideCountdown = ({
         damping: 20,
         opacity: { duration: 0.2 },
       }}
-      className={`fixed !left-0 !right-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[100] flex flex-col gap-1 md:gap-2 ${
+      className={`fixed !left-0 !right-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[9999] flex flex-col gap-1 md:gap-2 ${
         isHidden ? "pointer-events-none" : "pointer-events-auto"
       }`}
     >
@@ -144,6 +125,7 @@ const SideCountdown = ({
         {items.map((item, index) => (
           <motion.div
             key={item.label}
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={() => handleAutoScroll("calendar-section", true)}
             className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
           >
@@ -157,8 +139,8 @@ const SideCountdown = ({
         ))}
 
         <motion.div
-          onClick={(e) => {
-            e.stopPropagation();
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => {
             onOpenMap();
           }}
           className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer shine-effect"
@@ -170,8 +152,8 @@ const SideCountdown = ({
         </motion.div>
 
         <motion.div
-          onClick={(e) => {
-            e.stopPropagation();
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={() => {
             sessionStorage.setItem("auto_flip_gifting", "true");
             handleAutoScroll("gifting-section");
           }}

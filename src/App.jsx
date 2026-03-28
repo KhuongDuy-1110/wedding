@@ -255,6 +255,9 @@ function App() {
   };
 
   const handleCelebrate = () => {
+    // Stop intro auto-scroll if running
+    window.dispatchEvent(new CustomEvent("stop-auto-scroll"));
+
     confetti({
       particleCount: 200,
       spread: 90,
@@ -287,7 +290,10 @@ function App() {
       window.removeEventListener("touchstart", stopAutoScroll);
       window.removeEventListener("mousedown", stopAutoScroll);
       window.removeEventListener("keydown", stopAutoScroll);
+      window.removeEventListener("stop-auto-scroll", stopAutoScroll);
     };
+
+    window.addEventListener("stop-auto-scroll", stopAutoScroll);
 
     const scrollFunc = () => {
       if (!isAutoScrolling) return;
@@ -322,6 +328,7 @@ function App() {
     return () => {
       clearTimeout(timeoutId);
       stopAutoScroll();
+      window.removeEventListener("stop-auto-scroll", stopAutoScroll);
     };
   }, [isOpened]);
 
@@ -430,6 +437,7 @@ function App() {
         targetDate={currentConfig.targetDate}
         side={weddingSide}
         onOpenMap={() => handleOpenMap()}
+        isOpened={isOpened}
       />
       <AnimatePresence>
         {showMapModal && (
