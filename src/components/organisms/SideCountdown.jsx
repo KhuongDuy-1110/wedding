@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { MapPin, QrCode } from "lucide-react";
 
 const SideCountdown = ({
   targetDate = "2026-04-05T00:00:00",
@@ -17,6 +17,7 @@ const SideCountdown = ({
   const [isScrolling, setIsScrolling] = useState(false);
   const [isOverCalendar, setIsOverCalendar] = useState(false);
   const scrollTimeoutRef = useRef(null);
+  const skipHideRef = useRef(false);
 
   useEffect(() => {
     // Observer for calendar section visibility
@@ -31,6 +32,13 @@ const SideCountdown = ({
     if (calendarEl) observer.observe(calendarEl);
 
     const handleScroll = () => {
+      // Check both local ref and global session storage for auto-scroll indicator
+      if (
+        skipHideRef.current || 
+        sessionStorage.getItem("is_auto_scrolling") === "true" ||
+        sessionStorage.getItem("auto_flip_gifting") === "true"
+      ) return;
+      
       setIsScrolling(true);
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = setTimeout(() => {
@@ -46,7 +54,21 @@ const SideCountdown = ({
     };
   }, []);
 
-  const isHidden = isScrolling || isOverCalendar;
+  const [autoScrolling, setAutoScrolling] = useState(false);
+
+  useEffect(() => {
+    const checkFlag = () => {
+      const isAuto = 
+        sessionStorage.getItem("is_auto_scrolling") === "true" ||
+        sessionStorage.getItem("auto_flip_gifting") === "true";
+      if (isAuto !== autoScrolling) setAutoScrolling(isAuto);
+    };
+
+    const interval = setInterval(checkFlag, 200);
+    return () => clearInterval(interval);
+  }, [autoScrolling]);
+
+  const isHidden = (isScrolling || isOverCalendar) && !autoScrolling;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -71,17 +93,26 @@ const SideCountdown = ({
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const handleScrollToCalendar = () => {
-    const element = document.getElementById("calendar-section");
+  const handleAutoScroll = (targetId, isCalendar = false) => {
+    const element = document.getElementById(targetId);
     if (element) {
-      const offset = 80;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      if (!isCalendar) {
+        skipHideRef.current = true;
+        sessionStorage.setItem("is_auto_scrolling", "true");
+        setIsScrolling(false);
+      }
+      
+      const offset = isCalendar ? 80 : (window.innerHeight - element.offsetHeight) / 2;
+      const top = element.getBoundingClientRect().top + window.pageYOffset - (offset > 0 ? offset : 0);
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+      window.scrollTo({ top, behavior: "smooth" });
+      
+      if (!isCalendar) {
+        setTimeout(() => {
+          skipHideRef.current = false;
+          sessionStorage.removeItem("is_auto_scrolling");
+        }, 1500);
+      }
     }
   };
 
@@ -113,7 +144,7 @@ const SideCountdown = ({
         {items.map((item, index) => (
           <motion.div
             key={item.label}
-            onClick={handleScrollToCalendar}
+            onClick={() => handleAutoScroll("calendar-section", true)}
             className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
           >
             <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
@@ -130,11 +161,25 @@ const SideCountdown = ({
             e.stopPropagation();
             onOpenMap();
           }}
-          className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer"
+          className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer shine-effect"
         >
           <MapPin size={18} className="text-white" />
           <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">
             Bản đồ
+          </div>
+        </motion.div>
+
+        <motion.div
+          onClick={(e) => {
+            e.stopPropagation();
+            sessionStorage.setItem("auto_flip_gifting", "true");
+            handleAutoScroll("gifting-section");
+          }}
+          className="bg-[#E7B547] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:opacity-90 transition-opacity cursor-pointer shadow-amber-500/20 shine-effect"
+        >
+          <QrCode size={18} className="text-black" />
+          <div className="text-[8px] md:text-[9px] font-bold text-black uppercase mt-0.5">
+            Gửi quà
           </div>
         </motion.div>
       </div>

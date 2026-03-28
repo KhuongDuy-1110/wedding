@@ -40,9 +40,17 @@ const RSVPModal = ({ isOpen, onClose, guestName, side, shortId }) => {
       onSuccess: () => {
         onClose();
         sessionStorage.setItem("rsvp_done", "true");
+        // Set a flag to auto-flip the gifting card when scrolled
+        sessionStorage.setItem("auto_flip_gifting", "true");
+        
         setTimeout(() => {
-          document.getElementById("gifting-section")?.scrollIntoView({ behavior: "smooth" });
-        }, 500);
+          const element = document.getElementById("gifting-section");
+          if (element) {
+            const offset = (window.innerHeight - element.offsetHeight) / 2;
+            const top = element.getBoundingClientRect().top + window.pageYOffset - (offset > 0 ? offset : 0);
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        }, 800);
       }
     });
   };

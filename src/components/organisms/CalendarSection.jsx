@@ -42,9 +42,13 @@ const CalendarSection = () => {
   const engagementDate = 4;
   const handleDateClick = (day) => {
     if (day === engagementDate || day === weddingDate) {
+      sessionStorage.setItem("is_auto_scrolling", "true");
       document
         .getElementById(`event-${day}`)
         ?.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => {
+        sessionStorage.removeItem("is_auto_scrolling");
+      }, 1500);
     }
   };
 

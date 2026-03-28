@@ -45,7 +45,7 @@ const GiftingCard = ({ acc, idx }) => {
 
           <button
             onClick={() => setIsFlipped(true)}
-            className="flex items-center gap-s8 text-primary text-[10px] font-bold tracking-[1px] hover:opacity-70 transition-opacity mt-s15"
+            className="flex items-center gap-s8 text-primary text-[12px] font-bold tracking-[1px] hover:opacity-70 transition-opacity mt-s15"
           >
             <QrCode size={14} />
             XEM QR MỪNG CƯỚI
@@ -119,6 +119,20 @@ const GiftingCard = ({ acc, idx }) => {
 const Gifting = ({ side }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
+  React.useEffect(() => {
+    const checkFlip = () => {
+      if (sessionStorage.getItem("auto_flip_gifting") === "true") {
+        setIsFlipped(true);
+        sessionStorage.removeItem("auto_flip_gifting");
+      }
+    };
+
+    // Check initially and also on scroll to be safe
+    checkFlip();
+    window.addEventListener("scroll", checkFlip);
+    return () => window.removeEventListener("scroll", checkFlip);
+  }, []);
+
   const allAccounts = [
     {
       bank: "TECHCOMBANK",
@@ -181,7 +195,7 @@ const Gifting = ({ side }) => {
                 setIsFlipped(true);
                 trackEvent("view_qr");
               }}
-              className="flex items-center gap-s10 text-primary text-[11px] font-bold tracking-[2px] border-b border-primary/20 pb-1 mt-s20 hover:opacity-75 transition-opacity"
+              className="flex items-center gap-s10 text-primary text-[13px] font-bold tracking-[2px] border-b border-primary/20 pb-1 mt-s20 hover:opacity-75 transition-opacity"
             >
               <QrCode size={16} />
               XEM QR MỪNG CƯỚI

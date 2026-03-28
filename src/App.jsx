@@ -262,9 +262,13 @@ function App() {
       colors: ["#AF0E13", "#E7B547", "#ffffff"],
     });
     // Scroll to form if exists
+    sessionStorage.setItem("is_auto_scrolling", "true");
     document
       .getElementById("rsvp-section")
       ?.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => {
+      sessionStorage.removeItem("is_auto_scrolling");
+    }, 2000);
   };
 
   useEffect(() => {
@@ -276,6 +280,7 @@ function App() {
     const stopAutoScroll = () => {
       if (!isAutoScrolling) return;
       isAutoScrolling = false;
+      sessionStorage.removeItem("is_auto_scrolling");
       if (requestRef) cancelAnimationFrame(requestRef);
       // Remove listeners once stopped
       window.removeEventListener("wheel", stopAutoScroll);
@@ -303,6 +308,8 @@ function App() {
     // Delay 3 seconds before starting auto-scroll after opening
     const timeoutId = setTimeout(() => {
       if (!isAutoScrolling) return;
+
+      sessionStorage.setItem("is_auto_scrolling", "true");
 
       window.addEventListener("wheel", stopAutoScroll, { passive: true });
       window.addEventListener("touchstart", stopAutoScroll, { passive: true });
