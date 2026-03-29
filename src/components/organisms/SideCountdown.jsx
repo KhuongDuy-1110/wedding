@@ -117,7 +117,7 @@ const SideCountdown = ({
         damping: 20,
         opacity: { duration: 0.2 },
       }}
-      className={`fixed !left-0 !right-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[9999] flex flex-col gap-1 md:gap-2 ${
+      className={`fixed !left-0 !right-auto top-[20%] md:top-[25%] md:-translate-y-1/2 z-[1000] flex flex-col gap-1 md:gap-2 ${
         isHidden ? "pointer-events-none" : "pointer-events-auto"
       }`}
     >

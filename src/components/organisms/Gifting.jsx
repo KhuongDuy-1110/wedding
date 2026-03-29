@@ -119,6 +119,7 @@ const GiftingCard = ({ acc, idx }) => {
 
 const Gifting = ({ side }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [zoomedAcc, setZoomedAcc] = useState(null);
 
   React.useEffect(() => {
     const checkFlip = () => {
@@ -215,11 +216,14 @@ const Gifting = ({ side }) => {
                   className="flex items-start gap-s15 w-full max-w-[450px] relative p-s5 bg-transparent"
                 >
                   {/* Left: QR Code */}
-                  <div className="w-[100px] aspect-square flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-xl p-s8">
+                  <div
+                    className="w-[100px] aspect-square flex-shrink-0 flex items-center justify-center rounded-xl cursor-pointer hover:shadow-md"
+                    onClick={() => setZoomedAcc(acc)}
+                  >
                     <img
                       src={acc.qrSrc}
                       alt="QR Code"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain pointer-events-none"
                     />
                   </div>
 
@@ -266,6 +270,69 @@ const Gifting = ({ side }) => {
           </div>
         </motion.div>
       </div>
+
+      {/* Zoomed QR Overlay */}
+      <AnimatePresence>
+        {zoomedAcc && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setZoomedAcc(null)}
+            className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-s20 gap-4"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative sm:p-6 rounded-2xl shadow-2xl max-w-[90vw] max-h-[70vh] flex flex-col items-center justify-center w-[300px]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div>
+                <p className="font-bold text-white text-[14px] uppercase mb-3 text-center">
+                  {zoomedAcc.bank} - {zoomedAcc.name} - {zoomedAcc.account}
+                </p>
+              </div>
+
+              <img
+                src={zoomedAcc.qrSrc}
+                alt="Zoomed QR Code"
+                className="max-h-[50vh] rounded-xl w-auto object-contain pointer-events-none"
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ delay: 0.1, duration: 0.3 }}
+              className="flex gap-3 w-full max-w-[300px]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                className="bg-primary text-white py-s10 px-s10 text-[11px] sm:text-[12px] rounded-full font-bold shadow-lg hover:bg-primary/90 transition-all flex-1 text-center border border-white/20"
+                onClick={() => {
+                  navigator.clipboard.writeText(zoomedAcc.account);
+                  toast.success("Đã sao chép số tài khoản!");
+                }}
+              >
+                COPY SỐ TK
+              </button>
+              <button
+                className="bg-white/10 backdrop-blur-md text-white py-s10 px-s10 text-[11px] sm:text-[12px] rounded-full font-bold hover:bg-white/20 transition-all flex-1 flex items-center justify-center gap-1.5 border border-white/20"
+                onClick={() => handleDownload(zoomedAcc.qrSrc, zoomedAcc.name)}
+              >
+                <Download size={15} /> TẢI MÃ QR
+              </button>
+            </motion.div>
+
+            <p className="text-sm text-gray-300/80 italic mt-2">
+              Chạm ra ngoài để đóng
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

@@ -62,6 +62,9 @@ const Gallery = () => {
       <SectionHeading subtitle="với một vài khoảnh khắc đẹp">
         Album hình cưới
       </SectionHeading>
+      <p className="text-center text-[10px] md:text-[12px] text-gray-400 mt-2  italic font-serif">
+        (Chạm vào ảnh để xem chi tiết)
+      </p>
 
       <div className="grid grid-cols-3 gap-s8 p-s10 auto-rows-[100px] md:auto-rows-[150px]">
         {images.map((img, idx) => (

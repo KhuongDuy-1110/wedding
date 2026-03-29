@@ -493,7 +493,10 @@ function App() {
         )}
       </AnimatePresence>
       <audio ref={audioRef} src="/audio/i-do.mp3" loop />
-      <Toaster position="top-center" />
+      <Toaster 
+        position="top-center" 
+        containerStyle={{ zIndex: 99999 }}
+      />
     </>
   );
 }
