@@ -915,9 +915,11 @@ app.get("/api/invitations/by-id/:shortId", async (req, res) => {
   }
 });
 
-// Serve assets directly - this prevents meta tag logic from running on images/js/css
-app.use("/assets", express.static(path.join(__dirname, "../dist/assets")));
-app.use("/audio", express.static(path.join(__dirname, "../dist/audio")));
+// Serve assets directly - check current working directory first (common for Vercel functions)
+const projectRoot = process.cwd();
+app.use("/assets", express.static(path.join(projectRoot, "dist/assets")));
+app.use("/audio", express.static(path.join(projectRoot, "dist/audio")));
+app.use("/font", express.static(path.join(projectRoot, "dist/font")));
 
 // SPA Fallback: All other requests serve index.html with dynamic meta tags
 app.use(async (req, res) => {
@@ -925,8 +927,13 @@ app.use(async (req, res) => {
   
   // Exclude static assets that might have slipped through
   if (req.path.includes(".") && !req.path.startsWith("/api")) {
-    const assetPath = path.join(__dirname, "../dist", req.path);
+    const assetPath = path.join(projectRoot, "dist", req.path);
     if (fs.existsSync(assetPath)) return res.sendFile(assetPath);
+    
+    // Safety check: Avoid returning HTML for clearly non-HTML requests
+    if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico)$/)) {
+      return res.status(404).end();
+    }
   }
 
   const segments = req.path.split("/").filter(Boolean);
@@ -968,7 +975,7 @@ app.use(async (req, res) => {
     console.error("Error fetching guest for meta:", e);
   }
 
-  const distPath = path.join(__dirname, "../dist");
+  const distPath = path.join(projectRoot, "dist");
   const indexPath = path.join(distPath, "index.html");
   if (fs.existsSync(indexPath)) {
     let html = fs.readFileSync(indexPath, "utf8");

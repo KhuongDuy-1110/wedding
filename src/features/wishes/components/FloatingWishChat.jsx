@@ -124,16 +124,21 @@ const WishModal = ({
 
   const createMutation = useCreateWish();
   const updateMutation = useUpdateWish();
+  const { data: settings } = useSiteSettings();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!editWish) {
+      if (settings?.is_wishes_enabled === "false") {
+        toast.error("Tính năng gửi lời chúc hiện đang tạm đóng. Cảm ơn bạn!");
+        return;
+      }
       const lastWishTime = localStorage.getItem("last_wish_send_time");
       const now = Date.now();
-      if (lastWishTime && now - parseInt(lastWishTime) < 60000) {
+      if (lastWishTime && now - parseInt(lastWishTime) < 15000) {
         toast.error(
-          `Bạn vừa gửi lời chúc xong. Hãy quay lại sau ${Math.ceil((60000 - (now - parseInt(lastWishTime))) / 1000)} giây nữa nhé!`,
+          `Bạn vừa gửi lời chúc xong. Hãy quay lại sau ${Math.ceil((15000 - (now - parseInt(lastWishTime))) / 1000)} giây nữa nhé!`,
         );
         return;
       }
@@ -200,7 +205,10 @@ const WishModal = ({
           <h3 className="text-[18px] font-bold text-[#5c1a1a]">
             {editWish ? "Sửa lời chúc" : "Gửi lời chúc"}
           </h3>
-          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          >
             <X size={20} />
           </button>
         </div>
@@ -214,7 +222,9 @@ const WishModal = ({
               maxLength={MAX_NAME_LENGTH}
               disabled={!!editWish}
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className={`w-full bg-[#fdf5f6] border border-[#5c1a1a]/10 rounded-xl px-s15 py-s10 text-[14px] text-[#333] outline-none focus:border-[#5c1a1a]/30 transition-all ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
               placeholder="Nhập tên..."
             />
@@ -239,10 +249,12 @@ const WishModal = ({
             type="submit"
             disabled={createMutation.isPending || updateMutation.isPending}
             className={`w-full py-s12 rounded-xl text-white font-bold text-[14px] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 ${
-              side === "groom" ? "bg-blue-600 shadow-blue-500/20" : "bg-[#fd848e] shadow-pink-500/20"
+              side === "groom"
+                ? "bg-blue-600 shadow-blue-500/20"
+                : "bg-[#fd848e] shadow-pink-500/20"
             }`}
           >
-            {(createMutation.isPending || updateMutation.isPending) ? (
+            {createMutation.isPending || updateMutation.isPending ? (
               <Loader2 className="animate-spin" size={20} />
             ) : (
               <Send size={18} />
@@ -285,14 +297,13 @@ const parseMessage = (side, message) => {
 const FloatingWishChat = ({ guestName, side, invitationId }) => {
   const { data: wishes } = useWishes();
   const { data: settings } = useSiteSettings();
+  const isWishesDisabled = settings?.is_wishes_enabled === "false";
   const createMutation = useCreateWish();
   const updateMutation = useUpdateWish();
   const recallMutation = useRecallWish();
 
   const [isOpen, setIsOpen] = useState(true);
 
-  // If wishes are disabled from admin, don't show anything
-  if (settings?.is_wishes_enabled === "false") return null;
   const [activeWishes, setActiveWishes] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedWishId, setSelectedWishId] = useState(null);
@@ -315,11 +326,11 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
 
   const addNextWish = useCallback(() => {
     if (!wishes || wishes.length === 0) return;
-    
+
     // Nếu dưới 5 lời chúc, chỉ hiện thị hết 1 lượt rồi thôi, hoặc là không loop
     if (wishes.length < 5 && indexRef.current >= wishes.length) {
       if (timerRef.current) clearInterval(timerRef.current);
-      return; 
+      return;
     }
 
     const wish = wishes[indexRef.current % wishes.length];
@@ -333,7 +344,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
 
   useEffect(() => {
     if (!wishes || wishes.length === 0) return;
-    
+
     // Reset state khi data thay đổi (quan trọng)
     if (activeWishes.length === 0) {
       indexRef.current = 0;
@@ -343,7 +354,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
 
   useEffect(() => {
     if (!wishes || wishes.length === 0 || selectedWishId) return;
-    
+
     // Nếu < 5 và đã hiện hết thì không chạy timer
     if (wishes.length < 5 && indexRef.current >= wishes.length) return;
 
@@ -354,6 +365,10 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
   const handleDesktopSubmit = useCallback(
     (e) => {
       e.preventDefault();
+      if (isWishesDisabled && !editWish) {
+        toast.error("Tính năng gửi lời chúc hiện đang tạm đóng. Cảm ơn bạn!");
+        return;
+      }
       if (!desktopData.name || !desktopData.message) return;
 
       if (editWish) {
@@ -418,7 +433,15 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
         },
       );
     },
-    [desktopData, side, createMutation, updateMutation, editWish, visitorId, invitationId],
+    [
+      desktopData,
+      side,
+      createMutation,
+      updateMutation,
+      editWish,
+      visitorId,
+      invitationId,
+    ],
   );
 
   const handleSelect = useCallback((wishId) => {
@@ -545,17 +568,24 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                   </AnimatePresence>
                 </div>
 
-                {/* Desktop Form Only when open */}
+                {/* Desktop Form */}
                 <div className="hidden md:block mt-4">
-                  <div className={`p-s15 rounded-[16px] border backdrop-blur-sm transition-all pointer-events-auto ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}>
+                  <div
+                    className={`p-s15 rounded-[16px] border backdrop-blur-sm transition-all pointer-events-auto ${editWish ? "bg-blue-50/80 border-blue-300/40" : "bg-[#5c1a1a]/5 border-[#5c1a1a]/10"}`}
+                  >
                     {editWish && (
                       <div className="flex items-center justify-between mb-2 px-1">
-                        <span className="text-[12px] font-bold text-blue-600">Đang sửa lời chúc...</span>
+                        <span className="text-[12px] font-bold text-blue-600">
+                          Đang sửa lời chúc...
+                        </span>
                         <button
                           type="button"
                           onClick={() => {
                             setEditWish(null);
-                            setDesktopData((prev) => ({ ...prev, message: "" }));
+                            setDesktopData((prev) => ({
+                              ...prev,
+                              message: "",
+                            }));
                           }}
                           className="text-[12px] text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1"
                         >
@@ -563,13 +593,21 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                         </button>
                       </div>
                     )}
-                    <form onSubmit={handleDesktopSubmit} className="flex flex-col gap-s10">
+                    <form
+                      onSubmit={handleDesktopSubmit}
+                      className="flex flex-col gap-s10"
+                    >
                       <input
                         placeholder="Tên của bạn..."
                         maxLength={MAX_NAME_LENGTH}
                         value={desktopData.name}
                         disabled={!!editWish}
-                        onChange={(e) => setDesktopData({ ...desktopData, name: e.target.value })}
+                        onChange={(e) =>
+                          setDesktopData({
+                            ...desktopData,
+                            name: e.target.value,
+                          })
+                        }
                         className={`w-full bg-[#fdf5f6] border border-[#5c1a1a]/20 rounded-xl px-s15 py-s8 text-[13px] text-[#333] focus:border-[#5c1a1a]/50 outline-none transition-all ${editWish ? "opacity-50 cursor-not-allowed" : ""}`}
                       />
                       <div className="flex gap-2">
@@ -578,15 +616,23 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                           placeholder="Lời nhắn gửi yêu thương..."
                           maxLength={MAX_MESSAGE_LENGTH}
                           value={desktopData.message}
-                          onChange={(e) => setDesktopData({ ...desktopData, message: e.target.value })}
+                          onChange={(e) =>
+                            setDesktopData({
+                              ...desktopData,
+                              message: e.target.value,
+                            })
+                          }
                           className={`flex-1 bg-[#fdf5f6] border rounded-xl px-s15 py-s8 text-[13px] text-[#333] outline-none transition-all ${editWish ? "border-blue-400/50 focus:border-blue-500" : "border-[#5c1a1a]/20 focus:border-[#5c1a1a]/50"}`}
                         />
                         <button
                           type="submit"
-                          disabled={createMutation.isPending || updateMutation.isPending}
+                          disabled={
+                            createMutation.isPending || updateMutation.isPending
+                          }
                           className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
                         >
-                          {(createMutation.isPending || updateMutation.isPending) ? (
+                          {createMutation.isPending ||
+                          updateMutation.isPending ? (
                             <Loader2 size={18} className="animate-spin" />
                           ) : editWish ? (
                             <Edit2 size={18} />
@@ -613,27 +659,32 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                   onClick={() => setShowModal(true)}
                   className={`md:hidden flex-1 h-[44px] rounded-full px-s20 flex items-center justify-between text-white border border-white/30 backdrop-blur-sm shadow-xl active:scale-95 transition-all ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/20" : isBridePath ? "bg-[#fd848e]/70 shadow-pink-500/30" : "bg-[#E7B547]/60 shadow-amber-500/10"}`}
                 >
-                <span className="text-[14px] font-medium opacity-90 truncate">Gửi lời chúc...</span>
-                <MessageSquareText size={20} />
-              </motion.button>
-            )}
-          </AnimatePresence>
+                  <span className="text-[14px] font-medium opacity-90 truncate">
+                    Gửi lời chúc...
+                  </span>
+                  <MessageSquareText size={20} />
+                </motion.button>
+              )}
+            </AnimatePresence>
 
-          <button
-            onClick={toggleOpen}
-            className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:hidden" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group pointer-events-auto`}
-          >
-            {isOpen ? (
-              <X size={22} className="group-hover:rotate-90 transition-transform duration-300" />
-            ) : (
-              <MessageSquareText className="w-6 h-6 md:w-7 md:h-7" />
-            )}
-          </button>
+            <button
+              onClick={toggleOpen}
+              className={`shrink-0 ${isOpen ? "w-[44px] h-[44px] md:hidden" : "w-[48px] h-[48px] md:w-[56px] md:h-[56px]"} ${isGroomPath ? "bg-blue-600/40 shadow-blue-500/30" : isBridePath ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all group pointer-events-auto`}
+            >
+              {isOpen ? (
+                <X
+                  size={22}
+                  className="group-hover:rotate-90 transition-transform duration-300"
+                />
+              ) : (
+                <MessageSquareText className="w-6 h-6 md:w-7 md:h-7" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
 };
 
 export default FloatingWishChat;
