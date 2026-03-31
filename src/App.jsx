@@ -142,7 +142,8 @@ function App() {
       fetchGuest();
     } else {
       // Only restore from session if not at the root path to avoid showing stale guest names
-      const isRoot = window.location.pathname === "/" && !window.location.search;
+      const isRoot =
+        window.location.pathname === "/" && !window.location.search;
       if (!isRoot) {
         const stored = sessionStorage.getItem("guest_name");
         if (stored) setGuestName(stored);
@@ -414,6 +415,17 @@ function App() {
                   <h3 className="text-base  tracking-[2px] font-serif uppercase font-brice m-0 text-primary">
                     THANK YOU FOR WATCHING .<br />I HOPE YOU LIKE IT
                   </h3>
+                  <p className="text-xs  mt-4 leading-relaxed z-50 relative pointer-events-auto">
+                    tạo bởi{" "}
+                    <a
+                      href="https://www.facebook.com/phamvkhai20/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-primary uppercase transition-colors underline font-medium"
+                    >
+                      phamvkhai20
+                    </a>
+                  </p>
                 </footer>
               </main>
 
@@ -493,10 +505,7 @@ function App() {
         )}
       </AnimatePresence>
       <audio ref={audioRef} src="/audio/i-do.mp3" loop />
-      <Toaster 
-        position="top-center" 
-        containerStyle={{ zIndex: 99999 }}
-      />
+      <Toaster position="top-center" containerStyle={{ zIndex: 99999 }} />
     </>
   );
 }
