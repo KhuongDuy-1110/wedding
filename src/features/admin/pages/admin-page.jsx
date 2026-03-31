@@ -21,6 +21,7 @@ import LogsTable from "../components/logs-table";
 import WishesTable from "../components/wishes-table";
 import InvitationManager from "../components/invitation-manager";
 import GalleryManager from "../components/gallery-manager";
+import AccessCharts from "../components/access-charts";
 
 const ADMIN_PASS = "kaina2k";
 
@@ -291,7 +292,12 @@ const AdminPage = () => {
           ))}
         </div>
 
-        {tab === "stats" && <StatsCards stats={stats} />}
+        {tab === "stats" && (
+          <div className="space-y-6">
+            <StatsCards stats={stats} />
+            <AccessCharts logs={logs} />
+          </div>
+        )}
         {tab === "logs" && (
           <LogsTable 
             filteredLogs={filteredLogs}
