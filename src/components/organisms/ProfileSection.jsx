@@ -7,8 +7,8 @@ const ProfileSection = () => {
   const { data: settings } = useSiteSettings();
 
   const bride = {
-    role: "Cô dâu",
-    name: "Lê Thị Nga",
+    role: "17.03.2022",
+    name: "First message",
     images: [
       settings?.bride_main || "",
       settings?.bride_small_1 || "",
@@ -18,7 +18,7 @@ const ProfileSection = () => {
 
   const groom = {
     role: "Chú rể",
-    name: "Phạm Văn Khải",
+    name: "Duy Khương",
     images: [
       settings?.groom_main || "",
       settings?.groom_small_1 || "",
@@ -37,11 +37,12 @@ const ProfileSection = () => {
             transition={{ duration: 0.8 }}
             className="profile-story-title"
           >
-            THE STORY{" "}
+            {/* THE STORY{" "}
             <span className="italic font-couple lowercase text-primary">
               of
             </span>{" "}
-            LOVE
+            LOVE */}
+            OUR LOVE STORY
           </motion.h2>
         </div>
       </div>
@@ -59,6 +60,19 @@ const ProfileSection = () => {
         {/* Text Area Right */}
         <div className="profile-text-area bride">
           <p className="profile-role-title">{bride.role}</p>
+          <motion.p
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            viewport={{ once: false, margin: "-50px" }}
+            className="font-brush font-bold profile-name-text"
+          >
+            {bride.name}
+          </motion.p>
+        </div>
+
+        <div className="profile-text-area bride">
+          <p className="profile-role-title">abc</p>
           <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}

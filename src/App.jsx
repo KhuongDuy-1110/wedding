@@ -184,31 +184,32 @@ function App() {
 
   useEffect(() => {
     if (guestName) {
-      document.title = `Thân mời ${guestName} - Đám Cưới Khải & Nga`;
+      document.title = `Thân mời ${guestName} - Đám Cưới Khương & Giang`;
     } else {
-      document.title = "Đám Cưới Khải & Nga";
+      document.title = "Đám Cưới Khương & Giang";
     }
   }, [guestName]);
 
   const weddingConfigs = {
     groom: {
-      date: "04.04.2026",
-      time: "THỨ BẢY - 10H00",
-      targetDate: "2026-04-04T10:00:00",
+      date: "06.06.2026",
+      time: "THỨ BẢY - 11H00",
+      targetDate: "2026-06-06T11:00:00",
     },
     bride: {
-      date: "04.04.2026",
-      time: "THỨ BẢY - 16H00",
-      targetDate: "2026-04-04T16:00:00",
+      date: "05.06.2026",
+      time: "THỨ SÁU - 11H00",
+      targetDate: "2026-06-05T11:00:00",
     },
     both: {
-      date: "04.04.2026",
-      time: "THỨ BẢY - 16H00",
-      targetDate: "2026-04-04T16:00:00",
+      date: "06.06.2026",
+      time: "THỨ BẢY - 11H00",
+      targetDate: "2026-06-06T11:00:00",
     },
   };
 
   const currentConfig = weddingConfigs[weddingSide];
+  // console.log()
 
   useEffect(() => {
     if (audioRef.current) {
@@ -346,7 +347,7 @@ function App() {
         <OpeningEffect
           isOpened={isOpened}
           onOpen={handleOpen}
-          coupleName="Phạm Khải & Lê Nga"
+          coupleName="Khương & Giang"
           date={currentConfig.date}
           isReady={isReady && !isSettingsLoading}
           heroImage={settings?.opening_image || settings?.hero_couple}
@@ -374,7 +375,7 @@ function App() {
             <div key="main-content">
               {/* Hero Section */}
               <HeroSection
-                coupleName="Phạm Khải & Lê Nga"
+                coupleName="Duy Khương & Hương Giang"
                 date={currentConfig.date}
                 timeLabel={currentConfig.time}
                 guestName={guestName}
@@ -384,7 +385,7 @@ function App() {
               <ProfileSection />
 
               {/* Quote Section */}
-              <QuoteSection />
+              {/* <QuoteSection /> */}
 
               {/* Countdown Section */}
               <div className="px-s20">

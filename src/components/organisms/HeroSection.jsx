@@ -88,7 +88,7 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
         </motion.h1>
 
         <p className="text-primary font-bold tracking-[1.5px] mt-2 text-[13px] md:text-[14px] uppercase text-center whitespace-nowrap">
-          THỨ BẢY - 16H00 • 04.04.2026
+          THỨ BẢY - 11H00 • 06.06.2026
         </p>
 
         <div className="mt-s20 text-center">
