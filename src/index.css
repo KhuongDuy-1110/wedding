@@ -101,7 +101,7 @@
   --profile-container-h: 520px;
   --profile-large-h: 420px;
   --profile-small-h: 280px;
-  --profile-text-top: 40px;
+  --profile-text-top: 0px;
   --profile-name-size: 32px;
   --profile-role-size: 18px;
 }
@@ -111,7 +111,7 @@
     --profile-container-h: 750px;
     --profile-large-h: 600px;
     --profile-small-h: 400px;
-    --profile-text-top: 80px;
+    --profile-text-top: 20px;
     --profile-name-size: 48px;
     --profile-role-size: 24px;
   }
@@ -122,7 +122,7 @@
     --profile-container-h: 920px;
     --profile-large-h: 740px;
     --profile-small-h: 495px;
-    --profile-text-top: 100px;
+    --profile-text-top: 50px;
     --profile-name-size: 56px;
     --profile-role-size: 28px;
   }

@@ -59,7 +59,7 @@ const ProfileSection = () => {
 
         {/* Text Area Right */}
         <div className="profile-text-area bride">
-          <p className="profile-role-title">{bride.role}</p>
+          <p className="profile-role-title">17.03.2022</p>
           <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -67,12 +67,9 @@ const ProfileSection = () => {
             viewport={{ once: false, margin: "-50px" }}
             className="font-brush font-bold profile-name-text"
           >
-            {bride.name}
+            First message !
           </motion.p>
-        </div>
-
-        <div className="profile-text-area bride">
-          <p className="profile-role-title">abc</p>
+          <p className="profile-role-title" style={{ paddingTop: '35px' }}>01.07.2022</p>
           <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -80,7 +77,7 @@ const ProfileSection = () => {
             viewport={{ once: false, margin: "-50px" }}
             className="font-brush font-bold profile-name-text"
           >
-            {bride.name}
+            First met !
           </motion.p>
         </div>
 
