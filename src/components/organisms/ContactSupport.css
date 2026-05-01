@@ -1,0 +1,97 @@
+.contact-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px 20px 20px;
+  background-color: transparent;
+  font-family: 'monospace,monospace', serif; /* Thay bằng font bạn đang dùng cho footer */
+}
+
+.contact-divider {
+  color: #8c3b3b; /* Màu đỏ rượu nhạt giống footer */
+  font-size: 24px;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.contact-title {
+  font-size: 20px;
+  color: #4a4a4a; /* Xám đậm giống chữ trong card */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.contact-subtitle {
+  font-size: 14px;
+  color: #666;
+  max-width: 500px;
+  line-height: 1.5;
+  margin-bottom: 30px;
+  font-family: 'monospace,monospace', sans-serif; /* Font thường dễ đọc */
+}
+
+.contact-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.contact-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.contact-role {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.contact-name {
+  font-size: 18px;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.contact-phone {
+  font-size: 16px;
+  color: #722f2f; /* Màu đỏ rượu giống dòng chữ Thank You */
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  padding: 8px 16px;
+  border: 1px solid #722f2f;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.contact-phone:hover {
+  background-color: #722f2f;
+  color: #ffffff;
+}
+
+.contact-vertical-divider {
+  width: 1px;
+  height: 60px;
+  background-color: #ddd;
+}
+
+/* Responsive cho màn hình điện thoại (Mobile) */
+@media (max-width: 600px) {
+  .contact-container {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .contact-vertical-divider {
+    display: none; /* Ẩn đường kẻ dọc trên mobile */
+  }
+}

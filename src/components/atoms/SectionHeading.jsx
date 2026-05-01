@@ -19,7 +19,7 @@ const SectionHeading = ({ children, subtitle }) => {
       >
         {children}
       </motion.h2>
-      <div className="divider" />
+      {/* <div className="divider" /> */}
     </div>
   );
 };

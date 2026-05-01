@@ -23,7 +23,7 @@ import InvitationManager from "../components/invitation-manager";
 import GalleryManager from "../components/gallery-manager";
 import AccessCharts from "../components/access-charts";
 
-const ADMIN_PASS = "kaina2k";
+const ADMIN_PASS = "iloveyou@0606";
 
 const AdminPage = () => {
   const [authed, setAuthed] = useState(() => {
@@ -232,7 +232,7 @@ const AdminPage = () => {
               <span className="text-white text-2xl">🔐</span>
             </div>
             <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
-            <p className="text-sm text-gray-500 mt-1">Khai & Nga Wedding</p>
+            <p className="text-sm text-gray-500 mt-1">Giang & Khuong Wedding</p>
           </div>
           <form onSubmit={handleLogin} className="flex flex-col gap-3">
             <input
@@ -265,7 +265,7 @@ const AdminPage = () => {
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div>
             <h1 className="font-bold text-gray-800 text-sm sm:text-base">💍 Admin Dashboard</h1>
-            <p className="text-[10px] sm:text-[11px] text-gray-400">Khai & Nga · 2026</p>
+            <p className="text-[10px] sm:text-[11px] text-gray-400">Khuong & Giang · 2026</p>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={fetchData} disabled={loading} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors">

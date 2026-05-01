@@ -5,8 +5,6 @@ import { Heart } from "lucide-react";
 const CalendarSection = () => {
   const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const calendarData = [
-    null,
-    null,
     1,
     2,
     3,
@@ -37,9 +35,14 @@ const CalendarSection = () => {
     28,
     29,
     30,
+    null,
+    null,
+    null,
+    null,
+    null,
   ];
-  const weddingDate = 5;
-  const engagementDate = 4;
+  const weddingDate = 6;
+  const engagementDate = 5;
   const handleDateClick = (day) => {
     if (day === engagementDate || day === weddingDate) {
       // Stop intro auto-scroll if running
@@ -59,7 +62,7 @@ const CalendarSection = () => {
     <section id="calendar-section" className="py-s24 px-s24 bg-white text-center">
       <div className="mb-s40">
         <div className="text-[20px] font-serif text-[#333]">
-          Chủ nhật, Ngày 05 Tháng 04 năm 2026
+          Thứ bảy, Ngày 06 Tháng 06 Năm 2026
         </div>
       </div>
 

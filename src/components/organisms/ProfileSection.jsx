@@ -42,7 +42,7 @@ const ProfileSection = () => {
               of
             </span>{" "}
             LOVE */}
-            OUR LOVE STORY
+            THÔNG TIN HÔN LỄ
           </motion.h2>
         </div>
       </div>
@@ -59,7 +59,7 @@ const ProfileSection = () => {
 
         {/* Text Area Right */}
         <div className="profile-text-area bride">
-          <p className="profile-role-title">17.03.2022</p>
+          <p className="profile-role-title">Lễ Ăn Hỏi</p>
           <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -67,18 +67,9 @@ const ProfileSection = () => {
             viewport={{ once: false, margin: "-50px" }}
             className="font-brush font-bold profile-name-text"
           >
-            First message !
+            05 . 06 . 2026
           </motion.p>
-          <p className="profile-role-title" style={{ paddingTop: '35px' }}>01.07.2022</p>
-          <motion.p
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            viewport={{ once: false, margin: "-50px" }}
-            className="font-brush font-bold profile-name-text"
-          >
-            First met !
-          </motion.p>
+          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 8h30 tại tư gia nhà gái</p>
         </div>
 
         {/* Small Images */}
@@ -120,7 +111,7 @@ const ProfileSection = () => {
 
         {/* Text Area Left */}
         <div className="profile-text-area groom">
-          <h3 className="profile-role-title">{groom.role}</h3>
+          <h3 className="profile-role-title">Lễ Thành Hôn</h3>
           <motion.p
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -128,8 +119,9 @@ const ProfileSection = () => {
             viewport={{ once: false, margin: "-50px" }}
             className="font-brush font-bold profile-name-text"
           >
-            {groom.name}
+            06 . 06 . 2026
           </motion.p>
+          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 10h00 tại tư gia nhà trai</p>
         </div>
 
         {/* Small Images */}

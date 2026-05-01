@@ -151,7 +151,7 @@ const SideCountdown = ({
           </div>
         </motion.div>
 
-        <motion.div
+        {/* <motion.div
           onMouseDown={(e) => e.stopPropagation()}
           onClick={() => {
             sessionStorage.setItem("auto_flip_gifting", "true");
@@ -163,7 +163,7 @@ const SideCountdown = ({
           <div className="text-[8px] md:text-[9px] font-bold text-black uppercase mt-0.5">
             Gửi quà
           </div>
-        </motion.div>
+        </motion.div> */}
       </div>
     </motion.div>
   );

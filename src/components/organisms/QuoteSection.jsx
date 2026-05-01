@@ -12,10 +12,10 @@ const QuoteSection = () => {
         className="relative max-w-full mx-auto bg-[url('/assets/paper.png')] bg-[length:100%_100%] bg-no-repeat bg-center pt-s50 pr-s40 pb-s70 pl-s40 drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)] transition-all duration-300"
       >
         <p className="text-[18px] text-[#333] text-center relative z-[2]">
-          "Tình cảm ấy, chẳng cần cứ phải hét to lên cho cả thế giới biết, chỉ
-          cần thỏ thẻ cho một người là cả thế giới của mình nghe là đủ rồi. Điều
-          quan trọng nhất là đến cuối đường vẫn còn ở bên nhau, đi cạnh nhau,
-          nắm tay nhau, rung động vì nhau. Cứ thế thôi là đủ rồi!"
+          "Bắt đầu từ vài tin nhắn vu vơ, hai đứa thân nhau lúc nào không hay vì đều thích đi đây đi đó.
+          Một Khương giản dị, ấm áp bù trừ cho một Giang hướng nội nhưng cứ cạnh người yêu là nói nhiều.<br />
+          Tụi mình chẳng ai hoàn hảo, nhưng luôn cố gắng hiểu nhau hơn mỗi ngày.
+          Sắp tới, hành trình khám phá cuộc sống của hai đứa sẽ chính thức gộp làm một!"
         </p>
         <img
           src="/assets/heart.png"

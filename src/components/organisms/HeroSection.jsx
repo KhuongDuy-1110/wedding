@@ -5,6 +5,16 @@ import { useSiteSettings } from "../../hooks/use-site-settings";
 
 const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
   const { data: settings } = useSiteSettings();
+  const [weddingDate, setWeddingDate] = useState("THỨ BẢY - 11H00 • 06.06.2026");
+
+  useEffect(() => {
+    const pathSegments = window.location.pathname.split('/');
+    const targetSection = pathSegments[1]; 
+    
+    if (targetSection === 'g') {
+      setWeddingDate("THỨ SÁU - 11H00 • 05.06.2026");
+    }
+  }, []);
 
   return (
     <section className="hero-section relative w-full flex flex-col bg-white min-h-[100svh]">
@@ -61,14 +71,14 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
           backgroundRepeat: "no-repeat",
         }}
       >
-        <motion.p
+        {/* <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="tracking-[4px] text-[12px] md:text-[14px] text-text-muted mb-s5"
         >
           WEDDING INVITATION
-        </motion.p>
+        </motion.p> */}
 
         <motion.h1
           initial={{ opacity: 0, scale: 0.95 }}
@@ -88,13 +98,13 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
         </motion.h1>
 
         <p className="text-primary font-bold tracking-[1.5px] mt-2 text-[13px] md:text-[14px] uppercase text-center whitespace-nowrap">
-          THỨ BẢY - 11H00 • 06.06.2026
+          {weddingDate}
         </p>
 
         <div className="mt-s20 text-center">
-          <p className="text-[18px] text-text-muted mb-s5 tracking-[2px] uppercase">
+          {/* <p className="text-[18px] text-text-muted mb-s5 tracking-[2px] uppercase">
             TRÂN TRỌNG KÍNH MỜI
-          </p>
+          </p> */}
           {guestName && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}

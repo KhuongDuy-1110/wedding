@@ -22,6 +22,7 @@ import { trackEvent } from "./features/admin/utils/tracker";
 import { useSiteSettings } from "./hooks/use-site-settings";
 import SideCountdown from "./components/organisms/SideCountdown";
 import RSVPTrigger from "./features/rsvp/components/RSVPTrigger";
+// import ContactSupport from "./components/organisms/ContactSupport";
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -99,12 +100,12 @@ function App() {
           : null;
 
     if (
-      window.location.pathname.includes("/d") ||
+      window.location.pathname.includes("/g") ||
       window.location.pathname.includes("/bride")
     ) {
       setWeddingSide("bride");
     } else if (
-      window.location.pathname.includes("/r") ||
+      window.location.pathname.includes("/k") ||
       window.location.pathname.includes("/groom")
     ) {
       setWeddingSide("groom");
@@ -385,11 +386,11 @@ function App() {
               <ProfileSection />
 
               {/* Quote Section */}
-              {/* <QuoteSection /> */}
+              <QuoteSection />
 
               {/* Countdown Section */}
               <div className="px-s20">
-                <WeddingCountdown targetDate={currentConfig.targetDate} />
+                <WeddingCountdown targetDate={currentConfig.targetDate} guestName={guestName}/>
               </div>
               {/* Calendar Section */}
               <CalendarSection />
@@ -407,16 +408,16 @@ function App() {
               </div> */}
 
                 {/* Gifting Section */}
-                <Gifting side={weddingSide} />
-
+                {/* <Gifting side={weddingSide} /> */}
+                {/* <ContactSupport /> */}
                 {/* Thank You Section */}
                 <ThankYouSection />
 
                 <footer className="py-s20 px-s24 text-center flex flex-col justify-center items-center">
                   <h3 className="text-base  tracking-[2px] font-serif uppercase font-brice m-0 text-primary">
-                    THANK YOU FOR WATCHING .<br />I HOPE YOU LIKE IT
+                    from DuyKhuong & HuongGiang with ❤️
                   </h3>
-                  <p className="text-xs  mt-4 leading-relaxed z-50 relative pointer-events-auto">
+                  {/* <p className="text-xs  mt-4 leading-relaxed z-50 relative pointer-events-auto">
                     tạo bởi{" "}
                     <a
                       href="https://www.facebook.com/phamvkhai20/"
@@ -426,7 +427,7 @@ function App() {
                     >
                       phamvkhai20
                     </a>
-                  </p>
+                  </p> */}
                 </footer>
               </main>
 
@@ -435,11 +436,11 @@ function App() {
           )}
         </AnimatePresence>
       </div>
-      <FloatingWishChat
+      {/* <FloatingWishChat
         guestName={guestName}
         side={weddingSide}
         shortId={shortId}
-      />
+      /> */}
       <RSVPTrigger
         guestName={guestName}
         side={weddingSide}

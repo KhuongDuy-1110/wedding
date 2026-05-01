@@ -222,10 +222,10 @@ const InvitationManager = () => {
   const getLink = (guest) => {
     const origin = window.location.origin;
     if (guest.short_id) {
-      const sidePath = guest.side === "bride" ? "/d" : "/r";
+      const sidePath = guest.side === "bride" ? "/g" : "/k";
       return `${origin}${sidePath}/${guest.short_id}`;
     }
-    const path = guest.side === "bride" ? "/d" : "/r";
+    const path = guest.side === "bride" ? "/g" : "/k";
     const params = new URLSearchParams();
     params.set("name", guest.name);
     return `${origin}${path}?${params.toString()}`;

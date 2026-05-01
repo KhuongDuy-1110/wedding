@@ -59,7 +59,7 @@ const Gallery = () => {
 
   return (
     <section className="py-s24 px-s24">
-      <SectionHeading subtitle="với một vài khoảnh khắc đẹp">
+      <SectionHeading subtitle="">
         Album hình cưới
       </SectionHeading>
       <p className="text-center text-[10px] md:text-[12px] text-gray-400 mt-2  italic font-serif">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
-const WeddingCountdown = ({ targetDate }) => {
+const WeddingCountdown = ({ targetDate, guestName }) => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -57,20 +57,26 @@ const WeddingCountdown = ({ targetDate }) => {
         viewport={{ once: true, margin: "-50px" }}
         className="text-center mb-s40"
       >
-        <h2 className="font-serif text-[32px] text-[#222] font-normal tracking-[3px] mb-s15">
-          INVITATION
+        <h2 className={`font-serif text-[32px] text-[#222] font-normal tracking-[3px] mb-s15`}>
+          THIỆP MỜI
         </h2>
         <p className="font-sans text-[13px] text-[#444] tracking-[1px] uppercase font-medium">
-          Đến dự đám cưới của chúng mình
+          {guestName ? (
+            <p>
+              Thân mời <span className="font-black" style={{ color: 'var(--color-primary)' }}>{guestName}</span>
+            </p>
+            ) : null
+          }
+          Đến dự bữa tiệc chung vui cùng gia đình.
         </p>
       </motion.div>
 
-      <div className="flex gap-s12 mx-auto max-w-[480px] px-s10 justify-center">
+      {/* <div className="flex gap-s12 mx-auto max-w-[480px] px-s10 justify-center">
         <Item value={timeLeft.days} label="days" />
         <Item value={timeLeft.hours} label="hours" />
         <Item value={timeLeft.minutes} label="minutes" />
         <Item value={timeLeft.seconds} label="seconds" />
-      </div>
+      </div> */}
     </div>
   );
 };
