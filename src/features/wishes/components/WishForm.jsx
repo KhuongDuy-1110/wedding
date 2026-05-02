@@ -17,8 +17,8 @@ const WishForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const guestPath = 
-      formData.role === "FAMILY_GROOM" ? "/r" : 
-      formData.role === "FAMILY_BRIDE" ? "/d" : 
+      formData.role === "FAMILY_GROOM" ? "/k" : 
+      formData.role === "FAMILY_BRIDE" ? "/g" : 
       "/";
 
     createMutation.mutate({ ...formData, guest_path_name: guestPath }, {

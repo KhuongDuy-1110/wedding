@@ -136,9 +136,9 @@ const WishesTable = ({
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1">
-                    {wish.guest_path_name?.includes("/r") || wish.guest_path_name?.includes("groom") ? (
+                    {wish.guest_path_name?.includes("/k") || wish.guest_path_name?.includes("groom") ? (
                       <span className="text-[10px] font-bold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded w-fit">CHÚ RỂ</span>
-                    ) : wish.guest_path_name?.includes("/d") || wish.guest_path_name?.includes("bride") ? (
+                    ) : wish.guest_path_name?.includes("/g") || wish.guest_path_name?.includes("bride") ? (
                       <span className="text-[10px] font-bold text-pink-500 bg-pink-50 px-1.5 py-0.5 rounded w-fit">CÔ DÂU</span>
                     ) : (
                       <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded w-fit uppercase">{wish.guest_path_name || "Chung"}</span>

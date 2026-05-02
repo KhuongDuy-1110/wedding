@@ -42,9 +42,9 @@ const LAYOUT_TRANSITION = { type: "tween", duration: 0.25 };
 const WishBubble = memo(
   ({ wish, isMine, isSelected, onSelect, onEdit, onRecall, recallPending }) => {
     const bgClass =
-      wish.guest_path_name === "/r"
+      wish.guest_path_name === "/k"
         ? "bg-blue-600/50 shadow-blue-500/10"
-        : wish.guest_path_name === "/d"
+        : wish.guest_path_name === "/g"
           ? "bg-[#fd848e]/50 shadow-pink-500/10"
           : "bg-[#E7B547]/60 shadow-amber-500/10";
 
@@ -269,10 +269,10 @@ const WishModal = ({
 
 const getChatPath = (side) => {
   const path = window.location.pathname;
-  if (path.includes("/r")) return "/r";
-  if (path.includes("/d")) return "/d";
-  if (side === "groom") return "/r";
-  if (side === "bride") return "/d";
+  if (path.includes("/k")) return "/k";
+  if (path.includes("/g")) return "/g";
+  if (side === "groom") return "/k";
+  if (side === "bride") return "/g";
   return "/both";
 };
 
@@ -283,11 +283,11 @@ const parseMessage = (side, message) => {
 
   if (message.startsWith("/r ")) {
     finalMessage = message.substring(3);
-    targetPath = "/r";
+    targetPath = "/k";
     role = "groom_family";
-  } else if (message.startsWith("/d ")) {
+  } else if (message.startsWith("/g ")) {
     finalMessage = message.substring(3);
-    targetPath = "/d";
+    targetPath = "/g";
     role = "bride_family";
   }
 
@@ -321,8 +321,8 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
   }, [guestName]);
 
   const currentPathType = getChatPath(side);
-  const isGroomPath = currentPathType === "/r";
-  const isBridePath = currentPathType === "/d";
+  const isGroomPath = currentPathType === "/k";
+  const isBridePath = currentPathType === "/g";
 
   const addNextWish = useCallback(() => {
     if (!wishes || wishes.length === 0) return;
@@ -423,9 +423,9 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
               spread: 50,
               origin: { x: 0.9, y: 0.9 },
               colors:
-                targetPath === "/r"
+                targetPath === "/k"
                   ? ["#3b82f6", "#2563eb", "#fff"]
-                  : targetPath === "/d"
+                  : targetPath === "/g"
                     ? ["#fd848e", "#e85d79", "#fff"]
                     : ["#E7B547", "#d1a03e", "#fff"],
             });
@@ -629,7 +629,7 @@ const FloatingWishChat = ({ guestName, side, invitationId }) => {
                           disabled={
                             createMutation.isPending || updateMutation.isPending
                           }
-                          className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/r") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/d") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
+                          className={`${editWish ? "bg-blue-600 shadow-blue-500/20" : isGroomPath || desktopData.message.toLowerCase().startsWith("/k") ? "bg-blue-600 shadow-blue-500/20" : isBridePath || desktopData.message.toLowerCase().startsWith("/g") ? "bg-[#fd848e] shadow-pink-500/30" : "bg-[#E7B547] shadow-amber-500/20"} text-white p-s10 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 shrink-0 shadow-lg`}
                         >
                           {createMutation.isPending ||
                           updateMutation.isPending ? (

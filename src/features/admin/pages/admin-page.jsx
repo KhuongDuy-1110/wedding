@@ -168,8 +168,8 @@ const AdminPage = () => {
 
   const logStats = () => {
     const filteredForStats = logs.filter((log) => {
-      if (logPathFilter === "groom") return log.path?.includes("/r") || log.path?.includes("/groom");
-      if (logPathFilter === "bride") return log.path?.includes("/d") || log.path?.includes("/bride");
+      if (logPathFilter === "groom") return log.path?.includes("/k") || log.path?.includes("/groom");
+      if (logPathFilter === "bride") return log.path?.includes("/g") || log.path?.includes("/bride");
       return true;
     });
 
@@ -193,8 +193,8 @@ const AdminPage = () => {
 
   const filteredLogs = logs.filter((log) => {
     let matchPath = true;
-    if (logPathFilter === "groom") matchPath = log.path?.includes("/r") || log.path?.includes("/groom");
-    else if (logPathFilter === "bride") matchPath = log.path?.includes("/d") || log.path?.includes("/bride");
+    if (logPathFilter === "groom") matchPath = log.path?.includes("/k") || log.path?.includes("/groom");
+    else if (logPathFilter === "bride") matchPath = log.path?.includes("/g") || log.path?.includes("/bride");
 
     let matchEvent = true;
     if (logEventFilter === "opened") matchEvent = log.is_opened;

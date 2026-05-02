@@ -76,8 +76,8 @@ const LogsTable = ({
             className="text-[10px] sm:text-xs border border-gray-100 rounded-lg px-2 py-1.5 focus:outline-none font-bold text-gray-500 bg-gray-50/50 min-w-[100px]"
           >
             <option value="all">Tất cả nguồn</option>
-            <option value="groom">Nhà trai (/r)</option>
-            <option value="bride">Nhà gái (/d)</option>
+            <option value="groom">Nhà trai (/k)</option>
+            <option value="bride">Nhà gái (/g)</option>
           </select>
 
           <select
@@ -99,7 +99,7 @@ const LogsTable = ({
         ) : (
           filteredLogs.map((log) => {
             const ev = eventMap[log.event] || { label: log.event, color: "gray" };
-            const isSide = log.path?.includes("/r") || log.path?.includes("/groom") ? "groom" : (log.path?.includes("/d") || log.path?.includes("/bride") ? "bride" : "none");
+            const isSide = log.path?.includes("/k") || log.path?.includes("/groom") ? "groom" : (log.path?.includes("/g") || log.path?.includes("/bride") ? "bride" : "none");
             
             return (
               <div key={log.id} className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
@@ -163,7 +163,7 @@ const LogsTable = ({
           <tbody className="divide-y divide-gray-50">
             {filteredLogs.map((log) => {
               const ev = eventMap[log.event] || { label: log.event, color: "gray" };
-              const isSide = log.path?.includes("/r") || log.path?.includes("/groom") ? "groom" : (log.path?.includes("/d") || log.path?.includes("/bride") ? "bride" : "none");
+              const isSide = log.path?.includes("/k") || log.path?.includes("/groom") ? "groom" : (log.path?.includes("/g") || log.path?.includes("/bride") ? "bride" : "none");
               
               return (
                 <tr key={log.id} className={`hover:bg-gray-50/50 transition-colors ${selectedLogs.includes(log.id) ? "bg-primary/5" : ""}`}>
