@@ -981,9 +981,9 @@ app.use(async (req, res) => {
     let html = fs.readFileSync(indexPath, "utf8");
     
     const title = guestInfo 
-      ? `Thân mời ${guestInfo.name} - Đám cưới Phạm Khải & Lê Nga`
-      : `Thư Mời Cưới - Phạm Khải & Lê Nga`;
-    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình vào ngày 04.04.2026!";
+      ? `Thân mời ${guestInfo.name} - Đám cưới Duy Khương & Hương Giang`
+      : `Thư Mời Cưới - Duy Khương & Hương Giang`;
+    const description = "Trân trọng kính mời bạn tới tham dự lễ thành hôn của chúng mình vào ngày 06.06.2026!";
     const image = openingImage;
     const protocol = req.headers['x-forwarded-proto'] || 'http';
     const currentUrl = `${protocol}://${req.headers.host}${req.originalUrl}`;
@@ -996,7 +996,7 @@ app.use(async (req, res) => {
       <meta property="og:image" content="${image}">
       <meta property="og:url" content="${currentUrl}">
       <meta property="og:type" content="website">
-      <meta property="og:site_name" content="Đám Cưới Khải & Nga">
+      <meta property="og:site_name" content="Đám Cưới Khương & Giang">
       <meta name="twitter:card" content="summary_large_image">
       <meta name="twitter:title" content="${title}">
       <meta name="twitter:description" content="${description}">
