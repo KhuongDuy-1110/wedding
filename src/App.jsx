@@ -376,7 +376,7 @@ function App() {
             <div key="main-content">
               {/* Hero Section */}
               <HeroSection
-                coupleName="test & test"
+                coupleName="Duy Khương & Hương Giang"
                 date={currentConfig.date}
                 timeLabel={currentConfig.time}
                 guestName={guestName}
