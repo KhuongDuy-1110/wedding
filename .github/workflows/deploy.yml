@@ -20,6 +20,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             echo "Connecting to EC2..."
+            echo ${{ secrets.MAIN_DIRECTORY }}
             cd ${{ secrets.MAIN_DIRECTORY }}
             
             ./deploy.sh ${{ secrets.MAIN_DIRECTORY }}
