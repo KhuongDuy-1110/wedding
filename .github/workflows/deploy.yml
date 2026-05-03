@@ -1,0 +1,25 @@
+name: Deploy to Amazon EC2
+
+# Trigger on pushing to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into EC2 and run deploy script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Connecting to EC2..."
+            cd ${{ secrets.MAIN_DIRECTORY }}
+            
+            ./deploy.sh ${{ secrets.MAIN_DIRECTORY }}
