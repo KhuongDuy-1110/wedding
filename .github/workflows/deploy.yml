@@ -28,5 +28,7 @@ jobs:
             ls -la
 
             cd ${{ secrets.MAIN_DIRECTORY }}
+
+            chmod +x deploy.sh
             
             ./deploy.sh ${{ secrets.MAIN_DIRECTORY }}
