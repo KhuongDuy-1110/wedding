@@ -100,7 +100,7 @@
   left: -20px;
   background: white;
   margin-top: 10px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .torn-edge-top {
@@ -122,11 +122,11 @@
 }
 
 .profile-story-title {
-  font-family: var(--font-serif);
-  font-size: 28px;
+  font-family: var(--font-couple);
+  font-size: 42px;
   letter-spacing: 2px;
   color: #c4a484;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   margin: 0;
   display: flex;
   align-items: center;

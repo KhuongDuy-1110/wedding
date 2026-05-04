@@ -28,7 +28,7 @@ const OpeningEffect = ({
             initial={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-            className="flex-1 h-full bg-gradient-to-br from-[#6b050d] to-[#4a0404] shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-r border-white/10"
+            className="flex-1 h-full bg-gradient-to-br from-[#373B44] to-[#4286f4] shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-r border-white/10"
           />
 
           {/* Right Panel */}
@@ -36,7 +36,7 @@ const OpeningEffect = ({
             initial={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-            className="flex-1 h-full bg-gradient-to-bl from-[#6b050d] to-[#4a0404] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-l border-white/10"
+            className="flex-1 h-full bg-gradient-to-bl from-[#373B44] to-[#4286f4] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-l border-white/10"
           />
 
           {/* Center Content Card */}
@@ -91,14 +91,14 @@ const OpeningEffect = ({
               {/* Information Area */}
               <div className="opening-card-info">
                 <div className="text-[11px] text-[#555] mt-s5 mx-0 mb-0 w-[80%] flex flex-col items-center">
-                  <p className="tracking-[1px] uppercase text-[12px] font-brice underline">
+                  <p className="tracking-[1px] uppercase text-[12px] font-brice">
                     Save The Date
                   </p>
                   <p className="font-brice font-normal text-[#6b050d] leading-none mt-s5 text-[24px]">
                     06.06.2026
                   </p>
                   <p className="text-[15px] text-[#888] font-medium tracking-[0.5px] mt-2 uppercase">
-                    (Âm lịch 21 - 04 Bính Ngọ)
+                    (21.04 Năm Bính Ngọ)
                   </p>
                 </div>
 

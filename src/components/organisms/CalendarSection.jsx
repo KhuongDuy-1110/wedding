@@ -115,6 +115,7 @@ const CalendarSection = () => {
           ))}
         </div>
       </div>
+      <div className="divider" />
     </section>
   );
 };

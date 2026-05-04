@@ -60,13 +60,13 @@ const EventDetails = ({ side }) => {
 
   return (
     <section id="event-details" className="pb-s50 bg-[#fdfdfd] overflow-hidden">
-      <div className="section-title pt-s40">
-        <h2 className="text-[26px] md:text-[32px] font-brice tracking-[2px]">
-          THÔNG TIN HÔN LỄ
-        </h2>
-        <p className="text-[#999] tracking-[1px] mt-1 text-[13px]">
-          Vào Tháng 06 Năm 2026
-        </p>
+      <div className="section-title">
+        {/* <h2 className="text-[48px] md:text-[48px] font-couple tracking-[2px]" style={{ textTransform: "unset", fontSize: "48px" }}>
+          Địa chỉ tham dự
+        </h2> */}
+        {/* <p className="text-[#999] tracking-[1px] mt-1 text-[13px]">
+          Tháng 06 Năm 2026
+        </p> */}
       </div>
 
       <div className="flex flex-col items-center gap-s30 px-s20 mt-s30 max-w-[500px] mx-auto">

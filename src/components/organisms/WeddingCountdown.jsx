@@ -57,8 +57,8 @@ const WeddingCountdown = ({ targetDate, guestName }) => {
         viewport={{ once: true, margin: "-50px" }}
         className="text-center mb-s40"
       >
-        <h2 className={`font-serif text-[32px] text-[#222] font-normal tracking-[3px] mb-s15`}>
-          THIỆP MỜI
+        <h2 className={`text-[48px] text-[#222] font-couple tracking-[3px] mb-s15`} style={{ textTransform: "unset" }}>
+          Thiệp mời
         </h2>
         <p className="font-sans text-[13px] text-[#444] tracking-[1px] uppercase font-medium">
           {guestName ? (

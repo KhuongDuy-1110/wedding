@@ -42,7 +42,7 @@ const ProfileSection = () => {
               of
             </span>{" "}
             LOVE */}
-            THÔNG TIN HÔN LỄ
+            Thông tin hôn lễ
           </motion.h2>
         </div>
       </div>
@@ -69,7 +69,7 @@ const ProfileSection = () => {
           >
             05 . 06 . 2026
           </motion.p>
-          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 8h30 tại tư gia nhà gái</p>
+          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 8h30 <br /> tại tư gia nhà gái</p>
         </div>
 
         {/* Small Images */}
@@ -121,7 +121,7 @@ const ProfileSection = () => {
           >
             06 . 06 . 2026
           </motion.p>
-          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 10h00 tại tư gia nhà trai</p>
+          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 10h00 <br /> tại tư gia nhà trai</p>
         </div>
 
         {/* Small Images */}

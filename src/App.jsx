@@ -228,8 +228,8 @@ function App() {
   const GOOGLE_SCRIPT_URL = "";
 
   const MAPS = {
-    groom: "https://maps.app.goo.gl/6dSmA6fX7HCMgNuY7",
-    bride: "https://maps.app.goo.gl/e6V69PFv2CKDWMbbA",
+    groom: "https://maps.app.goo.gl/Xhow8f7S2x9fhLz38",
+    bride: "https://maps.app.goo.gl/BXDvzTpXYeNBVcjJ9",
   };
 
   const handleOpenMap = (selectedSide) => {
@@ -420,12 +420,12 @@ function App() {
                   {/* <p className="text-xs  mt-4 leading-relaxed z-50 relative pointer-events-auto">
                     tạo bởi{" "}
                     <a
-                      href="https://www.facebook.com/phamvkhai20/"
+                      href="https://www.facebook.com/abc/"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-primary uppercase transition-colors underline font-medium"
                     >
-                      phamvkhai20
+                      abc
                     </a>
                   </p> */}
                 </footer>

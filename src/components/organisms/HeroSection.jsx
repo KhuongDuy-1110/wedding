@@ -5,14 +5,14 @@ import { useSiteSettings } from "../../hooks/use-site-settings";
 
 const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
   const { data: settings } = useSiteSettings();
-  const [weddingDate, setWeddingDate] = useState("THỨ BẢY - 11H00 • 06.06.2026");
+  const [weddingDate, setWeddingDate] = useState("THỨ BẢY • 06.06.2026");
 
   useEffect(() => {
     const pathSegments = window.location.pathname.split('/');
     const targetSection = pathSegments[1]; 
     
     if (targetSection === 'g') {
-      setWeddingDate("THỨ SÁU - 11H00 • 05.06.2026");
+      setWeddingDate("THỨ SÁU • 05.06.2026");
     }
   }, []);
 
