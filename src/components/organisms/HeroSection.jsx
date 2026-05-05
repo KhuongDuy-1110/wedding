@@ -20,7 +20,7 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
     <section className="hero-section relative w-full flex flex-col bg-white min-h-[100svh]">
       {/* Top Photo Part with Torn Edge */}
       <div
-        className={`relative w-full ${guestName ? "h-[55svh]" : "h-[70svh]"} overflow-hidden transition-all duration-700`}
+        className={`relative w-full h-[70svh] overflow-hidden transition-all duration-700`}
       >
         <img
           src={settings?.hero_couple || ""}
