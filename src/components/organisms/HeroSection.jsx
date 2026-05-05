@@ -27,7 +27,7 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
           alt="Hero Couple"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/15"></div>
+        <div className="absolute inset-0"></div>
 
         {/* SAVE the DATE Overlay */}
         <motion.div

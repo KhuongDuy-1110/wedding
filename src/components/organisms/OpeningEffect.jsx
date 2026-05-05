@@ -18,7 +18,7 @@ const OpeningEffect = ({
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, delay: 0.5 }}
-          className="fixed top-0 left-0 w-screen h-screen z-[2000] flex overflow-hidden bg-[#4a0404]"
+          className="fixed top-0 left-0 w-screen h-screen z-[2000] flex overflow-hidden bg-[#ACB6E5]"
         >
           {/* Shimmer/Glitter Overlay Texture */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.1)_1px,transparent_1px),radial-gradient(circle_at_70%_60%,rgba(255,255,255,0.15)_1px,transparent_1px),radial-gradient(circle_at_40%_80%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:30px_30px,40px_40px,50px_50px] opacity-40 pointer-events-none z-[1]" />
@@ -28,7 +28,7 @@ const OpeningEffect = ({
             initial={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-            className="flex-1 h-full bg-gradient-to-br from-[#373B44] to-[#4286f4] shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-r border-white/10"
+            className="flex-1 h-full bg-gradient-to-br from-[#74ebd5] to-[#ACB6E5] shadow-[10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-r border-white/10"
           />
 
           {/* Right Panel */}
@@ -36,7 +36,7 @@ const OpeningEffect = ({
             initial={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
-            className="flex-1 h-full bg-gradient-to-bl from-[#373B44] to-[#4286f4] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-l border-white/10"
+            className="flex-1 h-full bg-gradient-to-bl from-[#74ebd5] to-[#ACB6E5] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-[2] border-l border-white/10"
           />
 
           {/* Center Content Card */}
