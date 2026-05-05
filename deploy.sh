@@ -17,7 +17,8 @@ echo "================================================="
 cd "$PROJECT_DIR"
 
 echo "➡️ [1/4] Pulling source from git..."
-git pull origin main
+git fetch --all
+git reset --hard origin/main
 
 echo "➡️ [2/4] Checking new dependencies..."
 yarn install
