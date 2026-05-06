@@ -81,7 +81,7 @@
 .profile-role-title {
   font-size: 14px;
   font-family: inherit;
-  color: #111;
+  color: var(--color-primary);
   letter-spacing: 1px;
   font-weight: normal;
   text-transform: uppercase;
@@ -89,7 +89,7 @@
 }
 .profile-name-text {
   font-size: var(--profile-name-size, 32px);
-  color: #111;
+  color: var(--color-primary);
   line-height: 1;
 }
 

@@ -61,8 +61,8 @@ const CalendarSection = () => {
   return (
     <section id="calendar-section" className="py-s24 px-s24 bg-white text-center">
       <div className="mb-s40">
-        <div className="text-[20px] font-serif text-[#333]">
-          Thứ bảy, Ngày 06 Tháng 06 Năm 2026
+        <div className="text-[20px] font-serif text-[#1D2951]">
+          Tháng 06 Năm 2026
         </div>
       </div>
 
@@ -71,7 +71,7 @@ const CalendarSection = () => {
           {days.map((day) => (
             <div
               key={day}
-              className="text-[10px] font-bold text-[#333] tracking-[1px]"
+              className="text-[10px] font-bold text-[#1D2951] tracking-[1px]"
             >
               {day}
             </div>
@@ -83,7 +83,7 @@ const CalendarSection = () => {
               key={index}
               onClick={() => handleDateClick(day)}
               className={`h-[40px] flex items-center justify-center relative text-sm z-[1] ${
-              day === weddingDate || day === engagementDate ? "text-primary font-bold" : "text-[#333]"
+              day === weddingDate || day === engagementDate ? "text-primary font-bold" : "text-[#1D2951]"
               } ${
                 day === engagementDate || day === weddingDate
                   ? "cursor-pointer"

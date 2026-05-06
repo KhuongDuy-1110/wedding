@@ -127,7 +127,7 @@ const SideCountdown = ({
             key={item.label}
             onMouseDown={(e) => e.stopPropagation()}
             onClick={() => handleAutoScroll("calendar-section", true)}
-            className="bg-[#5c1a1a]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
+            className="bg-[#1D2951]/90 backdrop-blur-sm px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/10 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#7a2424] transition-colors cursor-pointer"
           >
             <div className="text-[12px] md:text-[18px] font-bold text-white leading-none mb-0.5">
               {item.value}
@@ -143,7 +143,7 @@ const SideCountdown = ({
           onClick={() => {
             onOpenMap();
           }}
-          className="bg-[#c43838] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer shine-effect"
+          className="bg-[#3863f3] px-1.5 py-1.5 md:px-3 md:py-2.5 rounded-r-xl shadow-lg border-y border-r border-white/20 flex flex-col items-center justify-center min-w-[45px] md:min-w-[65px] hover:bg-[#d44848] transition-colors cursor-pointer shine-effect"
         >
           <MapPin size={18} className="text-white" />
           <div className="text-[8px] md:text-[9px] font-bold text-white uppercase mt-0.5">
