@@ -132,7 +132,7 @@ const OpeningEffect = ({
                     ],
                   }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="bg-white text-[#6b050d] border-none py-[10px] px-[40px] rounded-[40px] text-[13px] font-bold tracking-[3px] cursor-pointer transition-all duration-300 ease-in-out uppercase"
+                  className="bg-white text-[#1D2951] border-none py-[10px] px-[40px] rounded-[40px] text-[13px] font-bold tracking-[3px] cursor-pointer transition-all duration-300 ease-in-out uppercase"
                 >
                   MỞ THIỆP
                 </motion.button>

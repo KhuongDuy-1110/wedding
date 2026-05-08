@@ -22,6 +22,7 @@ import { trackEvent } from "./features/admin/utils/tracker";
 import { useSiteSettings } from "./hooks/use-site-settings";
 import SideCountdown from "./components/organisms/SideCountdown";
 import RSVPTrigger from "./features/rsvp/components/RSVPTrigger";
+import RSVPForm from "./components/organisms/RSVPForm";
 // import ContactSupport from "./components/organisms/ContactSupport";
 
 function App() {
@@ -401,6 +402,7 @@ function App() {
 
                 {/* Gallery Section */}
                 <Gallery />
+                <RSVPForm guestName={guestName} />
                 {/* <div
                 className="bg-[#111] text-[#ddd] py-s15 px-0 text-center text-xs tracking-[4px] uppercase"
               >
