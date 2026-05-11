@@ -69,7 +69,7 @@ const ProfileSection = () => {
           >
             05 . 06 . 2026
           </motion.p>
-          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 8h30 <br /> tại tư gia nhà gái</p>
+          <p className="profile-role-title" style={{ paddingTop: '20px', textTransform: 'unset', lineHeight: '1' }}>Diễn ra lúc 8h30 <br /> tại Tư gia nhà gái</p>
         </div>
 
         {/* Small Images */}
@@ -121,7 +121,7 @@ const ProfileSection = () => {
           >
             06 . 06 . 2026
           </motion.p>
-          <p className="profile-role-title" style={{ paddingTop: '20px' }}>Diễn ra lúc 10h00 <br /> tại tư gia nhà trai</p>
+          <p className="profile-role-title" style={{ paddingTop: '20px', textTransform: 'unset', lineHeight: '1' }}>Diễn ra lúc 10h00 <br /> tại Tư gia nhà trai</p>
         </div>
 
         {/* Small Images */}

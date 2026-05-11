@@ -65,8 +65,8 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
         className="flex-1 flex flex-col items-center justify-start pt-s15 pb-s40 px-s20 relative z-20 bg-white"
         style={{
           backgroundImage:
-            "linear-gradient(to bottom, white 0%, white 40px, transparent 100%), url('/assets/background.webp')",
-          backgroundSize: "140%",
+            "linear-gradient(to bottom, white 0%, white 40px, transparent 100%), url('/assets/new3.png')",
+          backgroundSize: "100%",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
@@ -101,22 +101,22 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
           {weddingDate}
         </p>
 
-        <div className="mt-s20 text-center">
-          {/* <p className="text-[18px] text-text-muted mb-s5 tracking-[2px] uppercase">
+        <div className="mt-s35 text-center">
+          <p className="text-[13px] text-text-muted mb-s5 tracking-[2px] uppercase">
             TRÂN TRỌNG KÍNH MỜI
-          </p> */}
+          </p>
           {guestName && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
             >
-              <h3 className="font-brice text-[22px] md:text-[26px] pb-s10 text-primary capitalize leading-tight">
+              <h3 className="font-brice text-[18px] md:text-[20px] pb-s10 text-primary capitalize leading-tight">
                 {guestName}
               </h3>
-              <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
+              {/* <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
                 TỚI DỰ BỮA CƠM THÂN MẬT CHUNG VUI CÙNG GIA ĐÌNH CHÚNG TÔI
-              </p>
+              </p> */}
             </motion.div>
           )}
         </div>
