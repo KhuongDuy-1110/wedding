@@ -12,7 +12,8 @@ const QuoteSection = () => {
         className="relative max-w-full mx-auto bg-[url('/assets/paper.png')] bg-[length:100%_100%] bg-no-repeat bg-center pt-s50 pr-s40 pb-s70 pl-s40 drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)] transition-all duration-300"
       >
         <p className="text-[18px] text-[#333] text-center relative z-[2]">
-          Từ những dòng tin nhắn đầu tiên đến hơn 3 năm bên nhau — một người hướng nội, một người ấm áp, và từ nay, chúng mình là một gia đình!
+          Khương giản dị, chân thành và ấm áp; còn Giang, dù hướng nội, lại thấy mình rộn ràng hơn khi ở bên Khương. Cứ thế, chúng mình học cách thấu hiểu và cùng nhau trưởng thành.
+          Hôn lễ hôm nay không chỉ là một cột mốc ý nghĩa, mà còn là lời hứa về sự đồng hành và gắn bó trọn đời.
         </p>
         <img
           src="/assets/heart.png"
