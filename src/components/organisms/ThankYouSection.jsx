@@ -12,9 +12,7 @@ const ThankYouSection = () => {
         className="relative max-w-full mx-auto bg-[url('/assets/paper.png')] bg-[length:100%_100%] bg-no-repeat bg-center pt-[50px] px-s40 pb-[70px] drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)]"
       >
         <p className="text-[18px] text-[#333] text-center relative z-[2] mb-0">
-          Một hành trình mới bắt đầu từ tình yêu và sự lựa chọn ở bên nhau.
-          Chúng mình rất vui khi được chia sẻ khoảnh khắc này cùng bạn – sự hiện diện của bạn là niềm vinh dự lớn cho gia đình hai bên.
-          Hẹn gặp bạn trong ngày trọng đại!.
+          Một hành trình mới bắt đầu từ tình yêu và sự lựa chọn ở bên nhau. Gia đình rất vui khi được chia sẻ khoảnh khắc này cùng bạn. Hẹn gặp bạn trong ngày trọng đại!
         </p>
         <img
           src="/assets/heart.png"
