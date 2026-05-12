@@ -110,7 +110,7 @@ const RSVPModal = ({ isOpen, onClose, guestName, side, shortId }) => {
                   {submitRSVP.isPending ? "ĐANG GỬI..." : (
                     <>
                       <CalendarCheck size={20} />
-                      SẼ THAM DỰ
+                      SẼ THAM DỰ !
                       <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all font-bold" />
                     </>
                   )}
@@ -122,7 +122,7 @@ const RSVPModal = ({ isOpen, onClose, guestName, side, shortId }) => {
                   className="w-full py-s18 bg-white text-primary border-2 border-primary/20 rounded-full font-bold hover:bg-primary/5 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
                   <Gift size={20} />
-                  MỪNG TỪ XA
+                  DỰ ONLINE !
                 </button>
               </div>
             </div>
