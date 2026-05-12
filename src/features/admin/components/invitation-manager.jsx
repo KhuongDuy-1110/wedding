@@ -5,13 +5,14 @@ import { adminApi } from "../api/admin-api";
 import { useSiteSettings, useUpdateSetting } from "../../../hooks/use-site-settings";
 import { toast } from "react-hot-toast";
 
-const TEMPLATE_TYPES = ["bạn", "anh", "chị", "bạn thân", "em", "chú", "cô", "bác"];
+const TEMPLATE_TYPES = ["bạn", "anh", "chị", "bạn thân", "em", "chú", "cô", "bác", "gia đình", "blank"];
 
 const getSelfTitle = (guestTitle, side) => {
   const t = (guestTitle || "bạn").toLowerCase();
   if (t === "anh" || t === "chị") return "em";
   if (t === "chú" || t === "cô" || t === "bác") return "cháu";
   if (t === "em") return side === "groom" ? "anh" : "chị";
+  if (t === "blank") return "blank";
   return "mình"; // default for "bạn", "bạn thân"
 };
 
@@ -114,6 +115,10 @@ const InvitationManager = () => {
     setNewName(capitalizeName(val));
   };
 
+  const handleSetTempType = (val) => {
+    val === 'blank' ? setNewTemplateType('blank') : setNewTemplateType(val);
+  }
+
   const addGuest = async (e) => {
     e.preventDefault();
     if (!newName.trim() || isAddingGuest) return;
@@ -129,6 +134,9 @@ const InvitationManager = () => {
     }
 
     const transformName = (n) => {
+      if (newTemplateType === 'blank') {
+        return n;
+      }
       const title = newTemplateType.charAt(0).toUpperCase() + newTemplateType.slice(1);
       if (n.toLowerCase().startsWith(newTemplateType.toLowerCase() + " ")) return n;
       return `${title} ${n}`;
@@ -352,7 +360,7 @@ const InvitationManager = () => {
                 <span className="text-[9px] text-gray-400 font-bold uppercase">Xưng hô (Khách)</span>
                 <select 
                   value={newTemplateType}
-                  onChange={(e) => setNewTemplateType(e.target.value)}
+                  onChange={(e) => handleSetTempType(e.target.value)}
                   className="w-full text-[10px] border border-gray-100 rounded-lg px-1 py-1 outline-none font-bold text-gray-600 bg-white"
                 >
                   {TEMPLATE_TYPES.map(t => (
