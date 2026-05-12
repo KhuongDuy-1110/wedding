@@ -111,7 +111,7 @@ const HeroSection = ({ date, coupleName, timeLabel, guestName }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.4 }}
             >
-              <h3 className="font-brice text-[18px] md:text-[20px] pb-s10 text-primary capitalize leading-tight">
+              <h3 className="font-brice text-[16px] md:text-[18px] pb-s10 text-primary capitalize leading-tight">
                 {guestName}
               </h3>
               {/* <p className="text-[10px] text-text-muted mb-s5 tracking-[2px] uppercase">
