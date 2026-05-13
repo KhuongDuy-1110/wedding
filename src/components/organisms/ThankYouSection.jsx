@@ -17,7 +17,7 @@ const ThankYouSection = () => {
         <img
           src="/assets/heart.png"
           alt="heart"
-          className="absolute bottom-s50 right-s10 w-[120px] h-auto z-[1] opacity-85 mix-blend-multiply"
+          className="absolute bottom-s50 right-s10 w-[80px] h-auto z-[1] opacity-85 mix-blend-multiply"
         />
       </motion.div>
     </section>

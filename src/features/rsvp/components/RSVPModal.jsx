@@ -98,7 +98,7 @@ const RSVPModal = ({ isOpen, onClose, guestName, side, shortId }) => {
             <div className="text-center">
               <h3 className="font-brice text-[22px] text-primary mb-s10 uppercase tracking-wider">Xác nhận tham dự</h3>
               <p className="text-text-muted text-[14px] leading-relaxed mb-s30 italic">
-                Chào <strong>{guestName || "bạn"}</strong>, gia đình Khương & Giang rất mong được đón tiếp sự hiện diện của bạn!
+                Chào <strong>{guestName || "bạn"}</strong>, gia đình Khương & Giang rất mong được đón tiếp bạn trong ngày vui sắp tới !
               </p>
 
               <div className="flex flex-col gap-4">
